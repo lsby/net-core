@@ -1,0 +1,48 @@
+{
+  "name": "playground-ts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "require": "./dist/cjs/index.cjs",
+    "import": "./dist/esm/index.js"
+  },
+  "bin": {
+    "playground-ts-bin": "dist/esm/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build:all": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "tsup src/**/*.ts --format cjs --clean --dts -d dist/cjs",
+    "build:esm": "tsup src/**/*.ts --format esm --clean --dts -d dist/esm",
+    "other:clean": "rm -rf dist",
+    "other:format": "prettier --write .",
+    "other:lint": "eslint . --fix",
+    "other:pub": "npm run other:typecheck && npm run build:all && bumpp && pnpm -r publish --access public",
+    "other:typecheck": "tsc --noEmit",
+    "other:typecheck:watch": "tsc --noEmit -w",
+    "reset:all": "git reset --hard HEAD && git clean -xdff && pnpm i",
+    "run:start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.2.1",
+    "@types/node": "^20.12.10",
+    "@typescript-eslint/eslint-plugin": "^7.8.0",
+    "@typescript-eslint/parser": "^7.8.0",
+    "bumpp": "^9.4.1",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-sort-class-members": "^1.20.0",
+    "eslint-plugin-unused-imports": "^3.2.0",
+    "prettier": "3.2.5",
+    "prettier-plugin-packagejson": "^2.5.0",
+    "tsup": "^8.0.2",
+    "tsx": "^4.9.3",
+    "typescript": "^5.4.5"
+  }
+}
