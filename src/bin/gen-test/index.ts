@@ -1,0 +1,113 @@
+import fs, { writeFileSync } from 'node:fs'
+import path from 'node:path'
+import ts from 'typescript'
+import { Task } from '@lsby/ts-fp-data'
+import { Log } from '../../tools/log'
+
+export function main(
+  tsconfigPath: string,
+  interfaceFolderPath: string,
+  outFilePath: string,
+  filter: string,
+): Promise<void> {
+  return new Task(async () => {
+    var log = new Log('@lsby/net-core').extend('gen-test')
+
+    const projectRootPath = path.dirname(tsconfigPath)
+
+    const tsconfigJson = ts.parseConfigFileTextToJson(tsconfigPath, fs.readFileSync(tsconfigPath, 'utf8'))
+    if (tsconfigJson.error) {
+      throw new Error('无法解析 tsconfig.json')
+    }
+    const parsedTsconfig = ts.parseJsonConfigFileContent(tsconfigJson.config, ts.sys, path.resolve(tsconfigPath, '..'))
+    await log.debug('成功解析 tsconfig 文件...').run()
+
+    const projectHost = ts.createCompilerHost(parsedTsconfig.options)
+    const project = ts.createProgram(parsedTsconfig.fileNames, parsedTsconfig.options, projectHost)
+    await log.debug('成功读取项目...').run()
+
+    // 不可以删除, 否则会变得不幸
+    const _check = project.getTypeChecker()
+
+    const allSourceFiles = project.getSourceFiles()
+    const typeSourceFiles = allSourceFiles.filter((sourceFile) => {
+      // 我们约定接口类型必须名为 type.ts
+      return new RegExp(`${interfaceFolderPath.replaceAll('\\', '\\\\')}.*type\.ts`).test(
+        path.resolve(sourceFile.fileName),
+      )
+    })
+    const testSourceFiles = allSourceFiles.filter((sourceFile) => {
+      return new RegExp(`${interfaceFolderPath.replaceAll('\\', '\\\\')}.*\.test\.ts`).test(
+        path.resolve(sourceFile.fileName),
+      )
+    })
+
+    const testSourceFilesFilter = testSourceFiles.filter((sourceFile) => {
+      return new RegExp(filter).test(path.resolve(sourceFile.fileName))
+    })
+
+    await log
+      .debug(
+        '找到 %o 个接口，其中有 %o 个测试，筛选后还剩 %o 个...',
+        typeSourceFiles.length,
+        testSourceFiles.length,
+        testSourceFilesFilter.length,
+      )
+      .run()
+
+    const importCode: string[] = []
+    const testCode: string[] = []
+    testSourceFilesFilter.forEach(async (testSourceFile, index) => {
+      const filenameRelativeToApiFolder = path
+        .relative(interfaceFolderPath, testSourceFile.fileName)
+        .replaceAll('\\', '/')
+      const importName = filenameRelativeToApiFolder
+        .replaceAll('/', '_')
+        .replaceAll('.test.ts', '')
+        .replaceAll('./', '')
+        .replaceAll('-', '_')
+      const filenameRelativeToProjectRoot = path
+        .relative(projectRootPath, testSourceFile.fileName)
+        .replaceAll('\\', '/')
+        .replaceAll('.ts', '')
+      const outputFolderRelativeToProjectRoot = path
+        .relative(path.dirname(outFilePath), projectRootPath)
+        .replaceAll('\\', '/')
+      const importPath = path
+        .join(outputFolderRelativeToProjectRoot, filenameRelativeToProjectRoot)
+        .replaceAll('\\', '/')
+
+      await log.info(`处理（${index + 1} / ${testSourceFilesFilter.length}）：${filenameRelativeToApiFolder}`).run()
+
+      for (const node of testSourceFile.statements) {
+        if (ts.isExportAssignment(node) && node.isExportEquals === undefined) {
+          const expression = node.expression
+          if (ts.isNewExpression(expression) && expression.expression.getText() === '接口类型') {
+            break
+          }
+          throw new Error(`${testSourceFile.fileName}：默认导出不是 接口类型`)
+        }
+      }
+
+      importCode.push(`import ${importName} from '${importPath}'`)
+      testCode.push(generateTestCode(importName, importName))
+    })
+
+    const finalTestFile = [
+      "import './unit-test-prefix'",
+      '',
+      ...importCode,
+      '',
+      ...testCode,
+      '',
+      "it('exit', async () => process.exit(0))",
+      '',
+    ].join('\n')
+
+    writeFileSync(outFilePath, finalTestFile)
+  }).run()
+}
+
+function generateTestCode(testCaseName: string, importName: string): string {
+  return `it('${testCaseName}', async () => await ${importName}.运行())`
+}

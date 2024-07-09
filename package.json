@@ -6,11 +6,16 @@
     "require": "./dist/cjs/index.cjs",
     "import": "./dist/esm/index.js"
   },
+  "bin": {
+    "lsby-net-core-gen-test": "./dist/bin/gen-test/bin.js",
+    "lsby-net-core-get-type": "./dist/bin/get-type/bin.js"
+  },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build:all": "npm run build:cjs && npm run build:esm",
+    "build:all": "npm run build:cjs && npm run build:esm && npm run build:bin",
+    "build:bin": "tsup src/bin/**/*.ts --format cjs --clean --dts -d dist/bin",
     "build:cjs": "tsup src/**/*.ts --format cjs --clean --dts -d dist/cjs",
     "build:esm": "tsup src/**/*.ts --format esm --clean --dts -d dist/esm",
     "other:clean": "rm -rf dist",
@@ -22,6 +27,7 @@
     "run:start": "tsx src/index.ts"
   },
   "dependencies": {
+    "commander": "^12.1.0",
     "debug": "^4.3.5",
     "express": "^4.19.2",
     "zod": "^3.23.8"
