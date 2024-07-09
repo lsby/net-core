@@ -1,10 +1,11 @@
 import type { Request, Response } from 'express'
+import { Task } from '@lsby/ts-fp-data'
 import { GlobalLog } from '../global/global'
 import { 类型保持符号 } from '../types/type-hold'
 
 export abstract class 结果<T> {
   declare [类型保持符号]: T
-  abstract run(req: Request, res: Response): Promise<void>
+  abstract run(req: Request, res: Response): Task<void>
 }
 
 // ======================
@@ -14,26 +15,28 @@ export abstract class 成功结果<T> extends 结果<T> {
 }
 
 export class 成功JSON结果<Data extends Record<string, unknown>> extends 成功结果<Data> {
-  private log = GlobalLog.getInstance().extend('SuccessResultJson')
+  private log = GlobalLog.getInstance().extend('成功JSON结果')
 
   constructor(private data: Data) {
     super()
     this.log.debug('创建返回数据: %o', data)
   }
 
-  async run(req: Request, res: Response): Promise<void> {
-    this.log.debug('返回数据: %o', this.data)
-    res.send(this.data)
+  run(req: Request, res: Response): Task<void> {
+    return new Task(async () => {
+      this.log.debug('返回数据: %o', this.data)
+      res.send(this.data)
+    })
   }
 }
 
 export class 成功自定义结果 extends 成功结果<unknown> {
-  constructor(private customHandler: (req: Request, res: Response) => Promise<void>) {
+  constructor(private customHandler: (req: Request, res: Response) => Task<void>) {
     super()
   }
 
-  async run(req: Request, res: Response): Promise<void> {
-    await this.customHandler(req, res)
+  run(req: Request, res: Response): Task<void> {
+    return this.customHandler(req, res)
   }
 }
 
@@ -44,15 +47,17 @@ export abstract class 错误结果<T> extends 结果<T> {
 }
 
 export class 错误JSON结果<Data> extends 错误结果<Data> {
-  private log = GlobalLog.getInstance().extend('ErrorResultJson')
+  private log = GlobalLog.getInstance().extend('错误JSON结果')
 
   constructor(private data: Data) {
     super()
     this.log.debug('创建返回数据: %o', data)
   }
 
-  async run(req: Request, res: Response): Promise<void> {
-    this.log.debug('返回数据: %o', this.data)
-    res.send(this.data)
+  run(req: Request, res: Response): Task<void> {
+    return new Task(async () => {
+      this.log.debug('返回数据: %o', this.data)
+      res.send(this.data)
+    })
   }
 }
