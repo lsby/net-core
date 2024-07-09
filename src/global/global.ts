@@ -4,7 +4,7 @@ import { Log } from '../tools/log'
 export class GlobalLog {
   private static instance: Log
   public static getInstance(): Log {
-    var 标识符 = GlobalGetProName.getInstance().getProName()
+    var 标识符 = GlobalGetProName.getInstance().getProName().replaceAll('/', ':')
     if (!GlobalLog.instance) {
       GlobalLog.instance = new Log(标识符)
     }
