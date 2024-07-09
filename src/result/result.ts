@@ -10,11 +10,11 @@ export abstract class 结果<T> {
 
 // ======================
 
-export abstract class 成功结果<T> extends 结果<T> {
-  private 成功结果烙印 = true
+export abstract class 正确结果<T> extends 结果<T> {
+  private 正确结果烙印 = true
 }
 
-export class 成功JSON结果<Data extends Record<string, unknown>> extends 成功结果<Data> {
+export class 正确JSON结果<Data extends Record<string, unknown>> extends 正确结果<Data> {
   private log = GlobalLog.getInstance()
 
   constructor(private data: Data) {
@@ -23,14 +23,14 @@ export class 成功JSON结果<Data extends Record<string, unknown>> extends 成�
 
   run(req: Request, res: Response): Task<void> {
     return new Task(async () => {
-      var log = (await this.log.run()).extend('成功JSON结果')
+      var log = (await this.log.run()).extend('正确JSON结果')
       await log.debug('返回数据: %o', this.data).run()
       res.send(this.data)
     })
   }
 }
 
-export class 成功自定义结果 extends 成功结果<unknown> {
+export class 正确自定义结果 extends 正确结果<unknown> {
   constructor(private customHandler: (req: Request, res: Response) => Task<void>) {
     super()
   }
