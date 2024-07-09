@@ -77,15 +77,15 @@ export class 服务器 {
       })
 
       let server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse> | null = null
-      if (server === null) {
-        throw new Error('启动服务器失败')
-      }
-
       await new Promise<void>((res, _rej) => {
         server = app.listen(this.端口, () => {
           res()
         })
       })
+
+      if (server === null) {
+        throw new Error('启动服务器失败')
+      }
 
       return {
         ip: Object.values(networkInterfaces())
