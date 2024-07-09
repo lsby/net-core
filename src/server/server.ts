@@ -62,10 +62,10 @@ export class 服务器 {
           await 接口结果.run(req, res)
           this.log.debug('返回逻辑执行完毕')
         } catch (exception) {
-          console.log(exception)
+          this.log.err(exception)
           res.send('未知错误')
         }
-      })().catch((reason) => console.log(reason))
+      })().catch((reason) => this.log.err(reason))
     })
 
     let server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse> | null = null
