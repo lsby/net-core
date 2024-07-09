@@ -82,10 +82,10 @@ export function main(
       for (const node of testSourceFile.statements) {
         if (ts.isExportAssignment(node) && node.isExportEquals === undefined) {
           const expression = node.expression
-          if (ts.isNewExpression(expression) && expression.expression.getText() === '接口类型') {
+          if (ts.isNewExpression(expression) && expression.expression.getText() === '测试') {
             break
           }
-          throw new Error(`${testSourceFile.fileName}：默认导出不是 接口类型`)
+          throw new Error(`${testSourceFile.fileName}：默认导出不是 测试`)
         }
       }
 
