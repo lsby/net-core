@@ -8,7 +8,7 @@ import { calcCode } from './calc-code'
 
 export function main(tsconfigPath: string, apiFolderPath: string, outputPath: string): Promise<void> {
   return new Task(async () => {
-    var log = new Log('@lsby/net-core').extend('gen-type')
+    var log = new Log('@lsby:net-core').extend('gen-type')
 
     const tsconfigJson = ts.parseConfigFileTextToJson(tsconfigPath, fs.readFileSync(tsconfigPath, 'utf8'))
     if (tsconfigJson.error) {
