@@ -10,3 +10,5 @@ export * from './plug/urlencoded'
 export * from './result/result'
 
 export * from './server/server'
+
+export * from './test/test'
