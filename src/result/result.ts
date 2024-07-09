@@ -43,7 +43,7 @@ export abstract class 错误结果<T> extends 结果<T> {
   private 失败结果烙印 = true
 }
 
-export class 失败JSON结果<Data> extends 错误结果<Data> {
+export class 错误JSON结果<Data> extends 错误结果<Data> {
   private log = GlobalLog.getInstance().extend('ErrorResultJson')
 
   constructor(private data: Data) {
