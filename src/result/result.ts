@@ -39,11 +39,11 @@ export class 成功自定义结果 extends 成功结果<unknown> {
 
 // ======================
 
-export abstract class ErrorResult<T> extends 结果<T> {
+export abstract class 错误结果<T> extends 结果<T> {
   private 失败结果烙印 = true
 }
 
-export class 失败JSON结果<Data> extends ErrorResult<Data> {
+export class 失败JSON结果<Data> extends 错误结果<Data> {
   private log = GlobalLog.getInstance().extend('ErrorResultJson')
 
   constructor(private data: Data) {
