@@ -7,9 +7,9 @@ export class GlobalLog {
   public static getInstance(): Task<Log> {
     return GlobalGetProName.getInstance()
       .getProName()
-      .map((标识符) => {
-        标识符 = 标识符.replaceAll('/', ':')
-        if (!GlobalLog.instance) GlobalLog.instance = new Log(标识符)
+      .map((name) => {
+        name = name.replaceAll('/', ':')
+        if (!GlobalLog.instance) GlobalLog.instance = new Log(name)
         return GlobalLog.instance
       })
   }
