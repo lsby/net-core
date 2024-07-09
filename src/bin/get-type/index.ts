@@ -63,7 +63,10 @@ export function main(tsconfigPath: string, apiFolderPath: string, outputPath: st
     await log.debug('成功生成虚拟项目类型检查器...').run()
 
     const result: string[] = []
-    apiSourceFiles.forEach(async (apiSourceFile, index) => {
+    for (var index = 0; index < apiSourceFiles.length; index++) {
+      var apiSourceFile = apiSourceFiles[index]
+      if (apiSourceFile == null) throw new Error('非预期的数组越界')
+
       await log.info(`处理（${index + 1} / ${apiSourceFiles.length}）：${apiSourceFile.fileName}`).run()
 
       const apiCalcSourceFile = apiTypeCalcFiles[index]?.sourceFile
@@ -84,7 +87,7 @@ export function main(tsconfigPath: string, apiFolderPath: string, outputPath: st
           result.push(typeString)
         }
       }
-    })
+    }
     await log.debug('成功处理所有接口...').run()
 
     const outputPathAbs = path.resolve(outputPath)

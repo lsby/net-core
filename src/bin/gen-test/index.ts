@@ -57,7 +57,10 @@ export function main(
 
     const importCode: string[] = []
     const testCode: string[] = []
-    testSourceFilesFilter.forEach(async (testSourceFile, index) => {
+    for (var index = 0; index < testSourceFilesFilter.length; index++) {
+      var testSourceFile = testSourceFilesFilter[index]
+      if (testSourceFile == null) throw new Error('非预期的数组越界')
+
       const filenameRelativeToApiFolder = path
         .relative(interfaceFolderPath, testSourceFile.fileName)
         .replaceAll('\\', '/')
@@ -91,7 +94,7 @@ export function main(
 
       importCode.push(`import ${importName} from '${importPath}'`)
       testCode.push(generateTestCode(importName, importName))
-    })
+    }
 
     const finalTestFile = [
       "import './unit-test-prefix'",
