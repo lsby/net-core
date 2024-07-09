@@ -59,7 +59,7 @@ export class 服务器 {
           await log.debug('接口逻辑执行完毕').run()
 
           await log.debug('准备执行返回逻辑...').run()
-          ;(await 接口结果.run()).run(req, res)
+          await (await 接口结果.run()).run(req, res).run()
           await log.debug('返回逻辑执行完毕').run()
         })
           .tryRun()
