@@ -26,6 +26,9 @@ module.exports = {
     {
       files: ['src/**/*.ts', 'src/**/*.tsx', 'test/**/*.ts', 'test/**/*.tsx'],
       rules: {
+        // 拒绝浮动promise
+        '@typescript-eslint/no-floating-promises': 'error',
+
         // 必须标注函数返回类型
         '@typescript-eslint/explicit-function-return-type': ['error', {}],
 
