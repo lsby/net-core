@@ -21,15 +21,15 @@ export class JSON解析插件<Result extends z.ZodObject<{ body: z.AnyZodObject 
             }),
           )
 
-          log.debug('准备解析 Json：%o', req.body)
+          await log.debug('准备解析 Json：%o', req.body).run()
           const parseResult = t.safeParse({ body: req.body })
 
           if (!parseResult.success) {
-            log.err('解析 Json 失败：%o', parseResult.error)
+            await log.err('解析 Json 失败：%o', parseResult.error).run()
             throw new Error(format('Parse JSON body failed: %O', parseResult.error))
           }
 
-          log.debug('成功解析 Json：%o', parseResult.data.body)
+          await log.debug('成功解析 Json：%o', parseResult.data.body).run()
           return { body: parseResult.data.body }
         }),
     )

@@ -24,7 +24,7 @@ export class 成功JSON结果<Data extends Record<string, unknown>> extends 成�
   run(req: Request, res: Response): Task<void> {
     return new Task(async () => {
       var log = (await this.log.run()).extend('成功JSON结果')
-      log.debug('返回数据: %o', this.data)
+      await log.debug('返回数据: %o', this.data).run()
       res.send(this.data)
     })
   }
@@ -56,7 +56,7 @@ export class 错误JSON结果<Data> extends 错误结果<Data> {
   run(req: Request, res: Response): Task<void> {
     return new Task(async () => {
       var log = (await this.log.run()).extend('错误JSON结果')
-      log.debug('返回数据: %o', this.data)
+      await log.debug('返回数据: %o', this.data).run()
       res.send(this.data)
     })
   }
