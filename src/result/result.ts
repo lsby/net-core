@@ -15,16 +15,16 @@ export abstract class 成功结果<T> extends 结果<T> {
 }
 
 export class 成功JSON结果<Data extends Record<string, unknown>> extends 成功结果<Data> {
-  private log = GlobalLog.getInstance().extend('成功JSON结果')
+  private log = GlobalLog.getInstance()
 
   constructor(private data: Data) {
     super()
-    this.log.debug('创建返回数据: %o', data)
   }
 
   run(req: Request, res: Response): Task<void> {
     return new Task(async () => {
-      this.log.debug('返回数据: %o', this.data)
+      var log = (await this.log.run()).extend('成功JSON结果')
+      log.debug('返回数据: %o', this.data)
       res.send(this.data)
     })
   }
@@ -47,16 +47,16 @@ export abstract class 错误结果<T> extends 结果<T> {
 }
 
 export class 错误JSON结果<Data> extends 错误结果<Data> {
-  private log = GlobalLog.getInstance().extend('错误JSON结果')
+  private log = GlobalLog.getInstance()
 
   constructor(private data: Data) {
     super()
-    this.log.debug('创建返回数据: %o', data)
   }
 
   run(req: Request, res: Response): Task<void> {
     return new Task(async () => {
-      this.log.debug('返回数据: %o', this.data)
+      var log = (await this.log.run()).extend('错误JSON结果')
+      log.debug('返回数据: %o', this.data)
       res.send(this.data)
     })
   }
