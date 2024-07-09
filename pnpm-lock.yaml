@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@lsby/ts-fp-data':
-    specifier: ^0.0.5
-    version: 0.0.5
+    specifier: ^0.0.6
+    version: 0.0.6
   debug:
     specifier: ^4.3.5
     version: 4.3.5
@@ -858,8 +858,8 @@ packages:
       type-detect: 4.0.8
     dev: true
 
-  /@lsby/ts-fp-data@0.0.5:
-    resolution: {integrity: sha512-Fjw/Fnr+k6ReIXrhmxDWG2wO9JMVTmjYSYG659vDnXAX8329/2Y9iRbmhYBaQT9JUWejvcKLJGs4zFhoDGoUWg==}
+  /@lsby/ts-fp-data@0.0.6:
+    resolution: {integrity: sha512-mGPvBji/RMQvZXrYgZSKNR+LTE2Lqkfcs0H8wyhgFW1kw7FxIK8rdSB6WZxqSvcbtQ32fRIrrXrqsWqo40b4mQ==}
     dev: false
 
   /@nodelib/fs.scandir@2.1.5:
