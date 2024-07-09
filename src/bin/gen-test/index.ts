@@ -11,7 +11,7 @@ export function main(
   filter: string,
 ): Promise<void> {
   return new Task(async () => {
-    var log = new Log('@lsby/net-core').extend('gen-test')
+    var log = new Log('@lsby:net-core').extend('gen-test')
 
     const projectRootPath = path.dirname(tsconfigPath)
 
