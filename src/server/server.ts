@@ -30,7 +30,7 @@ export class 服务器 {
           const 请求路径 = req.path
           const 请求方法 = req.method.toLowerCase()
 
-          log.debug('收到请求，路径：%o，方法：%o', 请求路径, 请求方法)
+          await log.debug('收到请求，路径：%o，方法：%o', 请求路径, 请求方法).run()
 
           const 目标接口 = this.接口们.find((接口) => {
             const 接口类型 = 接口.获得类型()
@@ -43,7 +43,7 @@ export class 服务器 {
 
           const 接口类型 = 目标接口.获得类型()
           const 接口插件 = 接口类型.获得插件们() as Array<插件<z.AnyZodObject>>
-          log.debug('找到 %o 个 插件，准备执行...', 接口插件.length)
+          await log.debug('找到 %o 个 插件，准备执行...', 接口插件.length).run()
 
           var 插件结果 = seqArrayTask(
             接口插件.map((插件) => {
@@ -51,22 +51,26 @@ export class 服务器 {
               return 实现(req, res)
             }),
           ).map((a) => a.reduce((s, a) => Object.assign(s, a), {}))
-          log.debug('插件 执行完毕')
+          await log.debug('插件 执行完毕').run()
 
           const 接口实现 = 目标接口.获得实现()
-          log.debug('准备执行接口逻辑...')
+          await log.debug('准备执行接口逻辑...').run()
           const 接口结果 = 插件结果.bind(接口实现)
-          log.debug('接口逻辑执行完毕')
+          await log.debug('接口逻辑执行完毕').run()
 
-          log.debug('准备执行返回逻辑...')
+          await log.debug('准备执行返回逻辑...').run()
           ;(await 接口结果.run()).run(req, res)
-          log.debug('返回逻辑执行完毕')
+          await log.debug('返回逻辑执行完毕').run()
         })
           .tryRun()
           .then((a) => {
             if (a.isLeft()) {
-              log.err(a.getLeft())
-              res.send('未知错误')
+              new Task(async () => {
+                await log.err(a.getLeft()).run()
+                res.send('未知错误')
+              })
+                .run()
+                .catch(() => {})
             }
           })
           .catch(() => {})
