@@ -1,9 +1,9 @@
 import { Task } from '@lsby/ts-fp-data'
-import { 任意接口 } from '../interface/interface'
+import { 任意接口类型 } from '../interface/interface-type'
 
-export class 测试<接口类型 extends 任意接口> {
+export class 测试 {
   constructor(
-    private 接口类型: 接口类型,
+    private 接口类型: 任意接口类型,
     private 前置: Task<void>,
     private 中置: Task<object>,
     private 后置: (中置结果: object) => Task<void>,

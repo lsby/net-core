@@ -39,3 +39,5 @@ export class 接口类型<
     return this.错误结果
   }
 }
+
+export type 任意接口类型 = 接口类型<any, any, any, any, any>
