@@ -40,7 +40,7 @@ export class 成功自定义结果 extends 成功结果<unknown> {
 // ======================
 
 export abstract class 错误结果<T> extends 结果<T> {
-  private 失败结果烙印 = true
+  private 错误结果烙印 = true
 }
 
 export class 错误JSON结果<Data> extends 错误结果<Data> {
