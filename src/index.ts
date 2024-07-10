@@ -2,10 +2,10 @@ export * from './interface/interface'
 export * from './interface/interface-type'
 export * from './interface/plug'
 
-export * from './plug/chinese-path'
-export * from './plug/custom-data'
-export * from './plug/json'
-export * from './plug/urlencoded'
+export * from './plugin/chinese-path'
+export * from './plugin/custom-data'
+export * from './plugin/json'
+export * from './plugin/urlencoded'
 
 export * from './result/result'
 
