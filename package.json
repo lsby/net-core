@@ -8,7 +8,7 @@
   },
   "bin": {
     "lsby-net-core-gen-test": "./dist/bin/gen-test/bin.cjs",
-    "lsby-net-core-get-type": "./dist/bin/get-type/bin.cjs"
+    "lsby-net-core-gen-type": "./dist/bin/gen-type/bin.cjs"
   },
   "files": [
     "dist"
