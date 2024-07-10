@@ -87,7 +87,7 @@ export function main(tsconfigPath: string, interfaceFolderPath: string, outFileP
       '',
       ...引入区,
       '',
-      `export var interfaceList: 任意接口[] = [${代码区.join(',')}]`,
+      `export var interfaceList: 任意接口[] = [\n${代码区.map((a) => `  ${a}`).join(',\n')}\n]`,
       '',
     ].join('\n')
 
