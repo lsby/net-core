@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import fs from 'node:fs'
+import fs, { existsSync, mkdirSync } from 'node:fs'
 import path from 'node:path'
 import ts from 'typescript'
 import { Task } from '@lsby/ts-fp-data'
@@ -91,6 +91,11 @@ export function main(tsconfigPath: string, apiFolderPath: string, outputPath: st
     await log.debug('成功处理所有接口...').run()
 
     const outputPathAbs = path.resolve(outputPath)
+
+    if (!existsSync(outputPathAbs)) {
+      mkdirSync(outputPathAbs, { recursive: true })
+    }
+
     fs.writeFileSync(outputPathAbs, `export type InterfaceType = [${result.join(',')}]`)
     await log.debug('生成成功：%o', outputPathAbs).run()
   }).run()

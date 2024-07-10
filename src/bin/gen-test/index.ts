@@ -1,4 +1,4 @@
-import fs, { writeFileSync } from 'node:fs'
+import fs, { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import ts from 'typescript'
 import { Task } from '@lsby/ts-fp-data'
@@ -106,6 +106,10 @@ export function main(
       "it('exit', async () => process.exit(0))",
       '',
     ].join('\n')
+
+    if (!existsSync(outFilePath)) {
+      mkdirSync(outFilePath, { recursive: true })
+    }
 
     writeFileSync(outFilePath, finalTestFile)
   }).run()
