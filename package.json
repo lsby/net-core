@@ -15,9 +15,9 @@
   ],
   "scripts": {
     "build:all": "npm run build:cjs && npm run build:esm && npm run build:bin",
-    "build:bin": "tsup src/bin/**/*.ts --format cjs --clean --dts -d dist/bin",
-    "build:cjs": "tsup src/**/*.ts --format cjs --clean --dts -d dist/cjs",
-    "build:esm": "tsup src/**/*.ts --format esm --clean --dts -d dist/esm",
+    "build:bin": "tsup src/bin/**/*.ts --external typescript --format cjs --clean --dts -d dist/bin",
+    "build:cjs": "tsup src/**/*.ts --external typescript --format cjs --clean --dts -d dist/cjs",
+    "build:esm": "tsup src/**/*.ts --external typescript --format esm --clean --dts -d dist/esm",
     "other:clean": "rm -rf dist",
     "other:format": "prettier --write .",
     "other:lint": "eslint . --fix",
