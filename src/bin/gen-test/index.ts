@@ -107,8 +107,9 @@ export function main(
       '',
     ].join('\n')
 
-    if (!existsSync(outFilePath)) {
-      mkdirSync(outFilePath, { recursive: true })
+    var outDir = path.dirname(outFilePath)
+    if (!existsSync(outDir)) {
+      mkdirSync(outDir, { recursive: true })
     }
 
     writeFileSync(outFilePath, finalTestFile)

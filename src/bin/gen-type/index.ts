@@ -91,9 +91,10 @@ export function main(tsconfigPath: string, apiFolderPath: string, outputPath: st
     await log.debug('成功处理所有接口...').run()
 
     const outputPathAbs = path.resolve(outputPath)
+    var outDir = path.dirname(outputPathAbs)
 
-    if (!existsSync(outputPathAbs)) {
-      mkdirSync(outputPathAbs, { recursive: true })
+    if (!existsSync(outDir)) {
+      mkdirSync(outDir, { recursive: true })
     }
 
     fs.writeFileSync(outputPathAbs, `export type InterfaceType = [${result.join(',')}]`)
