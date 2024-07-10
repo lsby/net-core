@@ -97,7 +97,7 @@ export function main(tsconfigPath: string, apiFolderPath: string, outputPath: st
       mkdirSync(outDir, { recursive: true })
     }
 
-    fs.writeFileSync(outputPathAbs, `export type InterfaceType = [${result.join(',')}]`)
+    fs.writeFileSync(outputPathAbs, `export type InterfaceType = [${result.join(',')}]\n`)
     await log.debug('生成成功：%o', outputPathAbs).run()
   }).run()
 }
