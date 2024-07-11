@@ -67,6 +67,7 @@ export class 服务器 {
             if (a.isLeft()) {
               new Task(async () => {
                 await log.err(a.getLeft()).run()
+                res.status(500)
                 res.send('未知错误')
               })
                 .run()
