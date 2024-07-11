@@ -104,8 +104,6 @@ export function main(
       '',
       ...testCode,
       '',
-      "test('exit', async () => process.exit(0))",
-      '',
     ].join('\n')
 
     var outDir = path.dirname(outFilePath)
