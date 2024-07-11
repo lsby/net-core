@@ -97,13 +97,14 @@ export function main(
     }
 
     const finalTestFile = [
+      "import { test } from 'vitest'",
       "import './unit-test-prefix'",
       '',
       ...importCode,
       '',
       ...testCode,
       '',
-      "it('exit', async () => process.exit(0))",
+      "test('exit', async () => process.exit(0))",
       '',
     ].join('\n')
 
@@ -117,5 +118,5 @@ export function main(
 }
 
 function generateTestCode(testCaseName: string, importName: string): string {
-  return `it('${testCaseName}', async () => await ${importName}.运行())`
+  return `test('${testCaseName}', async () => await ${importName}.运行())`
 }
