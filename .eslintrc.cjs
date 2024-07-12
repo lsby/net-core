@@ -26,6 +26,9 @@ module.exports = {
     {
       files: ['src/**/*.ts', 'src/**/*.tsx', 'test/**/*.ts', 'test/**/*.tsx'],
       rules: {
+        // 检查无意义的比较
+        '@typescript-eslint/no-unnecessary-condition': ['error', { allowConstantLoopConditions: true }],
+
         // 拒绝浮动promise
         '@typescript-eslint/no-floating-promises': 'error',
 

@@ -1,22 +1,26 @@
-import { GetProName } from '../tools/get-pro-name'
 import { Log } from '../tools/log'
+import { Package } from '../tools/package'
 
-export class GlobalLog {
-  private static instance: Log
-  public static async getInstance(): Promise<Log> {
-    var name = (await GlobalGetProName.getInstance().getProName()).replaceAll('/', ':')
-    if (!GlobalLog.instance) GlobalLog.instance = new Log(name)
-    return GlobalLog.instance
+export class GlobalPackage {
+  private static instance: Package | null = null
+  public static getInstance(): Package {
+    if (!GlobalPackage.instance) GlobalPackage.instance = new Package()
+    return GlobalPackage.instance
   }
 
   private constructor() {}
 }
 
-export class GlobalGetProName {
-  private static instance: GetProName
-  public static getInstance(): GetProName {
-    if (!GlobalGetProName.instance) GlobalGetProName.instance = new GetProName()
-    return GlobalGetProName.instance
+export class GlobalLog {
+  private static instance: Log | null = null
+  public static async getInstance(): Promise<Log> {
+    return GlobalPackage.getInstance()
+      .getName()
+      .then((name) => {
+        name = name.replaceAll('/', ':')
+        if (!GlobalLog.instance) GlobalLog.instance = new Log(name)
+        return GlobalLog.instance
+      })
   }
 
   private constructor() {}
