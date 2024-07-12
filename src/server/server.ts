@@ -64,11 +64,12 @@ export class 服务器 {
       }
     })
 
-    var server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>
+    var server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse> | null = null
     await new Promise<void>((res, _rej) => {
       server = app.listen(this.端口, () => res())
     })
-    throw new Error('启动服务器失败')
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (server == null) throw new Error('启动服务器失败')
 
     return {
       ip: Object.values(networkInterfaces())
