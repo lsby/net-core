@@ -1,6 +1,6 @@
 {
   "name": "@lsby/net-core",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "type": "module",
   "exports": {
     "require": "./dist/cjs/index.cjs",
