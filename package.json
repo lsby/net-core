@@ -23,9 +23,8 @@
     "other:format": "prettier --write .",
     "other:lint": "eslint . --fix",
     "other:pub": "npm run other:typecheck && npm run other:lint && npm run build:all && bumpp && npm publish --access public",
-    "other:typecheck": "tsc --noEmit",
-    "other:typecheck:watch": "tsc --noEmit -w",
-    "run:start": "tsx src/index.ts"
+    "type:check": "tsc --noEmit",
+    "type:check:watch": "tsc --noEmit -w"
   },
   "dependencies": {
     "commander": "^12.1.0",
