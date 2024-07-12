@@ -22,7 +22,7 @@
     "other:clean": "rm -rf dist",
     "other:format": "prettier --write .",
     "other:lint": "eslint . --fix",
-    "other:pub": "npm run other:typecheck && npm run build:all && bumpp && pnpm -r publish --access public",
+    "other:pub": "npm run other:typecheck && npm run other:lint && npm run build:all && bumpp && pnpm -r publish --access public",
     "other:typecheck": "tsc --noEmit",
     "other:typecheck:watch": "tsc --noEmit -w",
     "run:start": "tsx src/index.ts"
