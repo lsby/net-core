@@ -1,5 +1,4 @@
 import debugGen from 'debug'
-import { Task } from '@lsby/ts-fp-data'
 
 export class Log {
   private debugObj: debugGen.Debugger
@@ -18,21 +17,15 @@ export class Log {
     return new Log(`${this.fileName}:${name}`)
   }
 
-  info(formatter: unknown, ...args: unknown[]): Task<void> {
-    return new Task(async () => {
-      this._info(formatter, ...args)
-    })
+  async info(formatter: unknown, ...args: unknown[]): Promise<void> {
+    this._info(formatter, ...args)
   }
 
-  debug(formatter: unknown, ...args: unknown[]): Task<void> {
-    return new Task(async () => {
-      this._debug(formatter, ...args)
-    })
+  async debug(formatter: unknown, ...args: unknown[]): Promise<void> {
+    this._debug(formatter, ...args)
   }
 
-  err(formatter: unknown, ...args: unknown[]): Task<void> {
-    return new Task(async () => {
-      this._err(formatter, ...args)
-    })
+  async err(formatter: unknown, ...args: unknown[]): Promise<void> {
+    this._err(formatter, ...args)
   }
 }
