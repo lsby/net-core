@@ -1,11 +1,10 @@
 import type { Request, Response } from 'express'
-import { Task } from '@lsby/ts-fp-data'
 import { GlobalLog } from '../global/global'
 import { 类型保持符号 } from '../types/type-hold'
 
 export abstract class 结果<T> {
   declare [类型保持符号]: T
-  abstract run(req: Request, res: Response): Task<void>
+  abstract run(req: Request, res: Response): Promise<void>
 }
 
 // ======================
@@ -21,21 +20,19 @@ export class 正确JSON结果<Data extends Record<string, unknown>> extends 正�
     super()
   }
 
-  run(req: Request, res: Response): Task<void> {
-    return new Task(async () => {
-      var log = (await this.log.run()).extend('正确JSON结果')
-      await log.debug('返回数据: %o', this.data).run()
-      res.send(this.data)
-    })
+  async run(req: Request, res: Response): Promise<void> {
+    var log = (await this.log).extend('正确JSON结果')
+    await log.debug('返回数据: %o', this.data)
+    res.send(this.data)
   }
 }
 
 export class 正确自定义结果 extends 正确结果<unknown> {
-  constructor(private customHandler: (req: Request, res: Response) => Task<void>) {
+  constructor(private customHandler: (req: Request, res: Response) => Promise<void>) {
     super()
   }
 
-  run(req: Request, res: Response): Task<void> {
+  async run(req: Request, res: Response): Promise<void> {
     return this.customHandler(req, res)
   }
 }
@@ -53,11 +50,9 @@ export class 错误JSON结果<Data> extends 错误结果<Data> {
     super()
   }
 
-  run(req: Request, res: Response): Task<void> {
-    return new Task(async () => {
-      var log = (await this.log.run()).extend('错误JSON结果')
-      await log.debug('返回数据: %o', this.data).run()
-      res.send(this.data)
-    })
+  async run(req: Request, res: Response): Promise<void> {
+    var log = (await this.log).extend('错误JSON结果')
+    await log.debug('返回数据: %o', this.data)
+    res.send(this.data)
   }
 }

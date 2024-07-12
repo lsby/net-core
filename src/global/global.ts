@@ -1,17 +1,12 @@
-import { Task } from '@lsby/ts-fp-data'
 import { GetProName } from '../tools/get-pro-name'
 import { Log } from '../tools/log'
 
 export class GlobalLog {
   private static instance: Log
-  public static getInstance(): Task<Log> {
-    return GlobalGetProName.getInstance()
-      .getProName()
-      .map((name) => {
-        name = name.replaceAll('/', ':')
-        if (!GlobalLog.instance) GlobalLog.instance = new Log(name)
-        return GlobalLog.instance
-      })
+  public static async getInstance(): Promise<Log> {
+    var name = (await GlobalGetProName.getInstance().getProName()).replaceAll('/', ':')
+    if (!GlobalLog.instance) GlobalLog.instance = new Log(name)
+    return GlobalLog.instance
   }
 
   private constructor() {}

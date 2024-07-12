@@ -5,9 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
-  '@lsby/ts-fp-data':
-    specifier: ^0.0.9
-    version: 0.0.9
   '@types/express':
     specifier: ^4.17.21
     version: 4.17.21
@@ -860,10 +857,6 @@ packages:
       string-argv: 0.3.2
       type-detect: 4.0.8
     dev: true
-
-  /@lsby/ts-fp-data@0.0.9:
-    resolution: {integrity: sha512-0dmffwj74iFNZXvjqh+DKz3skW8WnrnQuWYqLD81DxCLkoNqAHg4oX0FhE3TQad+umqEBNABPg6+3/E7aNtB7Q==}
-    dev: false
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}

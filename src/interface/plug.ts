@@ -1,6 +1,5 @@
 import type { Request, Response } from 'express'
 import type { z } from 'zod'
-import { Task } from '@lsby/ts-fp-data'
 import { 类型保持符号 } from '../types/type-hold'
 
 export class 插件<Obj extends z.AnyZodObject> {
@@ -8,7 +7,7 @@ export class 插件<Obj extends z.AnyZodObject> {
 
   constructor(
     private 类型: Obj,
-    private 实现: (req: Request, res: Response) => Task<z.infer<Obj>>,
+    private 实现: (req: Request, res: Response) => Promise<z.infer<Obj>>,
   ) {}
 
   获得类型(): typeof this.类型 {
