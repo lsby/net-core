@@ -19,12 +19,14 @@
     "build:bin": "tsup src/bin/**/*.ts --external typescript --format cjs --clean --dts -d dist/bin",
     "build:cjs": "tsup src/**/*.ts --external typescript --format cjs --clean --dts -d dist/cjs",
     "build:esm": "tsup src/**/*.ts --external typescript --format esm --clean --dts -d dist/esm",
-    "other:clean": "rm -rf dist",
-    "other:format": "prettier --write .",
-    "other:lint": "eslint . --fix",
-    "other:pub": "npm run other:typecheck && npm run other:lint && npm run build:all && bumpp && npm publish --access public",
-    "type:check": "tsc --noEmit",
-    "type:check:watch": "tsc --noEmit -w"
+    "check:all": "npm run check:format && npm run check:lint && npm run check:type:check",
+    "check:format": "prettier --write .",
+    "check:lint": "eslint . --fix",
+    "check:type:check": "tsc --noEmit",
+    "check:type:check:watch": "tsc --noEmit -w",
+    "pub:public": "npm run check:all && npm run test:base && npm run build:all && bumpp && npm publish --access public",
+    "test:base": "npm run check:all && vitest run",
+    "test:coverage": "npm run check:all && vitest run --coverage && open-cli ./coverage/index.html"
   },
   "dependencies": {
     "commander": "^12.1.0",
