@@ -40,12 +40,13 @@ export class 服务器 {
         }
 
         const 接口类型 = 目标接口.获得类型()
-        const 接口插件 = 接口类型.获得插件们() as Array<Promise<插件<z.AnyZodObject>>>
+        const 接口插件 = 接口类型.获得插件们() as Array<插件<z.AnyZodObject>>
         await log.debug('找到 %o 个 插件，准备执行...', 接口插件.length)
 
-        const 插件结果 = (
-          await Promise.all(接口插件.map(async (插件) => await (await 插件).获得实现()(req, res)))
-        ).reduce((s, a) => Object.assign(s, a), {})
+        const 插件结果 = (await Promise.all(接口插件.map(async (插件) => await 插件.获得实现()(req, res)))).reduce(
+          (s, a) => Object.assign(s, a),
+          {},
+        )
         await log.debug('插件 执行完毕')
 
         const 接口实现 = 目标接口.获得实现()
