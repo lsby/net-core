@@ -23,7 +23,7 @@ export class 插件<Obj extends z.AnyZodObject> {
 export type 合并插件结果<Arr extends Array<插件项类型>> = Arr extends []
   ? {}
   : Arr extends [infer x, ...infer xs]
-    ? x extends 插件<infer obj>
+    ? x extends infer obj
       ? xs extends Array<插件项类型>
         ? z.infer<取插件内部类型<obj>> & 合并插件结果<xs>
         : {}
