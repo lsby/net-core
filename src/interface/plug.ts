@@ -19,7 +19,7 @@ export class 插件<Obj extends z.AnyZodObject> {
   }
 }
 
-type 取值<A> = A extends Promise<插件<infer x>> ? x : never
+type 取值<A> = A extends () => Promise<插件<infer x>> ? x : never
 export type 合并插件结果<Arr extends Array<() => Promise<插件<z.AnyZodObject>>>> = Arr extends []
   ? {}
   : Arr extends [infer x, ...infer xs]
