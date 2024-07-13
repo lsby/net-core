@@ -23,7 +23,7 @@ type 取值<A> = A extends () => Promise<插件<infer x>> ? x : never
 export type 合并插件结果<Arr extends Array<() => Promise<插件<z.AnyZodObject>>>> = Arr extends []
   ? {}
   : Arr extends [infer x, ...infer xs]
-    ? x extends 插件<infer obj>
+    ? x extends infer obj
       ? xs extends Array<() => Promise<插件<z.AnyZodObject>>>
         ? obj extends (...args: any) => any
           ? z.infer<取值<obj>> & 合并插件结果<xs>
@@ -31,3 +31,5 @@ export type 合并插件结果<Arr extends Array<() => Promise<插件<z.AnyZodOb
         : {}
       : {}
     : {}
+
+export type 任意插件 = 插件<any>
