@@ -5,7 +5,7 @@ import type { 插件 } from './plug'
 export class 接口类型<
   路径 extends string,
   方法 extends 'get' | 'post',
-  插件们 extends Array<Promise<插件<z.AnyZodObject>>>,
+  插件们 extends Array<() => Promise<插件<z.AnyZodObject>>>,
   正确结果类型 extends z.ZodTypeAny,
   错误结果类型 extends z.ZodTypeAny,
 > {
