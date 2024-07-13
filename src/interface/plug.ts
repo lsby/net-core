@@ -1,9 +1,8 @@
 import type { Request, Response } from 'express'
 import type { z } from 'zod'
-import { 类型保持符号 } from '../types/type-hold'
 
 export class 插件<Obj extends z.AnyZodObject> {
-  declare [类型保持符号]: Obj
+  protected declare readonly 类型保持符号?: Obj
 
   constructor(
     private 类型: Obj,
