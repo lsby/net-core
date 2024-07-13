@@ -2,10 +2,9 @@ import type * as http from 'node:http'
 import { networkInterfaces } from 'node:os'
 import type { Request, Response } from 'express'
 import express from 'express'
-import type { z } from 'zod'
 import { GlobalLog } from '../global/global'
 import type { 任意接口 } from '../interface/interface'
-import type { 插件 } from '../interface/plug'
+import { 插件项类型 } from '../interface/plug-types'
 
 export class 服务器 {
   private log = GlobalLog.getInstance()
@@ -40,7 +39,7 @@ export class 服务器 {
         }
 
         const 接口类型 = 目标接口.获得类型()
-        const 接口插件 = 接口类型.获得插件们() as Array<插件<z.AnyZodObject>>
+        const 接口插件 = 接口类型.获得插件们() as Array<插件项类型>
         await log.debug('找到 %o 个 插件，准备执行...', 接口插件.length)
 
         const 插件结果 = (await Promise.all(接口插件.map(async (插件) => await 插件.获得实现()(req, res)))).reduce(

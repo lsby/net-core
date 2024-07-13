@@ -1,5 +1,6 @@
 export * from './interface/interface'
 export * from './interface/interface-type'
+export * from './interface/plug-types'
 export * from './interface/plug'
 
 export * from './plugin/chinese-path'

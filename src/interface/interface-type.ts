@@ -1,11 +1,11 @@
 import type { z } from 'zod'
 import { 类型保持符号 } from '../types/type-hold'
-import type { 插件 } from './plug'
+import { 插件项类型 } from './plug-types'
 
 export class 接口类型<
   路径 extends string,
   方法 extends 'get' | 'post',
-  插件们 extends Array<插件<z.AnyZodObject>>,
+  插件们 extends Array<插件项类型>,
   正确结果类型 extends z.ZodTypeAny,
   错误结果类型 extends z.ZodTypeAny,
 > {
