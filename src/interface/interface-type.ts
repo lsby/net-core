@@ -1,6 +1,6 @@
 import type { z } from 'zod'
 import { 类型保持符号 } from '../types/type-hold'
-import { 插件项类型 } from './types'
+import { 插件项类型 } from './plug'
 
 export class 接口类型<
   路径 extends string,
@@ -39,3 +39,6 @@ export class 接口类型<
     return this.错误结果
   }
 }
+
+export type 任意接口类型 = 接口类型<any, any, any, any, any>
+export type 获得接口插件们<接口类型描述> = 接口类型描述 extends 接口类型<any, any, infer 插件, any, any> ? 插件 : never
