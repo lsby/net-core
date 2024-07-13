@@ -1,7 +1,7 @@
 import type { z } from 'zod'
 import type { 正确结果, 错误结果 } from '../result/result'
 import type { 接口类型 } from './interface-type'
-import { 合并插件结果, 插件项类型 } from './types'
+import { 合并插件结果, 插件项类型 } from './plug'
 
 export class 接口<
   路径 extends string,
@@ -25,3 +25,5 @@ export class 接口<
     return this.实现
   }
 }
+
+export type 任意接口 = 接口<any, any, any, any, any>

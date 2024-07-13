@@ -3,7 +3,8 @@ import { networkInterfaces } from 'node:os'
 import type { Request, Response } from 'express'
 import express from 'express'
 import { GlobalLog } from '../global/global'
-import { 任意接口, 插件项类型 } from '../interface/types'
+import { 任意接口 } from '../interface/interface'
+import { 插件项类型 } from '../interface/plug'
 
 export class 服务器 {
   private log = GlobalLog.getInstance()

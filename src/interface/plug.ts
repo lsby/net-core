@@ -18,3 +18,17 @@ export class 插件<Obj extends z.AnyZodObject> {
     return this.实现
   }
 }
+
+export type 任意插件 = 插件<any>
+export type 插件项类型 = 插件<z.AnyZodObject>
+export type 取插件内部类型<A> = A extends 插件<infer x> ? x : never
+
+export type 合并插件结果<Arr extends Array<插件项类型>> = Arr extends []
+  ? {}
+  : Arr extends [infer x, ...infer xs]
+    ? x extends infer 插件
+      ? xs extends Array<插件项类型>
+        ? z.infer<取插件内部类型<插件>> & 合并插件结果<xs>
+        : {}
+      : {}
+    : {}

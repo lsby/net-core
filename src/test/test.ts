@@ -1,4 +1,4 @@
-import { 任意接口类型 } from '../interface/types'
+import { 任意接口类型 } from '../interface/interface-type'
 
 export class 测试 {
   constructor(
