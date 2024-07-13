@@ -6,7 +6,7 @@ import type { 合并插件结果, 插件 } from './plug'
 export class 接口<
   路径 extends string,
   方法 extends 'get' | 'post',
-  插件们 extends Array<() => Promise<插件<z.AnyZodObject>>>,
+  插件们 extends Array<Promise<插件<z.AnyZodObject>>>,
   正确返回类型 extends z.ZodTypeAny,
   错误返回类型 extends z.ZodTypeAny,
 > {
