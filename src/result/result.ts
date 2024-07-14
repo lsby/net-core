@@ -2,7 +2,7 @@ import type { Request, Response } from 'express'
 import { GlobalLog } from '../global/global'
 
 export abstract class 结果<T> {
-  protected declare readonly 类型保持符号?: T
+  protected declare readonly __类型保持符号?: T
   abstract run(req: Request, res: Response): Promise<void>
 }
 

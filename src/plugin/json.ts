@@ -36,10 +36,10 @@ export type 任意JSON解析插件 = JSON解析插件<any>
 export type 合并JSON插件结果<Arr extends Array<插件项类型>> = Arr extends []
   ? {}
   : Arr extends [infer x, ...infer xs]
-    ? x extends infer 插件
+    ? x extends infer 插件项
       ? xs extends Array<插件项类型>
-        ? 插件 extends 任意JSON解析插件
-          ? z.infer<取插件内部类型<插件>>['body'] & 合并插件结果<xs>
+        ? 插件项 extends 任意JSON解析插件
+          ? z.infer<取插件内部类型<插件项>>['body'] & 合并插件结果<xs>
           : {}
         : {}
       : {}
