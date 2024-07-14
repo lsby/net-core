@@ -8,6 +8,8 @@ import { calcCode } from './calc-code'
 export async function main(tsconfigPath: string, apiFolderPath: string, outputPath: string): Promise<void> {
   var log = new Log('@lsby:net-core').extend('gen-type')
 
+  await log.debug('准备生成类型文件...')
+
   const tsconfigJson = ts.parseConfigFileTextToJson(tsconfigPath, fs.readFileSync(tsconfigPath, 'utf8'))
   if (tsconfigJson.error) {
     throw new Error('无法解析 tsconfig.json')
