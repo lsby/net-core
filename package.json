@@ -29,7 +29,6 @@
     "test:coverage": "npm run check:all && vitest run --coverage && open-cli ./coverage/index.html"
   },
   "dependencies": {
-    "@lsby/ts-fp-data": "^0.0.9",
     "commander": "^12.1.0",
     "debug": "^4.3.5",
     "express": "^4.19.2",
@@ -50,6 +49,7 @@
     "typescript": "^5.4.5"
   },
   "peerDependencies": {
+    "@lsby/ts-fp-data": "^0.0.9",
     "@types/express": "^4.17.21"
   }
 }

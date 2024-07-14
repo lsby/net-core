@@ -3,7 +3,7 @@ import express from 'express'
 import type { z } from 'zod'
 import { GlobalLog } from '../global/global'
 import { 获得接口插件们 } from '../interface/interface-type'
-import { 取插件内部类型, 合并插件结果, 插件, 插件项类型 } from '../interface/plug'
+import { 包装插件项, 取插件内部类型, 合并插件结果, 插件, 插件项类型 } from '../interface/plug'
 
 export class JSON解析插件<Result extends z.ZodObject<{ body: z.AnyZodObject }>> extends 插件<Result> {
   private log = GlobalLog.getInstance()
@@ -33,12 +33,13 @@ export class JSON解析插件<Result extends z.ZodObject<{ body: z.AnyZodObject 
 }
 
 export type 任意JSON解析插件 = JSON解析插件<any>
+export type 任意JSON解析插件项 = 包装插件项<任意JSON解析插件>
 export type 合并JSON插件结果<Arr extends Array<插件项类型>> = Arr extends []
   ? {}
   : Arr extends [infer x, ...infer xs]
     ? x extends infer 插件项
       ? xs extends Array<插件项类型>
-        ? 插件项 extends 任意JSON解析插件
+        ? 插件项 extends 任意JSON解析插件项
           ? z.infer<取插件内部类型<插件项>>['body'] & 合并插件结果<xs>
           : {}
         : {}

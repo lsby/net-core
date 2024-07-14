@@ -20,7 +20,8 @@ export class 插件<Obj extends z.AnyZodObject> {
 }
 
 export type 任意插件 = 插件<any>
-export type 插件项类型 = Task<插件<z.AnyZodObject>>
+export type 包装插件项<A> = Task<A>
+export type 插件项类型 = 包装插件项<插件<z.AnyZodObject>>
 export type 取插件内部类型<A> = A extends Task<插件<infer x>> ? x : never
 
 export type 合并插件结果<Arr extends Array<插件项类型>> = Arr extends []
