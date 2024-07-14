@@ -6,6 +6,8 @@ import { Log } from '../../tools/log'
 export async function main(tsconfigPath: string, interfaceFolderPath: string, outFilePath: string): Promise<void> {
   var log = new Log('@lsby:net-core').extend('gen-list')
 
+  await log.debug('准备生成接口列表...')
+
   const 项目根路径 = path.dirname(tsconfigPath)
 
   const tsconfigJson = ts.parseConfigFileTextToJson(tsconfigPath, fs.readFileSync(tsconfigPath, 'utf8'))

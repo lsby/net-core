@@ -11,6 +11,8 @@ export async function main(
 ): Promise<void> {
   var log = new Log('@lsby:net-core').extend('gen-test')
 
+  await log.debug('准备生成测试文件...')
+
   const projectRootPath = path.dirname(tsconfigPath)
 
   const tsconfigJson = ts.parseConfigFileTextToJson(tsconfigPath, fs.readFileSync(tsconfigPath, 'utf8'))
