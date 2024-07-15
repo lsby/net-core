@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@lsby/ts-fp-data':
-    specifier: ^0.0.9
-    version: 0.0.9
+    specifier: ^0.1.0
+    version: 0.1.0
   '@types/express':
     specifier: ^4.17.21
     version: 4.17.21
@@ -857,8 +857,8 @@ packages:
       eslint-plugin-unused-imports: 3.2.0(@typescript-eslint/eslint-plugin@7.8.0)(eslint@8.57.0)
     dev: true
 
-  /@lsby/ts-fp-data@0.0.9:
-    resolution: {integrity: sha512-0dmffwj74iFNZXvjqh+DKz3skW8WnrnQuWYqLD81DxCLkoNqAHg4oX0FhE3TQad+umqEBNABPg6+3/E7aNtB7Q==}
+  /@lsby/ts-fp-data@0.1.0:
+    resolution: {integrity: sha512-zF/kdahvKM3I77XbbnyrFI/dhd+T2oZAYr2RIPN7IY1kVxIJIhr0Jzhnp2dXAd4NlKIPhKpDs6lWFXsEThFaQw==}
     dev: false
 
   /@nodelib/fs.scandir@2.1.5:
