@@ -2,7 +2,7 @@ import type * as http from 'node:http'
 import { networkInterfaces } from 'node:os'
 import type { Request, Response } from 'express'
 import express from 'express'
-import * as uuid from 'uuid'
+import short from 'short-uuid'
 import { Global } from '../global/global'
 import { 任意接口 } from '../interface/interface'
 import { 插件项类型 } from '../interface/plug'
@@ -23,7 +23,7 @@ export class 服务器 {
     const app = express()
 
     app.use(async (req: Request, res: Response) => {
-      var log = (await this.log).extend('请求').extend(uuid.v4())
+      var log = (await this.log).extend('请求').extend(short().new())
 
       try {
         const 请求路径 = req.path
