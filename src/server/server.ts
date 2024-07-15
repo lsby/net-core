@@ -46,7 +46,7 @@ export class 服务器 {
           throw new Error('无法找到对应接口')
         }
 
-        await log.debug('选择接口: %o', 目标接口.获得类型().获得路径())
+        await log.debug('选择接口: %o', 目标接口)
 
         const 接口类型 = 目标接口.获得类型()
         const 接口插件 = 接口类型.获得插件们() as Array<插件项类型>
