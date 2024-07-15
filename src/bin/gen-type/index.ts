@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 import fs, { existsSync, mkdirSync } from 'node:fs'
 import path from 'node:path'
 import ts from 'typescript'
-import { Log } from '../../tools/log'
+import { Log } from '@lsby/ts-log'
 import { calcCode } from './calc-code'
 
 export async function main(tsconfigPath: string, apiFolderPath: string, outputPath: string): Promise<void> {

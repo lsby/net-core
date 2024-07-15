@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express'
-import { GlobalLog } from '../global/global'
+import { Global } from '../global/global'
 
 export abstract class 结果<T> {
   protected declare readonly __类型保持符号?: T
@@ -13,7 +13,7 @@ export abstract class 正确结果<T> extends 结果<T> {
 }
 
 export class 正确JSON结果<Data extends Record<string, unknown>> extends 正确结果<Data> {
-  private log = GlobalLog.getInstance()
+  private log = Global.getItem('log')
 
   constructor(private data: Data) {
     super()
@@ -43,7 +43,7 @@ export abstract class 错误结果<T> extends 结果<T> {
 }
 
 export class 错误JSON结果<Data> extends 错误结果<Data> {
-  private log = GlobalLog.getInstance()
+  private log = Global.getItem('log')
 
   constructor(private data: Data) {
     super()
