@@ -44,7 +44,7 @@ export class 服务器 {
         })
 
         if (目标接口 == undefined) {
-          await log.debug('没有命中任何接口')
+          await log.debug('没有命中接口')
           next()
           return
         }
@@ -77,12 +77,21 @@ export class 服务器 {
     if (this.静态资源路径) {
       var 静态资源路径 = this.静态资源路径
       app.use(async (req, res, next) => {
-        const 请求方法 = req.method.toLowerCase()
-        if (请求方法 != 'get') return next()
-        express.static(静态资源路径)(req, res, next)
+        if (req.method.toLowerCase() != 'get') return next()
+
+        await log.debug('尝试匹配静态资源...')
+        express.static(静态资源路径, {
+          setHeaders: async () => {
+            await log.debug('命中静态资源')
+          },
+        })(req, res, async () => {
+          await log.debug('没有命中静态资源')
+          next()
+        })
       })
     }
     app.use(async (req, res) => {
+      await log.debug('没有命中任何资源')
       res.status(404)
     })
 
