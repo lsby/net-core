@@ -16,10 +16,9 @@ export class 接口类型<
     private 插件们: [...插件们],
     private 正确结果: 正确结果类型,
     private 错误结果: 错误结果类型,
-    private 优先级: number = 1,
   ) {}
 
-  获得路径(): string {
+  获得路径(): 路径 {
     return this.路径
   }
 
@@ -37,10 +36,6 @@ export class 接口类型<
 
   获得错误结果类型(): 错误结果类型 {
     return this.错误结果
-  }
-
-  获得优先级(): number {
-    return this.优先级
   }
 }
 
