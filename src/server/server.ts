@@ -49,6 +49,8 @@ export class 服务器 {
           return
         }
 
+        await log.debug('命中接口')
+
         const 接口类型 = 目标接口.获得类型()
         const 接口插件 = 接口类型.获得插件们() as Array<插件项类型>
         await log.debug('找到 %o 个 插件, 准备执行...', 接口插件.length)
@@ -76,13 +78,11 @@ export class 服务器 {
       var 静态资源路径 = this.静态资源路径
       app.use(async (req, res, next) => {
         const 请求方法 = req.method.toLowerCase()
-        if (请求方法 == 'get') return next()
-        await log.debug('尝试查找静态资源...')
-        return express.static(静态资源路径)(req, res, next)
+        if (请求方法 != 'get') return next()
+        express.static(静态资源路径)(req, res, next)
       })
     }
     app.use(async (req, res) => {
-      await log.debug('没有命中任何资源...')
       res.status(404)
     })
 
