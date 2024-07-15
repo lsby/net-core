@@ -27,20 +27,30 @@ export class 服务器 {
         const 请求路径 = req.path
         const 请求方法 = req.method.toLowerCase()
 
-        await log.debug('收到请求，路径：%o，方法：%o', 请求路径, 请求方法)
+        await log.debug('收到请求: 路径: %o, 方法: %o', 请求路径, 请求方法)
 
-        const 目标接口 = this.接口们.find((接口) => {
+        const 目标接口们 = this.接口们.filter((接口) => {
           const 接口类型 = 接口.获得类型()
-          return 请求路径 == 接口类型.获得路径() && 请求方法 == 接口类型.获得方法()
+          return 请求方法 == 接口类型.获得方法() && new RegExp(接口类型.获得路径()).test(请求路径)
         })
+
+        await log.debug(
+          '找到 %o 个匹配的接口: %o',
+          目标接口们.length,
+          目标接口们.map((a) => a.获得类型().获得路径()),
+        )
+
+        var 目标接口 = 目标接口们.sort((a, b) => a.获得类型().获得优先级() - b.获得类型().获得优先级())[0]
 
         if (目标接口 == undefined) {
           throw new Error('无法找到对应接口')
         }
 
+        await log.debug('选择接口: %o', 目标接口)
+
         const 接口类型 = 目标接口.获得类型()
         const 接口插件 = 接口类型.获得插件们() as Array<插件项类型>
-        await log.debug('找到 %o 个 插件，准备执行...', 接口插件.length)
+        await log.debug('找到 %o 个 插件, 准备执行...', 接口插件.length)
 
         const 插件结果 = (
           await Promise.all(接口插件.map(async (插件) => await (await 插件.run()).获得实现()(req, res)))
