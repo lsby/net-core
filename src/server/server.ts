@@ -69,12 +69,11 @@ export class 服务器 {
             },
           })(req, res, async () => {
             await log.debug('没有命中静态资源')
-            next()
+
+            await log.debug('没有命中任何资源')
+            res.status(404)
           })
         }
-
-        await log.debug('没有命中任何资源')
-        res.status(404)
       } catch (e) {
         await log.err(e)
         res.status(500)
