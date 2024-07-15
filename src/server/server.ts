@@ -23,7 +23,7 @@ export class 服务器 {
     const app = express()
 
     app.use(async (req: Request, res: Response) => {
-      var log = (await this.log).extend('请求').extend(uuid.v1())
+      var log = (await this.log).extend('请求').extend(uuid.v4())
 
       try {
         const 请求路径 = req.path
