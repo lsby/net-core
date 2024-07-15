@@ -1,6 +1,6 @@
 import type * as http from 'node:http'
 import { networkInterfaces } from 'node:os'
-import type { Request, Response } from 'express'
+import type { NextFunction, Request, Response } from 'express'
 import express from 'express'
 import { GlobalLog } from '../global/global'
 import { 任意接口 } from '../interface/interface'
@@ -12,6 +12,7 @@ export class 服务器 {
   constructor(
     private 接口们: 任意接口[],
     private 端口: number,
+    private 静态资源路径?: string | undefined,
   ) {}
 
   async run(): Promise<{
@@ -22,12 +23,20 @@ export class 服务器 {
 
     const app = express()
 
-    app.use(async (req: Request, res: Response) => {
+    app.use(async (req: Request, _res: Response, next: NextFunction) => {
+      const 请求路径 = req.path
+      const 请求方法 = req.method.toLowerCase()
+
+      await log.debug('收到请求, 路径: %o, 方法: %o', 请求路径, 请求方法)
+
+      next()
+    })
+    app.use(async (req: Request, res: Response, next: NextFunction) => {
       try {
+        await log.debug('尝试匹配接口...')
+
         const 请求路径 = req.path
         const 请求方法 = req.method.toLowerCase()
-
-        await log.debug('收到请求，路径：%o，方法：%o', 请求路径, 请求方法)
 
         const 目标接口 = this.接口们.find((接口) => {
           const 接口类型 = 接口.获得类型()
@@ -35,12 +44,14 @@ export class 服务器 {
         })
 
         if (目标接口 == undefined) {
-          throw new Error('无法找到对应接口')
+          await log.debug('没有命中任何接口')
+          next()
+          return
         }
 
         const 接口类型 = 目标接口.获得类型()
         const 接口插件 = 接口类型.获得插件们() as Array<插件项类型>
-        await log.debug('找到 %o 个 插件，准备执行...', 接口插件.length)
+        await log.debug('找到 %o 个 插件, 准备执行...', 接口插件.length)
 
         const 插件结果 = (
           await Promise.all(接口插件.map(async (插件) => await (await 插件.run()).获得实现()(req, res)))
@@ -58,8 +69,21 @@ export class 服务器 {
       } catch (e) {
         await log.err(e)
         res.status(500)
-        res.send('未知错误')
+        res.send('服务器内部错误')
       }
+    })
+    if (this.静态资源路径) {
+      var 静态资源路径 = this.静态资源路径
+      app.use(async (req, res, next) => {
+        const 请求方法 = req.method.toLowerCase()
+        if (请求方法 == 'get') return next()
+        await log.debug('尝试查找静态资源...')
+        return express.static(静态资源路径)(req, res, next)
+      })
+    }
+    app.use(async (req, res) => {
+      await log.debug('没有命中任何资源...')
+      res.status(404)
     })
 
     var server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse> | null = null
