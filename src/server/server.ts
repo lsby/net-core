@@ -1,6 +1,6 @@
 import type * as http from 'node:http'
 import { networkInterfaces } from 'node:os'
-import type { NextFunction, Request, Response } from 'express'
+import type { Request, Response } from 'express'
 import express from 'express'
 import * as uuid from 'uuid'
 import { GlobalLog } from '../global/global'
@@ -22,7 +22,7 @@ export class 服务器 {
   }> {
     const app = express()
 
-    app.use(async (req: Request, res: Response, next: NextFunction) => {
+    app.use(async (req: Request, res: Response) => {
       var log = (await this.log).extend('请求').extend(uuid.v1())
 
       try {
