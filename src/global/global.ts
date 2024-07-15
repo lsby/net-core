@@ -1,27 +1,8 @@
-import { Log } from '../tools/log'
-import { Package } from '../tools/package'
+import { GlobalAsyncItem, GlobalService } from '@lsby/ts-global'
+import { Log } from '@lsby/ts-log'
 
-export class GlobalPackage {
-  private static instance: Package | null = null
-  public static getInstance(): Package {
-    if (!GlobalPackage.instance) GlobalPackage.instance = new Package()
-    return GlobalPackage.instance
-  }
-
-  private constructor() {}
-}
-
-export class GlobalLog {
-  private static instance: Log | null = null
-  public static async getInstance(): Promise<Log> {
-    return GlobalPackage.getInstance()
-      .getName()
-      .then((name) => {
-        name = name.replaceAll('/', ':')
-        if (!GlobalLog.instance) GlobalLog.instance = new Log(name)
-        return GlobalLog.instance
-      })
-  }
-
-  private constructor() {}
-}
+export var Global = new GlobalService([
+  new GlobalAsyncItem('log', async () => {
+    return new Log('@lsby:net-core')
+  }),
+])

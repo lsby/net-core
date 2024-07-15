@@ -8,6 +8,12 @@ dependencies:
   '@lsby/ts-fp-data':
     specifier: ^0.1.0
     version: 0.1.0
+  '@lsby/ts-global':
+    specifier: ^0.0.3
+    version: 0.0.3(@types/node@20.12.10)
+  '@lsby/ts-log':
+    specifier: ^0.0.3
+    version: 0.0.3(@types/node@20.12.10)
   '@types/express':
     specifier: ^4.17.21
     version: 4.17.21
@@ -865,6 +871,50 @@ packages:
 
   /@lsby/ts-fp-data@0.1.0:
     resolution: {integrity: sha512-zF/kdahvKM3I77XbbnyrFI/dhd+T2oZAYr2RIPN7IY1kVxIJIhr0Jzhnp2dXAd4NlKIPhKpDs6lWFXsEThFaQw==}
+    dev: false
+
+  /@lsby/ts-global@0.0.3(@types/node@20.12.10):
+    resolution: {integrity: sha512-5smktNMYP+xkZSPKfuZfpIr+oMfsSJcIbScWr3BPJfYi/iM11JuJXUgxerw9rzuXGC6Eq+1zibWxN8G1cgUpFQ==}
+    dependencies:
+      vitest: 2.0.2(@types/node@20.12.10)
+      zod: 3.23.8
+    transitivePeerDependencies:
+      - '@edge-runtime/vm'
+      - '@types/node'
+      - '@vitest/browser'
+      - '@vitest/ui'
+      - happy-dom
+      - jsdom
+      - less
+      - lightningcss
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+    dev: false
+
+  /@lsby/ts-log@0.0.3(@types/node@20.12.10):
+    resolution: {integrity: sha512-ztstLQ2lXOW2QwREmknoM0wHM/G+xyKcbOwEk6vYn099R2RlXvb4ykvwPecgZC4eHp8g93HCtt2GS/Cp94mWaQ==}
+    hasBin: true
+    dependencies:
+      debug: 4.3.5
+      vitest: 2.0.2(@types/node@20.12.10)
+      zod: 3.23.8
+    transitivePeerDependencies:
+      - '@edge-runtime/vm'
+      - '@types/node'
+      - '@vitest/browser'
+      - '@vitest/ui'
+      - happy-dom
+      - jsdom
+      - less
+      - lightningcss
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
     dev: false
 
   /@nodelib/fs.scandir@2.1.5:

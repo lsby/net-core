@@ -3,12 +3,12 @@ import { networkInterfaces } from 'node:os'
 import type { Request, Response } from 'express'
 import express from 'express'
 import * as uuid from 'uuid'
-import { GlobalLog } from '../global/global'
+import { Global } from '../global/global'
 import { 任意接口 } from '../interface/interface'
 import { 插件项类型 } from '../interface/plug'
 
 export class 服务器 {
-  private log = GlobalLog.getInstance()
+  private log = Global.getItem('log')
 
   constructor(
     private 接口们: 任意接口[],

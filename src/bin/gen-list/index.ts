@@ -1,7 +1,7 @@
 import fs, { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import ts from 'typescript'
-import { Log } from '../../tools/log'
+import { Log } from '@lsby/ts-log'
 
 export async function main(tsconfigPath: string, interfaceFolderPath: string, outFilePath: string): Promise<void> {
   var log = new Log('@lsby:net-core').extend('gen-list')

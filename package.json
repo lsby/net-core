@@ -29,6 +29,8 @@
     "test:coverage": "npm run check:all && vitest run --coverage && open-cli ./coverage/index.html"
   },
   "dependencies": {
+    "@lsby/ts-global": "^0.0.3",
+    "@lsby/ts-log": "^0.0.3",
     "commander": "^12.1.0",
     "debug": "^4.3.5",
     "express": "^4.19.2",
