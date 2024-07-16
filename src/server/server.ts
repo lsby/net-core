@@ -57,8 +57,9 @@ export class 服务器 {
           await log.debug('准备执行返回逻辑...')
           await 接口结果.run(req, res)
           await log.debug('返回逻辑执行完毕')
-        }
 
+          return
+        }
         await log.debug('没有命中接口')
 
         if (this.静态资源路径 && req.method.toLowerCase() == 'get') {
