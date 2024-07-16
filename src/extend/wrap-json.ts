@@ -32,7 +32,7 @@ export class 包装的接口类型<
     )
   }
 }
-export class 包装的正确JSON结果<Data extends Record<string, unknown>> extends 正确JSON结果<{
+export class 包装的正确JSON结果<Data> extends 正确JSON结果<{
   status: 'success'
   data: Data
 }> {
@@ -43,7 +43,7 @@ export class 包装的正确JSON结果<Data extends Record<string, unknown>> ext
     })
   }
 }
-export class 包装的错误JSON结果<Data extends Record<string, unknown>> extends 错误JSON结果<{
+export class 包装的错误JSON结果<Data> extends 错误JSON结果<{
   status: 'fail'
   data: Data
 }> {
