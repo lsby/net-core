@@ -1,3 +1,5 @@
+export * from './extend/wrap-json'
+
 export * from './interface/interface'
 export * from './interface/interface-type'
 export * from './interface/plug'
