@@ -1,15 +1,15 @@
 import { format } from 'node:util'
 import express from 'express'
-import type { z } from 'zod'
+import { AnyZodObject, z } from 'zod'
 import { Global } from '../global/global'
 import { 获得接口插件们 } from '../interface/interface-type'
 import { 包装插件项, 取插件内部类型, 合并插件结果, 插件, 插件项类型 } from '../interface/plug'
 
-export class JSON解析插件<Result extends z.ZodObject<{ body: z.AnyZodObject }>> extends 插件<Result> {
+export class JSON解析插件<Result extends AnyZodObject> extends 插件<z.ZodObject<{ body: Result }>> {
   private log = Global.getItem('log')
 
   constructor(t: Result, opt: Parameters<typeof express.json>[0]) {
-    super(t, async (req, res) => {
+    super(z.object({ body: t }), async (req, res) => {
       var log = (await this.log).extend('JSON解析插件')
 
       await new Promise((pRes, _rej) =>
@@ -19,7 +19,7 @@ export class JSON解析插件<Result extends z.ZodObject<{ body: z.AnyZodObject 
       )
 
       await log.debug('准备解析 JSON：%o', req.body)
-      const parseResult = t.safeParse({ body: req.body })
+      const parseResult = z.object({ body: t }).safeParse({ body: req.body })
 
       if (!parseResult.success) {
         await log.err('解析 JSON 失败：%o', parseResult.error)
@@ -27,7 +27,7 @@ export class JSON解析插件<Result extends z.ZodObject<{ body: z.AnyZodObject 
       }
 
       await log.debug('成功解析 JSON：%o', parseResult.data.body)
-      return { body: parseResult.data.body }
+      return parseResult.data
     })
   }
 }
