@@ -19,7 +19,7 @@ export class JSON解析插件<Result extends AnyZodObject> extends 插件<z.ZodO
       )
 
       await log.debug('准备解析 JSON：%o', req.body)
-      const parseResult = z.object({ body: t }).safeParse({ body: req.body })
+      const parseResult = z.object({ body: t }).safeParse({ body: req.body as unknown })
 
       if (!parseResult.success) {
         await log.err('解析 JSON 失败：%o', parseResult.error)
