@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.2.1",
-    "@lsby/eslint-config": "^0.0.2",
+    "@lsby/eslint-config": "^0.1.0",
     "@types/node": "^20.12.10",
     "@vitest/coverage-v8": "^2.0.2",
     "bumpp": "^9.4.1",

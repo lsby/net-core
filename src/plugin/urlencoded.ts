@@ -12,7 +12,7 @@ export class 表单解析插件<Result extends z.ZodObject<{ body: z.AnyZodObjec
         }),
       )
 
-      const parseResult = t.safeParse({ body: req.body })
+      const parseResult = t.safeParse({ body: req.body as unknown })
       if (!parseResult.success) throw new Error(format('parse url encoded body failed: %O', parseResult.error))
 
       return { body: parseResult.data.body }
