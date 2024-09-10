@@ -1,9 +1,8 @@
 export * from './extend/wrap-json'
 
-export * from './interface/inst/interface'
-export * from './interface/inst/interface-abstract'
-export * from './interface/type/interface-type'
-export * from './interface/type/interface-type-abstract'
+export * from './interface/interface'
+export * from './interface/interface-type'
+export * from './interface/interface-abstract'
 export * from './interface/plug'
 
 export * from './plugin/chinese-path'
