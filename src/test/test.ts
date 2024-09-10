@@ -1,4 +1,4 @@
-import { 任意接口类型 } from '../interface/interface-type'
+import { 任意接口类型 } from '../interface/type/interface-type-abstract'
 import { 测试抽象类 } from './test-abstract'
 
 export class 测试 extends 测试抽象类 {
