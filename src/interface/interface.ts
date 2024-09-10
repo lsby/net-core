@@ -17,11 +17,13 @@ export class 接口<
     ) => Promise<正确结果<z.infer<正确返回类型>> | 错误结果<z.infer<错误返回类型>>>,
   ) {}
 
-  获得类型(): typeof this.接口类型 {
+  获得类型(): 接口类型<路径, 方法, 插件们, 正确返回类型, 错误返回类型> {
     return this.接口类型
   }
 
-  获得实现(): typeof this.实现 {
+  获得实现(): (
+    插件结果: 合并插件结果<插件们>,
+  ) => Promise<正确结果<z.infer<正确返回类型>> | 错误结果<z.infer<错误返回类型>>> {
     return this.实现
   }
 }

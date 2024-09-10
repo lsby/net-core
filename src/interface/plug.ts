@@ -10,11 +10,11 @@ export class 插件<Obj extends z.AnyZodObject> {
     private 实现: (req: Request, res: Response) => Promise<z.infer<Obj>>,
   ) {}
 
-  获得类型(): typeof this.类型 {
+  获得类型(): Obj {
     return this.类型
   }
 
-  获得实现(): typeof this.实现 {
+  获得实现(): (req: Request, res: Response) => Promise<z.infer<Obj>> {
     return this.实现
   }
 }
