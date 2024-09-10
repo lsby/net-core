@@ -10,6 +10,8 @@ export class 接口<
   正确返回类型 extends z.ZodTypeAny,
   错误返回类型 extends z.ZodTypeAny,
 > {
+  protected declare readonly __类型保持符号?: [路径, 方法, 插件们, 正确返回类型, 错误返回类型]
+
   constructor(
     private 接口类型: 接口类型<路径, 方法, 插件们, 正确返回类型, 错误返回类型>,
     private 实现: (
