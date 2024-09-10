@@ -61,15 +61,16 @@ export async function main(tsconfigPath: string, interfaceFolderPath: string, ou
 
     await log.info(`处理（${i + 1} / ${接口实现文件们.length}）：${filenameRelativeToApiFolder}`)
 
-    for (const node of 接口实现文件.statements) {
-      if (ts.isExportAssignment(node) && node.isExportEquals === undefined) {
-        const expression = node.expression
-        if (ts.isNewExpression(expression) && expression.expression.getText() === '接口') {
-          break
-        }
-        throw new Error(`${接口实现文件.fileName}：默认导出不是 接口`)
-      }
-    }
+    // todo 我们应该同时允许默认导出是接口的子类
+    // for (const node of 接口实现文件.statements) {
+    //   if (ts.isExportAssignment(node) && node.isExportEquals === undefined) {
+    //     const expression = node.expression
+    //     if (ts.isNewExpression(expression) && expression.expression.getText() === '接口') {
+    //       break
+    //     }
+    //     throw new Error(`${接口实现文件.fileName}：默认导出不是 接口`)
+    //   }
+    // }
 
     引入区.push(`import * as ${importName} from '${importPath}'`)
     代码区.push(`${importName}.default`)
