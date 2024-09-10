@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { 接口类型 } from '../interface/interface-type'
 import { 插件项类型 } from '../interface/plug'
+import { 接口类型 } from '../interface/type/interface-type'
 import { 正确JSON结果, 错误JSON结果 } from '../result/result'
 
 export class 包装的接口类型<
