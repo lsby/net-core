@@ -78,15 +78,16 @@ export async function main(
 
     await log.info(`处理（${index + 1} / ${testSourceFilesFilter.length}）：${filenameRelativeToApiFolder}`)
 
-    for (const node of testSourceFile.statements) {
-      if (ts.isExportAssignment(node) && node.isExportEquals === undefined) {
-        const expression = node.expression
-        if (ts.isNewExpression(expression) && expression.expression.getText() === '测试') {
-          break
-        }
-        throw new Error(`${testSourceFile.fileName}：默认导出不是 测试`)
-      }
-    }
+    // todo 我们应该同时允许默认导出是测试的子类
+    // for (const node of testSourceFile.statements) {
+    //   if (ts.isExportAssignment(node) && node.isExportEquals === undefined) {
+    //     const expression = node.expression
+    //     if (ts.isNewExpression(expression) && expression.expression.getText() === '测试') {
+    //       break
+    //     }
+    //     throw new Error(`${testSourceFile.fileName}：默认导出不是 测试`)
+    //   }
+    // }
 
     importCode.push(`import ${importName} from '${importPath}'`)
     testCode.push(generateTestCode(importName, importName))

@@ -15,3 +15,4 @@ export * from './result/result'
 export * from './server/server'
 
 export * from './test/test'
+export * from './test/test-abstract'
