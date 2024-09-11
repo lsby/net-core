@@ -14,15 +14,15 @@ export type 计算实现结果<接口类型定义> = Promise<
 >
 
 export abstract class 接口抽象类<接口类型描述 extends 任意接口类型> {
-  abstract 获得类型(): 接口类型描述
-  abstract 调用(
+  abstract 获得API类型(): 接口类型描述
+  abstract API实现(
     ctx: 合并插件结果<F3<接口类型描述>>,
   ): Promise<正确结果<z.infer<F4<接口类型描述>>> | 错误结果<z.infer<F5<接口类型描述>>>>
 }
 
 export interface API接口<接口类型描述 extends 任意接口类型> {
-  获得类型(): 接口类型描述
-  调用(
+  获得API类型(): 接口类型描述
+  API实现(
     ctx: 合并插件结果<F3<接口类型描述>>,
   ): Promise<正确结果<z.infer<F4<接口类型描述>>> | 错误结果<z.infer<F5<接口类型描述>>>>
 }
