@@ -2,7 +2,7 @@ import type { z } from 'zod'
 import type { 正确结果, 错误结果 } from '../../result/result'
 import { 合并插件结果, 插件项类型 } from '../plug'
 import { 接口类型抽象类 } from '../type/interface-type-abstract'
-import { 接口抽象类 } from './interface-abstract'
+import { API接口基类 } from './interface-abstract'
 
 export class 接口<
   路径 extends string,
@@ -10,7 +10,7 @@ export class 接口<
   插件们 extends Array<插件项类型>,
   正确返回类型 extends z.ZodTypeAny,
   错误返回类型 extends z.ZodTypeAny,
-> extends 接口抽象类<接口类型抽象类<路径, 方法, 插件们, 正确返回类型, 错误返回类型>> {
+> extends API接口基类<接口类型抽象类<路径, 方法, 插件们, 正确返回类型, 错误返回类型>> {
   protected declare readonly __类型保持符号?: [路径, 方法, 插件们, 正确返回类型, 错误返回类型]
   constructor(
     private 接口类型: 接口类型抽象类<路径, 方法, 插件们, 正确返回类型, 错误返回类型>,
