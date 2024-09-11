@@ -21,11 +21,11 @@ export class 接口<
     super()
   }
 
-  override 获得类型(): 接口类型抽象类<路径, 方法, 插件们, 正确返回类型, 错误返回类型> {
+  override 获得API类型(): 接口类型抽象类<路径, 方法, 插件们, 正确返回类型, 错误返回类型> {
     return this.接口类型
   }
 
-  override 调用(
+  override API实现(
     ctx: 合并插件结果<插件们>,
   ): Promise<正确结果<z.TypeOf<正确返回类型>> | 错误结果<z.TypeOf<错误返回类型>>> {
     return this.实现(ctx)
