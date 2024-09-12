@@ -1,6 +1,17 @@
 import type { z } from 'zod'
 import { 插件项类型 } from '../plug'
 
+export type 接口类型路径<A> =
+  A extends 接口类型抽象类<infer A1, infer _A2, infer _A3, infer _A4, infer _A5> ? A1 : never
+export type 接口类型方法<A> =
+  A extends 接口类型抽象类<infer _A1, infer A2, infer _A3, infer _A4, infer _A5> ? A2 : never
+export type 接口类型插件们<A> =
+  A extends 接口类型抽象类<infer _A1, infer _A2, infer A3, infer _A4, infer _A5> ? A3 : never
+export type 接口类型正确结果<A> =
+  A extends 接口类型抽象类<infer _A1, infer _A2, infer _A3, infer A4, infer _A5> ? A4 : never
+export type 接口类型错误结果<A> =
+  A extends 接口类型抽象类<infer _A1, infer _A2, infer _A3, infer _A4, infer A5> ? A5 : never
+
 export abstract class 接口类型抽象类<
   路径 extends string,
   方法 extends 'get' | 'post',
