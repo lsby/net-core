@@ -1,23 +1,34 @@
 import { z } from 'zod'
+import { Either } from '@lsby/ts-fp-data'
 import { 正确结果, 错误结果 } from '../../result/result'
+import { 业务行为 } from '../action/action'
 import { 合并插件结果 } from '../plug'
-import { 任意接口类型, 接口类型抽象类 } from '../type/interface-type-abstract'
+import { 任意接口类型, 接口类型插件们, 接口类型正确结果, 接口类型错误结果 } from '../type/interface-type-abstract'
 
-type _F1<A> = A extends 接口类型抽象类<infer A1, infer _A2, infer _A3, infer _A4, infer _A5> ? A1 : never
-type _F2<A> = A extends 接口类型抽象类<infer _A1, infer A2, infer _A3, infer _A4, infer _A5> ? A2 : never
-type F3<A> = A extends 接口类型抽象类<infer _A1, infer _A2, infer A3, infer _A4, infer _A5> ? A3 : never
-type F4<A> = A extends 接口类型抽象类<infer _A1, infer _A2, infer _A3, infer A4, infer _A5> ? A4 : never
-type F5<A> = A extends 接口类型抽象类<infer _A1, infer _A2, infer _A3, infer _A4, infer A5> ? A5 : never
-export type 计算实现参数<接口类型定义> = 合并插件结果<F3<接口类型定义>>
-export type 计算实现结果<接口类型定义> = Promise<
-  正确结果<z.infer<F4<接口类型定义>>> | 错误结果<z.infer<F5<接口类型定义>>>
->
+export abstract class API接口基类<接口类型描述 extends 任意接口类型> extends 业务行为<
+  合并插件结果<接口类型插件们<接口类型描述>>,
+  z.infer<接口类型错误结果<接口类型描述>>,
+  z.infer<接口类型正确结果<接口类型描述>>
+> {
+  protected abstract override 业务行为实现(
+    参数: 合并插件结果<接口类型插件们<接口类型描述>>,
+  ): Promise<Either<z.TypeOf<接口类型错误结果<接口类型描述>>, z.TypeOf<接口类型正确结果<接口类型描述>>>>
 
-export abstract class API接口基类<接口类型描述 extends 任意接口类型> {
+  protected abstract 包装正确结果(
+    a: z.TypeOf<接口类型错误结果<接口类型描述>>,
+  ): 正确结果<z.infer<接口类型正确结果<接口类型描述>>>
+  protected abstract 包装错误结果(
+    a: z.TypeOf<接口类型正确结果<接口类型描述>>,
+  ): 错误结果<z.infer<接口类型错误结果<接口类型描述>>>
+
   abstract 获得API类型(): 接口类型描述
-  abstract API实现(
-    ctx: 合并插件结果<F3<接口类型描述>>,
-  ): Promise<正确结果<z.infer<F4<接口类型描述>>> | 错误结果<z.infer<F5<接口类型描述>>>>
+  async API实现(
+    参数: 合并插件结果<接口类型插件们<接口类型描述>>,
+  ): Promise<正确结果<z.infer<接口类型正确结果<接口类型描述>>> | 错误结果<z.infer<接口类型错误结果<接口类型描述>>>> {
+    var c = await this.业务行为实现(参数)
+    if (c.isLeft()) return this.包装错误结果(c.assertLeft().getLeft())
+    return this.包装正确结果(c.assertRight().getRight())
+  }
 }
 
 export type 任意接口 = API接口基类<any>
