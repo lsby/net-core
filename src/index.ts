@@ -1,6 +1,8 @@
 export * from './extend/api-json-base'
 export * from './extend/api-json-wrap'
 
+export * from './interface/action/action'
+
 export * from './interface/inst/interface'
 export * from './interface/inst/interface-abstract'
 export * from './interface/type/interface-type'
