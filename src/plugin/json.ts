@@ -2,7 +2,7 @@ import { format } from 'node:util'
 import express from 'express'
 import { AnyZodObject, z } from 'zod'
 import { Global } from '../global/global'
-import { 包装插件项, 取插件内部类型, 合并插件结果, 插件, 插件项类型 } from '../interface/plug'
+import { 包装插件项, 取Task插件内部类型, 合并插件结果, 插件, 插件项类型 } from '../interface/plug'
 import { 获得接口插件们 } from '../interface/type/interface-type-abstract'
 
 export class JSON解析插件<Result extends AnyZodObject> extends 插件<z.ZodObject<{ body: Result }>> {
@@ -40,7 +40,7 @@ export type 合并JSON插件结果<Arr extends Array<插件项类型>> = Arr ext
     ? x extends infer 插件项
       ? xs extends Array<插件项类型>
         ? 插件项 extends 任意JSON解析插件项
-          ? z.infer<取插件内部类型<插件项>>['body'] & 合并插件结果<xs>
+          ? z.infer<取Task插件内部类型<插件项>>['body'] & 合并插件结果<xs>
           : 合并JSON插件结果<xs>
         : {}
       : {}
