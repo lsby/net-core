@@ -71,10 +71,12 @@ export class 包装的接口类型<
   }
 }
 
+export type 计算JSON实现返回<接口类型描述> = Promise<
+  Either<z.infer<接口类型错误结果<接口类型描述>>['data'], z.infer<接口类型正确结果<接口类型描述>>['data']>
+>
+
 export abstract class JSON接口包装基类<接口类型描述 extends 任意的包装的接口类型> extends API接口基类<接口类型描述> {
-  protected abstract override 业务行为实现(
-    参数: 计算实现参数<接口类型描述>,
-  ): Promise<Either<z.infer<接口类型错误结果<接口类型描述>>['data'], z.infer<接口类型正确结果<接口类型描述>>['data']>>
+  protected abstract override 业务行为实现(参数: 计算实现参数<接口类型描述>): 计算JSON实现返回<接口类型描述>
   override async API实现(
     参数: 合并插件结果<接口类型插件们<接口类型描述>>,
   ): Promise<正确结果<z.infer<接口类型正确结果<接口类型描述>>> | 错误结果<z.infer<接口类型错误结果<接口类型描述>>>> {
