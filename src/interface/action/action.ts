@@ -79,15 +79,12 @@ export abstract class 业务行为<
     参数类型 extends 业务行为参数类型,
     错误类型 extends 业务行为错误类型,
     返回类型 extends 业务行为返回类型,
-  >(
-    实现: (参数: 参数类型) => Promise<Either<错误类型, 返回类型>>,
-    业务行为名称?: string,
-  ): 业务行为<参数类型, 错误类型, 返回类型> {
+  >(实现: (参数: 参数类型) => Promise<Either<错误类型, 返回类型>>): 业务行为<参数类型, 错误类型, 返回类型> {
     return new (class extends 业务行为<参数类型, 错误类型, 返回类型> {
       protected override async 业务行为实现(参数: 参数类型): Promise<Either<错误类型, 返回类型>> {
         return 实现(参数)
       }
-    })(业务行为名称)
+    })()
   }
 
   static 流式组合<
@@ -137,38 +134,24 @@ export abstract class 业务行为<
     arr: [...X],
     f: (a: 取返回<计算合并<X>>) => Promise<A>,
   ): 业务行为<取参数<计算合并<X>>, 取错误<计算合并<X>>, A> {
-    return 业务行为.通过实现构造(
-      async (参数) => {
-        var 所有结果 = await Promise.all(arr.map((a) => a.运行业务行为(参数)))
-        var 错误 = 所有结果.filter((a) => a.isLeft())[0]
-        if (错误) return 错误
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        var 正确结果合并 = 所有结果.map((a) => a.assertRight().getRight()).reduce((s, a) => Object.assign(s, a), {})
-        return new Right(await f(正确结果合并))
-      },
-      `并行组合(${arr.map((a) => a.业务行为名称).join(', ')})`,
-    )
+    return 业务行为.通过实现构造(async (参数) => {
+      var 所有结果 = await Promise.all(arr.map((a) => a.运行业务行为(参数)))
+      var 错误 = 所有结果.filter((a) => a.isLeft())[0]
+      if (错误) return 错误
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      var 正确结果合并 = 所有结果.map((a) => a.assertRight().getRight()).reduce((s, a) => Object.assign(s, a), {})
+      return new Right(await f(正确结果合并))
+    })
   }
 
   // ================================= 私有 =================================
-  private 业务行为名称: string
-
-  constructor(业务行为名称?: string) {
-    if (!业务行为名称) this.业务行为名称 = this.constructor.name || '<匿名>'
-    else this.业务行为名称 = 业务行为名称
-  }
-
   protected abstract 业务行为实现(参数: 参数类型): Promise<Either<错误类型, 返回类型>>
 
   // ================================= 设置 =================================
-  设置业务行为名称(业务行为名称: string): this {
-    this.业务行为名称 = 业务行为名称
-    return this
-  }
   设置参数<A extends Partial<参数类型>>(设置参数: A): 业务行为<Omit<参数类型, keyof A>, 错误类型, 返回类型> {
     return 业务行为.通过实现构造(async (参数) => {
       return await this.运行业务行为({ ...设置参数, ...参数 } as any)
-    }, this.业务行为名称)
+    })
   }
 
   // ================================= 运行 =================================
@@ -194,7 +177,7 @@ export abstract class 业务行为<
       const 我的结果 = await this.运行业务行为(参数)
       if (我的结果.isLeft()) return new Left(我的结果.assertLeft().getLeft())
       return b.运行业务行为(我的结果.assertRight().getRight())
-    }, `流式组合(${this.业务行为名称}, ${b.业务行为名称})`)
+    })
   }
 
   /**
@@ -213,7 +196,7 @@ export abstract class 业务行为<
       if (我的结果.isLeft()) return new Left(我的结果.assertLeft().getLeft())
       var 对方结果 = await b.运行业务行为({ ...参数, ...我的结果.assertRight().getRight() } as any)
       return 对方结果.map((a) => Object.assign(a, 我的结果.assertRight().getRight()))
-    }, `混合组合(${this.业务行为名称}, ${b.业务行为名称})`)
+    })
   }
 
   // ================================= 映射 =================================
@@ -224,7 +207,7 @@ export abstract class 业务行为<
       const 我的结果 = await this.运行业务行为(参数)
       if (我的结果.isLeft()) return new Left(我的结果.assertLeft().getLeft())
       return Either.pure(f(我的结果.assertRight().getRight()))
-    }, this.业务行为名称)
+    })
   }
   映射错误<新错误类型 extends 业务行为错误类型>(
     f: (a: 错误类型) => 新错误类型,
@@ -233,6 +216,21 @@ export abstract class 业务行为<
       const 我的结果 = await this.运行业务行为(参数)
       if (我的结果.isLeft()) return new Left(f(我的结果.assertLeft().getLeft()))
       return Either.pure(我的结果.assertRight().getRight())
-    }, this.业务行为名称)
+    })
+  }
+
+  绑定<
+    新参数类型 extends 业务行为参数类型,
+    新错误类型 extends 错误类型 | 业务行为错误类型,
+    新返回类型 extends 业务行为返回类型,
+  >(
+    参数: 参数类型,
+    f: (a: 返回类型) => 业务行为<新参数类型, 新错误类型, 新返回类型>,
+  ): 业务行为<新参数类型, 新错误类型, 新返回类型> {
+    return 业务行为.通过实现构造(async (新参数) => {
+      const 我的结果 = await this.运行业务行为(参数)
+      if (我的结果.isLeft()) return new Left(我的结果.assertLeft().getLeft() as 新错误类型)
+      return f(我的结果.assertRight().getRight()).运行业务行为(新参数)
+    })
   }
 }
