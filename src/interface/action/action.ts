@@ -33,9 +33,9 @@ type 计算合并<Arr> = Arr extends []
         : never
       : never
     : never
-type 取参数<A> = A extends 业务行为<infer 参数, infer _错误, infer _返回> ? 参数 : never
-type 取错误<A> = A extends 业务行为<infer _参数, infer 错误, infer _返回> ? 错误 : never
-type 取返回<A> = A extends 业务行为<infer _参数, infer _错误, infer 返回> ? 返回 : never
+export type 计算业务行为参数<A> = A extends 业务行为<infer 参数, infer _错误, infer _返回> ? 参数 : never
+export type 计算业务行为错误<A> = A extends 业务行为<infer _参数, infer 错误, infer _返回> ? 错误 : never
+export type 计算业务行为返回<A> = A extends 业务行为<infer _参数, infer _错误, infer 返回> ? 返回 : never
 
 /**
  * ## 业务行为
@@ -146,8 +146,8 @@ export abstract class 业务行为<
    */
   static 并行组合<X extends 任意业务行为[], A extends 业务行为返回类型>(
     arr: [...X],
-    f: (a: 取返回<计算合并<X>>) => Promise<A>,
-  ): 业务行为<取参数<计算合并<X>>, 取错误<计算合并<X>>, A> {
+    f: (a: 计算业务行为返回<计算合并<X>>) => Promise<A>,
+  ): 业务行为<计算业务行为参数<计算合并<X>>, 计算业务行为错误<计算合并<X>>, A> {
     return 业务行为.通过实现构造(async (参数) => {
       var 所有结果 = await Promise.all(arr.map((a) => a.运行业务行为(参数)))
       var 错误 = 所有结果.filter((a) => a.isLeft())[0]
