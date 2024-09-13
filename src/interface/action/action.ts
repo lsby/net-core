@@ -86,6 +86,20 @@ export abstract class 业务行为<
       }
     })()
   }
+  static 通过正确值构造<
+    参数类型 extends 业务行为参数类型,
+    错误类型 extends 业务行为错误类型,
+    返回类型 extends 业务行为返回类型,
+  >(a: 返回类型): 业务行为<参数类型, 错误类型, 返回类型> {
+    return 业务行为.通过实现构造(async () => new Right(a))
+  }
+  static 通过错误值构造<
+    参数类型 extends 业务行为参数类型,
+    错误类型 extends 业务行为错误类型,
+    返回类型 extends 业务行为返回类型,
+  >(a: 错误类型): 业务行为<参数类型, 错误类型, 返回类型> {
+    return 业务行为.通过实现构造(async () => new Left(a))
+  }
 
   static 流式组合<
     A参数类型 extends 业务行为参数类型,
