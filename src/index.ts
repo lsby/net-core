@@ -1,4 +1,5 @@
-export * from './extend/wrap-json'
+export * from './extend/api-json-base'
+export * from './extend/api-json-wrap'
 
 export * from './interface/inst/interface'
 export * from './interface/inst/interface-abstract'

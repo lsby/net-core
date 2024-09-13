@@ -1,7 +1,8 @@
 import { z } from 'zod'
+import { Either, Left, Right } from '@lsby/ts-fp-data'
 import { 插件项类型 } from '../interface/plug'
-import { 接口类型抽象类 } from '../interface/type/interface-type-abstract'
-import { 正确JSON结果, 错误JSON结果 } from '../result/result'
+import { 接口类型抽象类, 接口类型正确结果, 接口类型错误结果 } from '../interface/type/interface-type-abstract'
+import { JSON接口基类 } from './api-json-base'
 
 export abstract class 包装的接口类型抽象类<
   路径 extends string,
@@ -28,6 +29,9 @@ export abstract class 包装的接口类型抽象类<
   abstract override 获得正确结果类型(): z.ZodObject<{ status: z.ZodLiteral<'success'>; data: 正确返回类型 }>
   abstract override 获得错误结果类型(): z.ZodObject<{ status: z.ZodLiteral<'fail'>; data: 错误返回类型 }>
 }
+type 任意的包装的接口类型 = 包装的接口类型抽象类<any, any, any, any, any>
+type 取返回类型<A> = A extends 包装的接口类型抽象类<any, any, any, infer X, any> ? X : never
+type 取错误类型<A> = A extends 包装的接口类型抽象类<any, any, any, any, infer X> ? X : never
 
 export class 包装的接口类型<
   路径 extends string,
@@ -63,19 +67,15 @@ export class 包装的接口类型<
   }
 }
 
-export class 包装的正确JSON结果<Data> extends 正确JSON结果<{ status: 'success'; data: Data }> {
-  constructor(data: Data) {
-    super({
-      status: 'success' as const,
-      data,
-    })
+export abstract class JSON接口包装基类<接口类型描述 extends 任意的包装的接口类型> extends JSON接口基类<接口类型描述> {
+  protected 构造正确返回(
+    data: z.infer<取返回类型<接口类型描述>>,
+  ): Either<z.infer<接口类型错误结果<接口类型描述>>, z.infer<接口类型正确结果<接口类型描述>>> {
+    return new Right({ status: 'success' as const, data })
   }
-}
-export class 包装的错误JSON结果<Data> extends 错误JSON结果<{ status: 'fail'; data: Data }> {
-  constructor(data: Data) {
-    super({
-      status: 'fail' as const,
-      data,
-    })
+  protected 构造错误返回(
+    data: z.infer<取错误类型<接口类型描述>>,
+  ): Either<z.infer<接口类型错误结果<接口类型描述>>, z.infer<接口类型正确结果<接口类型描述>>> {
+    return new Left({ status: 'fail' as const, data })
   }
 }

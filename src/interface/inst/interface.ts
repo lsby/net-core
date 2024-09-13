@@ -15,26 +15,26 @@ export class 接口<
   constructor(
     private 接口类型: 接口类型抽象类<路径, 方法, 插件们, 正确返回类型, 错误返回类型>,
     private 正确结果包装器: (
-      a: z.TypeOf<接口类型错误结果<接口类型抽象类<路径, 方法, 插件们, 正确返回类型, 错误返回类型>>>,
+      a: z.infer<接口类型错误结果<接口类型抽象类<路径, 方法, 插件们, 正确返回类型, 错误返回类型>>>,
     ) => 正确结果<z.infer<接口类型正确结果<接口类型抽象类<路径, 方法, 插件们, 正确返回类型, 错误返回类型>>>>,
     private 错误结果包装器: (
-      a: z.TypeOf<接口类型正确结果<接口类型抽象类<路径, 方法, 插件们, 正确返回类型, 错误返回类型>>>,
+      a: z.infer<接口类型正确结果<接口类型抽象类<路径, 方法, 插件们, 正确返回类型, 错误返回类型>>>,
     ) => 错误结果<z.infer<接口类型错误结果<接口类型抽象类<路径, 方法, 插件们, 正确返回类型, 错误返回类型>>>>,
-    private 实现: (插件结果: 合并插件结果<插件们>) => Promise<Either<z.TypeOf<错误返回类型>, z.TypeOf<正确返回类型>>>,
+    private 实现: (插件结果: 合并插件结果<插件们>) => Promise<Either<z.infer<错误返回类型>, z.infer<正确返回类型>>>,
   ) {
     super()
   }
 
-  protected override 包装正确结果(a: z.TypeOf<错误返回类型>): 正确结果<z.TypeOf<正确返回类型>> {
+  protected override 包装正确结果(a: z.infer<错误返回类型>): 正确结果<z.infer<正确返回类型>> {
     return this.正确结果包装器(a)
   }
-  protected override 包装错误结果(a: z.TypeOf<正确返回类型>): 错误结果<z.TypeOf<错误返回类型>> {
+  protected override 包装错误结果(a: z.infer<正确返回类型>): 错误结果<z.infer<错误返回类型>> {
     return this.错误结果包装器(a)
   }
 
   protected override 业务行为实现(
     参数: 合并插件结果<插件们>,
-  ): Promise<Either<z.TypeOf<错误返回类型>, z.TypeOf<正确返回类型>>> {
+  ): Promise<Either<z.infer<错误返回类型>, z.infer<正确返回类型>>> {
     return this.实现(参数)
   }
 

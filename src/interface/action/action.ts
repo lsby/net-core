@@ -1,6 +1,6 @@
 import { Either, Left, Right } from '@lsby/ts-fp-data'
 
-export type 业务行为错误类型 = string | null
+export type 业务行为错误类型 = string | never
 export type 业务行为参数类型 = Record<string, any>
 export type 业务行为返回类型 = Record<string, any>
 
@@ -25,7 +25,7 @@ type 计算混合组合数组<Arr> = Arr extends [infer x, infer y]
     ? 计算混合组合数组<[计算混合单一组合<x, y>, ...s]>
     : never
 type 计算合并<Arr> = Arr extends []
-  ? 业务行为<{}, null, {}>
+  ? 业务行为<{}, never, {}>
   : Arr extends [infer x, ...infer xs]
     ? x extends 业务行为<infer 参数1, infer 错误1, infer 返回1>
       ? 计算合并<xs> extends 业务行为<infer 参数2, infer 错误2, infer 返回2>
