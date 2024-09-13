@@ -16,22 +16,10 @@ export abstract class API接口基类<接口类型描述 extends 任意接口类
   z.infer<接口类型正确结果<接口类型描述>>
 > {
   protected abstract override 业务行为实现(参数: 计算实现参数<接口类型描述>): 计算实现返回<接口类型描述>
-
-  protected abstract 包装正确结果(
-    数据: z.infer<接口类型正确结果<接口类型描述>>,
-  ): 正确结果<z.infer<接口类型正确结果<接口类型描述>>>
-  protected abstract 包装错误结果(
-    数据: z.infer<接口类型错误结果<接口类型描述>>,
-  ): 错误结果<z.infer<接口类型错误结果<接口类型描述>>>
-
   abstract 获得API类型(): 接口类型描述
-  async API实现(
+  abstract API实现(
     参数: 计算实现参数<接口类型描述>,
-  ): Promise<正确结果<z.infer<接口类型正确结果<接口类型描述>>> | 错误结果<z.infer<接口类型错误结果<接口类型描述>>>> {
-    var c = await this.业务行为实现(参数)
-    if (c.isLeft()) return this.包装错误结果(c.assertLeft().getLeft())
-    return this.包装正确结果(c.assertRight().getRight())
-  }
+  ): Promise<正确结果<z.infer<接口类型正确结果<接口类型描述>>> | 错误结果<z.infer<接口类型错误结果<接口类型描述>>>>
 }
 
 export type 任意接口 = API接口基类<any>
