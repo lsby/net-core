@@ -78,4 +78,10 @@ export abstract class JSON接口包装基类<接口类型描述 extends 任意�
   ): Either<z.infer<接口类型错误结果<接口类型描述>>, z.infer<接口类型正确结果<接口类型描述>>> {
     return new Left({ status: 'fail' as const, data })
   }
+  protected 构造包装返回(
+    data: Either<z.infer<取错误类型<接口类型描述>>, z.infer<取返回类型<接口类型描述>>>,
+  ): Either<z.infer<接口类型错误结果<接口类型描述>>, z.infer<接口类型正确结果<接口类型描述>>> {
+    if (data.isLeft()) return new Left({ status: 'fail' as const, data: data.assertLeft().getLeft() })
+    return new Right({ status: 'success' as const, data: data.assertRight().getRight() })
+  }
 }
