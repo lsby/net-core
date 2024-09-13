@@ -234,17 +234,14 @@ export abstract class 业务行为<
   }
 
   绑定<
-    新参数类型 extends 业务行为参数类型,
+    新参数类型 extends 业务行为参数类型 & 参数类型,
     新错误类型 extends 错误类型 | 业务行为错误类型,
     新返回类型 extends 业务行为返回类型,
-  >(
-    参数: 参数类型,
-    f: (a: 返回类型) => 业务行为<新参数类型, 新错误类型, 新返回类型>,
-  ): 业务行为<新参数类型, 新错误类型, 新返回类型> {
-    return 业务行为.通过实现构造(async (新参数) => {
+  >(f: (a: 返回类型) => 业务行为<新参数类型, 新错误类型, 新返回类型>): 业务行为<新参数类型, 新错误类型, 新返回类型> {
+    return 业务行为.通过实现构造(async (参数) => {
       const 我的结果 = await this.运行业务行为(参数)
       if (我的结果.isLeft()) return new Left(我的结果.assertLeft().getLeft() as 新错误类型)
-      return f(我的结果.assertRight().getRight()).运行业务行为(新参数)
+      return f(我的结果.assertRight().getRight()).运行业务行为(参数)
     })
   }
 }
