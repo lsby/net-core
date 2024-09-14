@@ -1,15 +1,14 @@
 import { z } from 'zod'
-import { 合并插件结果 } from '../../plugin/plug'
 import { 正确JSON结果, 正确结果, 错误JSON结果, 错误结果 } from '../../result/result'
-import { 接口 } from '../interface-inst'
-import { 任意接口类型, 接口类型插件们, 接口类型正确结果, 接口类型错误结果 } from '../interface-type'
+import { 接口, 计算接口返回 } from '../interface-inst'
+import { 任意接口类型, 接口类型正确结果, 接口类型错误结果 } from '../interface-type'
 
 export abstract class JSON接口<接口类型描述 extends 任意接口类型> extends 接口<接口类型描述> {
-  override async API实现(
-    参数: 合并插件结果<接口类型插件们<接口类型描述>>,
-  ): Promise<正确结果<z.infer<接口类型正确结果<接口类型描述>>> | 错误结果<z.infer<接口类型错误结果<接口类型描述>>>> {
-    var 业务结果 = await this.业务行为实现(参数)
-    if (业务结果.isLeft()) return new 错误JSON结果(业务结果.assertLeft().getLeft())
-    return new 正确JSON结果(业务结果.assertRight().getRight())
+  override async 转换业务结果到API结果(
+    业务结果: 计算接口返回<接口类型描述>,
+  ): Promise<正确结果<z.TypeOf<接口类型正确结果<接口类型描述>>> | 错误结果<z.TypeOf<接口类型错误结果<接口类型描述>>>> {
+    var c = await 业务结果
+    if (c.isLeft()) return new 错误JSON结果(c.assertLeft().getLeft())
+    return new 正确JSON结果(c.assertRight().getRight())
   }
 }
