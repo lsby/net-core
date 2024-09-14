@@ -115,7 +115,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
     .filter((a) => a[1] == true)
     .map((a) => a[0])
     .filter((a) => a != null)
-  await log.debug(`最终筛选到 ${最终结果.length} 个接口实现`)
+  await log.debug(`最终筛选出 ${最终结果.length} 个接口实现`)
 
   var 最终代码 = [
     `import { 任意接口 } from '@lsby/net-core'`,
