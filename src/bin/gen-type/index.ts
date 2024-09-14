@@ -132,7 +132,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
     检查结果.push(结果)
   }
 
-  var 最终结果 = Array.from(new Set(检查结果.filter((a) => a != 'any' && a != 'never')))
+  var 最终结果 = Array.from(new Set(检查结果.filter((a) => a != 'any' && a != 'never' && a != 'unknown')))
   await log.debug(`最终筛选出 ${最终结果.length} 个接口类型`)
 
   var 最终代码 = [`export type InterfaceType = [${最终结果.join(',')}]`, ...附加代码]
