@@ -3,6 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import ts from 'typescript'
 import { Log } from '@lsby/ts-log'
+import { 附加代码 } from './addition'
 
 function 提取变量节点(源文件: ts.SourceFile): ts.VariableDeclaration[] {
   const 变量节点数组: ts.VariableDeclaration[] = []
@@ -32,26 +33,31 @@ type 变量节点信息 = {
 }
 
 export async function main(tsconfig路径: string, 目标路径: string, 输出文件路径: string): Promise<void> {
-  var 日志 = new Log('@lsby:net-core').extend('gen-type')
+  var log = new Log('@lsby:net-core').extend('gen-type')
 
-  await 日志.debug('准备生成接口类型...')
+  await log.debug('开始生成类型...')
+  await log.debug(`tsconfig路径: ${tsconfig路径}`)
+  await log.debug(`目标路径: ${目标路径}`)
+  await log.debug(`输出文件路径: ${输出文件路径}`)
 
   const tsconfig内容 = ts.parseConfigFileTextToJson(tsconfig路径, fs.readFileSync(tsconfig路径, 'utf8'))
   if (tsconfig内容.error) {
+    await log.err('无法解析 tsconfig.json')
     throw new Error('无法解析 tsconfig.json')
   }
   const 解析后的tsconfig = ts.parseJsonConfigFileContent(tsconfig内容.config, ts.sys, path.resolve(tsconfig路径, '..'))
-  await 日志.debug('成功解析 tsconfig 文件...')
+  await log.debug('成功解析 tsconfig 文件...')
 
   const 项目主机 = ts.createCompilerHost(解析后的tsconfig.options)
   const 项目 = ts.createProgram(解析后的tsconfig.fileNames, 解析后的tsconfig.options, 项目主机)
-  await 日志.debug('成功读取项目...')
+  await log.debug('成功读取项目...')
 
   var 所有源文件 = 项目.getSourceFiles()
   var 所有相关源文件们 = 所有源文件.filter((源文件) => {
     var 源文件路径 = path.normalize(源文件.fileName)
     return 源文件路径.includes(目标路径)
   })
+  await log.debug(`筛选出 ${所有相关源文件们.length} 个相关源文件`)
 
   const 相关变量节点们: 变量节点信息[] = 所有相关源文件们.flatMap((a) =>
     提取变量节点(a).map((x) => ({
@@ -60,6 +66,8 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
       计算节点名称: 替换非法字符(randomUUID()),
     })),
   )
+  await log.debug(`提取到 ${相关变量节点们.length} 个变量节点`)
+
   var 伴随的虚拟文件们 = 相关变量节点们.map((a) => {
     var 代码: string[] = []
     if (a.变量节点.name.kind != ts.SyntaxKind.Identifier) {
@@ -108,6 +116,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
     },
     oldProgram: 项目,
   })
+
   var 类型检查器 = 新项目.getTypeChecker()
 
   var 检查结果: string[] = []
@@ -124,103 +133,13 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
   }
 
   var 最终结果 = Array.from(new Set(检查结果.filter((a) => a != 'any')))
-  var 最终代码 = [
-    `export type InterfaceType = [${最终结果.join(',')}]`,
-    '',
-    `type 元组转联合<T> = T extends any[] ? T[number] : never`,
-    '',
-    `type 所有接口路径们<A = InterfaceType> = A extends []`,
-    `  ? []`,
-    `  : A extends [infer x, ...infer xs]`,
-    `    ? 'path' extends keyof x`,
-    `      ? [x['path'], ...所有接口路径们<xs>]`,
-    `      : never`,
-    `    : never`,
-    `type Get接口路径们<A = InterfaceType> = A extends []`,
-    `  ? []`,
-    `  : A extends [infer x, ...infer xs]`,
-    `    ? 'method' extends keyof x`,
-    `      ? x['method'] extends 'get'`,
-    `        ? 'path' extends keyof x`,
-    `          ? [x['path'], ...所有接口路径们<xs>]`,
-    `          : never`,
-    `        : never`,
-    `      : never`,
-    `    : never`,
-    `type Post接口路径们<A = InterfaceType> = A extends []`,
-    `  ? []`,
-    `  : A extends [infer x, ...infer xs]`,
-    `    ? 'method' extends keyof x`,
-    `      ? x['method'] extends 'post'`,
-    `        ? 'path' extends keyof x`,
-    `          ? [x['path'], ...所有接口路径们<xs>]`,
-    `          : never`,
-    `        : never`,
-    `      : never`,
-    `    : never`,
-    ``,
-    `type 从路径获得参数<Path, A = InterfaceType> = A extends []`,
-    `  ? []`,
-    `  : A extends [infer x, ...infer xs]`,
-    `    ? 'path' extends keyof x`,
-    `      ? x['path'] extends Path`,
-    `        ? 'input' extends keyof x`,
-    `          ? x['input']`,
-    `          : never`,
-    `        : 从路径获得参数<Path, xs>`,
-    `      : never`,
-    `    : never`,
-    `type 从路径获得方法<Path, A = InterfaceType> = A extends []`,
-    `  ? []`,
-    `  : A extends [infer x, ...infer xs]`,
-    `    ? 'path' extends keyof x`,
-    `      ? x['path'] extends Path`,
-    `        ? 'method' extends keyof x`,
-    `          ? x['method']`,
-    `          : never`,
-    `        : 从路径获得方法<Path, xs>`,
-    `      : never`,
-    `    : never`,
-    `type 从路径获得正确返回<Path, A = InterfaceType> = A extends []`,
-    `  ? []`,
-    `  : A extends [infer x, ...infer xs]`,
-    `    ? 'path' extends keyof x`,
-    `      ? x['path'] extends Path`,
-    `        ? 'successOutput' extends keyof x`,
-    `          ? x['successOutput']`,
-    `          : never`,
-    `        : 从路径获得正确返回<Path, xs>`,
-    `      : never`,
-    `    : never`,
-    `type 从路径获得错误返回<Path, A = InterfaceType> = A extends []`,
-    `  ? []`,
-    `  : A extends [infer x, ...infer xs]`,
-    `    ? 'path' extends keyof x`,
-    `      ? x['path'] extends Path`,
-    `        ? 'errorOutput' extends keyof x`,
-    `          ? x['errorOutput']`,
-    `          : never`,
-    `        : 从路径获得错误返回<Path, xs>`,
-    `      : never`,
-    `  : never`,
-    ``,
-    `export type 请求后端函数类型 = <路径 extends 元组转联合<所有接口路径们>>(`,
-    `  路径: 路径,`,
-    `  参数: 从路径获得参数<路径>,`,
-    `  方法: 从路径获得方法<路径>,`,
-    `) => Promise<从路径获得正确返回<路径> | 从路径获得错误返回<路径>>`,
-    `export type Get请求后端函数类型 = <路径 extends 元组转联合<Get接口路径们>>(`,
-    `  路径: 路径,`,
-    `  参数: 从路径获得参数<路径>,`,
-    `) => Promise<从路径获得正确返回<路径> | 从路径获得错误返回<路径>>`,
-    `export type Post请求后端函数类型 = <路径 extends 元组转联合<Post接口路径们>>(`,
-    `  路径: 路径,`,
-    `  参数: 从路径获得参数<路径>,`,
-    `) => Promise<从路径获得正确返回<路径> | 从路径获得错误返回<路径>>`,
-    '',
-  ]
+  await log.debug(`最终筛选到 ${最终结果.length} 个接口类型`)
+
+  var 最终代码 = [`export type InterfaceType = [${最终结果.join(',')}]`, ...附加代码]
 
   var 输出文件夹 = path.dirname(输出文件路径)
   if (!fs.existsSync(输出文件夹)) fs.mkdirSync(输出文件夹, { recursive: true })
   fs.writeFileSync(输出文件路径, 最终代码.join('\n'))
+
+  await log.debug(`输出文件写入完成: ${输出文件路径}`)
 }

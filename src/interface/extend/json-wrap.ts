@@ -1,9 +1,9 @@
 import { z } from 'zod'
 import { Either } from '@lsby/ts-fp-data'
-import { 合并插件结果, 插件项类型 } from '../../plugin/plug'
+import { 插件项类型 } from '../../plugin/plug'
 import { 正确JSON结果, 正确结果, 错误JSON结果, 错误结果 } from '../../result/result'
-import { 接口, 计算接口参数 } from '../interface-inst'
-import { 接口类型, 接口类型插件们, 接口类型正确结果, 接口类型错误结果 } from '../interface-type'
+import { 接口, 计算接口参数, 计算接口返回 } from '../interface-inst'
+import { 接口类型, 接口类型正确结果, 接口类型错误结果 } from '../interface-type'
 
 export class JSON状态接口类型<
   路径 extends string,
@@ -42,10 +42,10 @@ export type 计算JSON状态接口返回<接口类型描述> = Promise<
 
 export abstract class JSON状态接口<接口类型描述 extends 任意的JSON状态接口类型> extends 接口<接口类型描述> {
   protected abstract override 业务行为实现(参数: 计算接口参数<接口类型描述>): 计算JSON状态接口返回<接口类型描述>
-  override async API实现(
-    参数: 合并插件结果<接口类型插件们<接口类型描述>>,
-  ): Promise<正确结果<z.infer<接口类型正确结果<接口类型描述>>> | 错误结果<z.infer<接口类型错误结果<接口类型描述>>>> {
-    var c = await this.业务行为实现(参数)
+  override async 转换业务结果到API结果(
+    业务结果: 计算接口返回<接口类型描述>,
+  ): Promise<正确结果<z.TypeOf<接口类型正确结果<接口类型描述>>> | 错误结果<z.TypeOf<接口类型错误结果<接口类型描述>>>> {
+    var c = await 业务结果
     if (c.isLeft()) return new 错误JSON结果({ status: 'fail' as const, data: c.assertLeft().getLeft() })
     return new 正确JSON结果({ status: 'success' as const, data: c.assertRight().getRight() })
   }
