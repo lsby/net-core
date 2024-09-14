@@ -1,22 +1,19 @@
-export * from './extend/api-json-base'
-export * from './extend/api-json-wrap'
+export * from './action/action'
 
-export * from './interface/action/action'
+export * from './interface/extend/json-base'
+export * from './interface/extend/json-wrap'
 
-export * from './interface/inst/interface'
-export * from './interface/inst/interface-abstract'
-export * from './interface/type/interface-type'
-export * from './interface/type/interface-type-abstract'
-export * from './interface/plug'
+export * from './interface/interface-inst'
+export * from './interface/interface-test'
+export * from './interface/interface-type'
 
-export * from './plugin/chinese-path'
-export * from './plugin/custom-data'
-export * from './plugin/json'
-export * from './plugin/urlencoded'
+export * from './plugin/extend/chinese-path'
+export * from './plugin/extend/custom-data'
+export * from './plugin/extend/json'
+export * from './plugin/extend/urlencoded'
+
+export * from './plugin/plug'
 
 export * from './result/result'
 
 export * from './server/server'
-
-export * from './test/test'
-export * from './test/test-abstract'

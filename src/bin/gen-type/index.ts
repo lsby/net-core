@@ -1,104 +1,131 @@
 import { randomUUID } from 'node:crypto'
-import fs, { existsSync, mkdirSync } from 'node:fs'
+import fs from 'node:fs'
 import path from 'node:path'
 import ts from 'typescript'
 import { Log } from '@lsby/ts-log'
-import { calcCode } from './calc-code'
 
-export async function main(tsconfigPath: string, apiFolderPath: string, outputPath: string): Promise<void> {
-  var log = new Log('@lsby:net-core').extend('gen-type')
+function 提取变量节点(源文件: ts.SourceFile): ts.VariableDeclaration[] {
+  const 变量节点数组: ts.VariableDeclaration[] = []
 
-  await log.debug('准备生成类型文件...')
+  const 访问节点 = (节点: ts.Node): void => {
+    if (ts.isVariableStatement(节点)) {
+      节点.declarationList.declarations.forEach((变量声明) => {
+        if (ts.isVariableDeclaration(变量声明)) {
+          变量节点数组.push(变量声明)
+        }
+      })
+    }
+    ts.forEachChild(节点, 访问节点)
+  }
 
-  const tsconfigJson = ts.parseConfigFileTextToJson(tsconfigPath, fs.readFileSync(tsconfigPath, 'utf8'))
-  if (tsconfigJson.error) {
+  ts.forEachChild(源文件, 访问节点)
+  return 变量节点数组
+}
+function 替换非法字符(字符串: string): string {
+  return '_' + 字符串.replace(/[ !\-!@#$%^&*()\[\]{}\\|;:'",.\/?]/g, '_')
+}
+
+type 变量节点信息 = {
+  文件: ts.SourceFile
+  变量节点: ts.VariableDeclaration
+  计算节点名称: string
+}
+
+export async function main(tsconfig路径: string, 目标路径: string, 输出文件路径: string): Promise<void> {
+  var 日志 = new Log('@lsby:net-core').extend('gen-type')
+
+  await 日志.debug('准备生成接口类型...')
+
+  const tsconfig内容 = ts.parseConfigFileTextToJson(tsconfig路径, fs.readFileSync(tsconfig路径, 'utf8'))
+  if (tsconfig内容.error) {
     throw new Error('无法解析 tsconfig.json')
   }
-  const parsedTsconfig = ts.parseJsonConfigFileContent(tsconfigJson.config, ts.sys, path.resolve(tsconfigPath, '..'))
-  await log.debug('成功解析 tsconfig 文件...')
+  const 解析后的tsconfig = ts.parseJsonConfigFileContent(tsconfig内容.config, ts.sys, path.resolve(tsconfig路径, '..'))
+  await 日志.debug('成功解析 tsconfig 文件...')
 
-  const projectHost = ts.createCompilerHost(parsedTsconfig.options)
-  const project = ts.createProgram(parsedTsconfig.fileNames, parsedTsconfig.options, projectHost)
-  await log.debug('成功读取项目...')
+  const 项目主机 = ts.createCompilerHost(解析后的tsconfig.options)
+  const 项目 = ts.createProgram(解析后的tsconfig.fileNames, 解析后的tsconfig.options, 项目主机)
+  await 日志.debug('成功读取项目...')
 
-  const allSourceFiles = project.getSourceFiles()
-  const apiSourceFiles = allSourceFiles.filter((sourceFile) => {
-    // 我们约定接口蓝图必须名为 type.ts
-    return new RegExp(`${apiFolderPath.replaceAll('\\', '\\\\')}.*type\.ts`).test(path.resolve(sourceFile.fileName))
+  var 所有源文件 = 项目.getSourceFiles()
+  var 所有相关源文件们 = 所有源文件.filter((源文件) => {
+    var 源文件路径 = path.normalize(源文件.fileName)
+    return 源文件路径.includes(目标路径)
   })
-  await log.debug('找到 %o 个接口...', apiSourceFiles.length)
 
-  // 为每一个接口文件生成一个虚拟计算文件
-  const apiTypeCalcFileNames = apiSourceFiles.map((sourceFile) =>
-    sourceFile.fileName.replace('type.ts', `type-calculate-${randomUUID()}.ts`),
+  const 相关变量节点们: 变量节点信息[] = 所有相关源文件们.flatMap((a) =>
+    提取变量节点(a).map((x) => ({
+      文件: a,
+      变量节点: x,
+      计算节点名称: 替换非法字符(randomUUID()),
+    })),
   )
-  const apiTypeCalcFiles = apiTypeCalcFileNames.map((filename) => {
+  var 伴随的虚拟文件们 = 相关变量节点们.map((a) => {
+    var 代码: string[] = []
+    if (a.变量节点.name.kind != ts.SyntaxKind.Identifier) {
+      代码 = []
+    } else {
+      var 变量名称 = a.变量节点.name.text
+      var netcore引入 = a.计算节点名称 + 'netcore'
+      var zod引入 = a.计算节点名称 + 'zod'
+      代码 = [
+        a.文件.getFullText(),
+        `import * as ${netcore引入} from '@lsby/net-core'`,
+        `import { z as ${zod引入} } from 'zod'`,
+        `
+        type ${a.计算节点名称} = typeof ${变量名称} extends ${netcore引入}.接口类型<infer Path, infer Method, infer PreApis, infer SuccessSchema, infer ErrorSchema>
+          ? {
+              path: Path
+              method: Method
+              input: ${netcore引入}.合并JSON插件结果<PreApis>
+              successOutput: ${zod引入}.infer<SuccessSchema>
+              errorOutput: ${zod引入}.infer<ErrorSchema>
+            }
+          : never
+        `,
+      ]
+    }
     return {
-      name: filename,
-      sourceFile: ts.createSourceFile(filename, calcCode, ts.ScriptTarget.Latest),
+      ...a,
+      文件: ts.createSourceFile(
+        a.文件.fileName.replaceAll('.ts', '-' + randomUUID() + '.ts'),
+        代码.join('\n'),
+        ts.ScriptTarget.Latest,
+      ),
     }
   })
-  await log.debug('成功生成虚拟计算文件...')
 
-  const newProject = ts.createProgram({
-    rootNames: [...parsedTsconfig.fileNames, ...apiTypeCalcFileNames],
-    options: parsedTsconfig.options,
+  const 新项目 = ts.createProgram({
+    rootNames: [...项目.getSourceFiles().map((a) => a.fileName), ...伴随的虚拟文件们.map((a) => a.文件.fileName)],
+    options: 解析后的tsconfig.options,
     host: {
-      ...projectHost,
+      ...项目主机,
       getSourceFile: (filename) => {
-        const apiTypeCalcSourceFile = apiTypeCalcFiles.find(
-          (apiTypeCalcSourceFile) => apiTypeCalcSourceFile.name === filename,
-        )
-        if (apiTypeCalcSourceFile !== undefined) {
-          return apiTypeCalcSourceFile.sourceFile
-        }
-        return project.getSourceFile(filename)
+        const 找到的虚拟文件 = 伴随的虚拟文件们.find((a) => a.文件.fileName == filename)?.文件
+        if (找到的虚拟文件 != null) return 找到的虚拟文件
+        return 项目.getSourceFile(filename)
       },
     },
-    oldProgram: project,
+    oldProgram: 项目,
   })
-  await log.debug('成功生成虚拟项目...')
+  var 类型检查器 = 新项目.getTypeChecker()
 
-  const check = newProject.getTypeChecker()
-  await log.debug('成功生成虚拟项目类型检查器...')
-
-  const result: string[] = []
-  for (var index = 0; index < apiSourceFiles.length; index++) {
-    var apiSourceFile = apiSourceFiles[index]
-    if (apiSourceFile == null) throw new Error('非预期的数组越界')
-
-    await log.info(`处理（${index + 1} / ${apiSourceFiles.length}）：${apiSourceFile.fileName}`)
-
-    const apiCalcSourceFile = apiTypeCalcFiles[index]?.sourceFile
-    if (apiCalcSourceFile === undefined) {
-      throw new Error('非预期的数组越界')
-    }
-
-    for (const node of apiCalcSourceFile.statements) {
-      if (ts.isExportAssignment(node) && node.isExportEquals === undefined) {
-        const apiType = check.getTypeAtLocation(node.expression)
-        const typeString = check.typeToString(
-          apiType,
-          undefined,
-          ts.TypeFormatFlags.NoTruncation |
-            ts.TypeFormatFlags.AllowUniqueESSymbolType |
-            ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
-        )
-        result.push(typeString)
+  var 检查结果: string[] = []
+  for (var 源文件 of 伴随的虚拟文件们) {
+    var 结果 = ''
+    ts.forEachChild(源文件.文件, (node) => {
+      if (ts.isTypeAliasDeclaration(node) && node.name.text === 源文件.计算节点名称) {
+        const type = 类型检查器.getTypeAtLocation(node)
+        var 文本结果 = 类型检查器.typeToString(type)
+        结果 = 文本结果
       }
-    }
-  }
-  await log.debug('成功处理所有接口...')
-
-  const outputPathAbs = path.resolve(outputPath)
-  var outDir = path.dirname(outputPathAbs)
-
-  if (!existsSync(outDir)) {
-    mkdirSync(outDir, { recursive: true })
+    })
+    检查结果.push(结果)
   }
 
-  var code = [
-    `export type InterfaceType = [${result.join(',')}]`,
+  var 最终结果 = Array.from(new Set(检查结果.filter((a) => a != 'any')))
+  var 最终代码 = [
+    `export type InterfaceType = [${最终结果.join(',')}]`,
     '',
     `type 元组转联合<T> = T extends any[] ? T[number] : never`,
     '',
@@ -193,6 +220,7 @@ export async function main(tsconfigPath: string, apiFolderPath: string, outputPa
     '',
   ]
 
-  fs.writeFileSync(outputPathAbs, code.join('\n'))
-  await log.debug('生成成功：%o', outputPathAbs)
+  var 输出文件夹 = path.dirname(输出文件路径)
+  if (!fs.existsSync(输出文件夹)) fs.mkdirSync(输出文件夹, { recursive: true })
+  fs.writeFileSync(输出文件路径, 最终代码.join('\n'))
 }

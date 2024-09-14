@@ -4,9 +4,9 @@ import type { Request, Response } from 'express'
 import express from 'express'
 import short from 'short-uuid'
 import { Global } from '../global/global'
-import { 任意接口 } from '../interface/inst/interface-abstract'
-import { 插件项类型 } from '../interface/plug'
-import { 任意接口类型 } from '../interface/type/interface-type-abstract'
+import { 任意接口 } from '../interface/interface-inst'
+import { 任意接口类型 } from '../interface/interface-type'
+import { 插件项类型 } from '../plugin/plug'
 
 export class 服务器 {
   private log = Global.getItem('log')

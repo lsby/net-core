@@ -1,95 +1,129 @@
-import fs, { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { randomUUID } from 'node:crypto'
+import fs from 'node:fs'
 import path from 'node:path'
+import L from 'lodash'
 import ts from 'typescript'
 import { Log } from '@lsby/ts-log'
 
-export async function main(tsconfigPath: string, interfaceFolderPath: string, outFilePath: string): Promise<void> {
-  var log = new Log('@lsby:net-core').extend('gen-list')
+function 提取顶级导出类节点(源文件: ts.SourceFile): ts.ClassDeclaration[] {
+  const 类节点数组: ts.ClassDeclaration[] = []
+  const visit = (节点: ts.Node): void => {
+    if (
+      ts.isClassDeclaration(节点) &&
+      ts.getModifiers(节点)?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)
+    ) {
+      类节点数组.push(节点)
+    }
+    ts.forEachChild(节点, visit)
+  }
+  ts.forEachChild(源文件, visit)
+  return 类节点数组
+}
+function 替换非法字符(字符串: string): string {
+  return '_' + 字符串.replace(/[ !\-!@#$%^&*()\[\]{}\\|;:'",.\/?]/g, '_')
+}
 
-  await log.debug('准备生成接口列表...')
+type 类节点信息 = {
+  文件: ts.SourceFile
+  类节点: ts.ClassDeclaration
+}
+function 计算完整名称(tsconfig路径: string, a: 类节点信息): string {
+  return 替换非法字符(path.relative(path.dirname(tsconfig路径), a.文件.fileName) + '_' + a.类节点.name?.text)
+}
+function 计算引入路径(输出文件路径: string, a: 类节点信息): string {
+  return path.relative(path.dirname(输出文件路径), a['文件'].fileName).replaceAll('\\', '/').replaceAll('.ts', '')
+}
 
-  const 项目根路径 = path.dirname(tsconfigPath)
+export async function main(tsconfig路径: string, 目标路径: string, 输出文件路径: string): Promise<void> {
+  var 日志 = new Log('@lsby:net-core').extend('gen-list')
 
-  const tsconfigJson = ts.parseConfigFileTextToJson(tsconfigPath, fs.readFileSync(tsconfigPath, 'utf8'))
-  if (tsconfigJson.error) {
+  await 日志.debug('准备生成接口列表...')
+
+  const tsconfig内容 = ts.parseConfigFileTextToJson(tsconfig路径, fs.readFileSync(tsconfig路径, 'utf8'))
+  if (tsconfig内容.error) {
     throw new Error('无法解析 tsconfig.json')
   }
-  const parsedTsconfig = ts.parseJsonConfigFileContent(tsconfigJson.config, ts.sys, path.resolve(tsconfigPath, '..'))
-  await log.debug('成功解析 tsconfig 文件...')
+  const 解析后的tsconfig = ts.parseJsonConfigFileContent(tsconfig内容.config, ts.sys, path.resolve(tsconfig路径, '..'))
+  await 日志.debug('成功解析 tsconfig 文件...')
 
-  const projectHost = ts.createCompilerHost(parsedTsconfig.options)
-  const project = ts.createProgram(parsedTsconfig.fileNames, parsedTsconfig.options, projectHost)
-  await log.debug('成功读取项目...')
+  const 项目主机 = ts.createCompilerHost(解析后的tsconfig.options)
+  const 项目 = ts.createProgram(解析后的tsconfig.fileNames, 解析后的tsconfig.options, 项目主机)
+  await 日志.debug('成功读取项目...')
 
-  // 不可以删除, 否则会变得不幸
-  const _check = project.getTypeChecker()
-
-  const 所有源文件 = project.getSourceFiles()
-  const 接口类型文件们 = 所有源文件.filter((sourceFile) => {
-    // 我们约定接口类型必须名为 type.ts
-    return new RegExp(`${interfaceFolderPath.replaceAll('\\', '\\\\')}.*type\.ts`).test(
-      path.resolve(sourceFile.fileName),
-    )
-  })
-  const 接口实现文件们 = 所有源文件.filter((sourceFile) => {
-    // 我们约定接口实现必须名为 index.ts
-    return new RegExp(`${interfaceFolderPath.replaceAll('\\', '\\\\')}.*index\.ts`).test(
-      path.resolve(sourceFile.fileName),
-    )
+  var 所有源文件 = 项目.getSourceFiles()
+  var 所有相关源文件们 = 所有源文件.filter((源文件) => {
+    var 源文件路径 = path.normalize(源文件.fileName)
+    return 源文件路径.includes(目标路径)
   })
 
-  await log.debug('找到 %o 个接口', 接口类型文件们.length)
+  const 相关类节点们: 类节点信息[] = 所有相关源文件们.flatMap((a) =>
+    提取顶级导出类节点(a).map((x) => ({
+      文件: a,
+      类节点: x,
+    })),
+  )
+  var 伴随的虚拟文件们 = 相关类节点们.map((a) => {
+    var 类名字 = a.类节点.name?.text
+    var 代码 = [
+      `import { 任意接口 } from '@lsby/net-core'`,
+      `import {${类名字}} from "./${a.文件.fileName.split('/').at(-1)?.replaceAll('.ts', '')}"`,
+      `type 计算结果 = ${类名字} extends 任意接口 ? true : false`,
+    ]
+    return ts.createSourceFile(
+      a.文件.fileName.replaceAll('.ts', '-' + randomUUID() + '.ts'),
+      代码.join('\n'),
+      ts.ScriptTarget.Latest,
+    )
+  })
 
-  const 引入区: string[] = []
-  const 代码区: string[] = []
-  for (var i = 0; i < 接口实现文件们.length; i++) {
-    var 接口实现文件 = 接口实现文件们[i]
-    if (接口实现文件 == null) throw new Error('非预期的数组越界')
+  const 新项目 = ts.createProgram({
+    rootNames: [...项目.getSourceFiles().map((a) => a.fileName), ...伴随的虚拟文件们.map((a) => a.fileName)],
+    options: 解析后的tsconfig.options,
+    host: {
+      ...项目主机,
+      getSourceFile: (filename) => {
+        const 找到的虚拟文件 = 伴随的虚拟文件们.find((a) => a.fileName == filename)
+        if (找到的虚拟文件 != null) return 找到的虚拟文件
+        return 项目.getSourceFile(filename)
+      },
+    },
+    oldProgram: 项目,
+  })
+  var 类型检查器 = 新项目.getTypeChecker()
 
-    const filenameRelativeToApiFolder = path.relative(interfaceFolderPath, 接口实现文件.fileName).replaceAll('\\', '/')
-    const importName = filenameRelativeToApiFolder
-      .replaceAll('/', '_')
-      .replaceAll('.ts', '')
-      .replaceAll('./', '')
-      .replaceAll('-', '_')
-    const filenameRelativeToProjectRoot = path
-      .relative(项目根路径, 接口实现文件.fileName)
-      .replaceAll('\\', '/')
-      .replaceAll('.ts', '')
-    const outputFolderRelativeToProjectRoot = path.relative(path.dirname(outFilePath), 项目根路径).replaceAll('\\', '/')
-    const importPath = path.join(outputFolderRelativeToProjectRoot, filenameRelativeToProjectRoot).replaceAll('\\', '/')
-
-    await log.info(`处理（${i + 1} / ${接口实现文件们.length}）：${filenameRelativeToApiFolder}`)
-
-    // todo 我们应该同时允许默认导出是接口的子类
-    // for (const node of 接口实现文件.statements) {
-    //   if (ts.isExportAssignment(node) && node.isExportEquals === undefined) {
-    //     const expression = node.expression
-    //     if (ts.isNewExpression(expression) && expression.expression.getText() === '接口') {
-    //       break
-    //     }
-    //     throw new Error(`${接口实现文件.fileName}：默认导出不是 接口`)
-    //   }
-    // }
-
-    引入区.push(`import * as ${importName} from '${importPath}'`)
-    代码区.push(`${importName}.default`)
+  var 检查结果: boolean[] = []
+  for (var 源文件 of 伴随的虚拟文件们) {
+    var 结果 = false
+    ts.forEachChild(源文件, (node) => {
+      if (ts.isTypeAliasDeclaration(node) && node.name.text === '计算结果') {
+        const type = 类型检查器.getTypeAtLocation(node)
+        var 文本结果 = 类型检查器.typeToString(type)
+        if (文本结果 == 'true') 结果 = true
+      }
+    })
+    检查结果.push(结果)
   }
 
-  const finalTestFile = [
-    // ..
+  var 最终结果 = L.zip(相关类节点们, 检查结果)
+    .filter((a) => a[1] == true)
+    .map((a) => a[0])
+    .filter((a) => a != null)
+
+  var 最终代码 = [
     `import { 任意接口 } from '@lsby/net-core'`,
     '',
-    ...引入区,
+    ...最终结果.map(
+      (a) =>
+        `import {${a.类节点.name?.text} as ${计算完整名称(tsconfig路径, a)}} from '${计算引入路径(输出文件路径, a)}'`,
+    ),
     '',
-    `export var interfaceList: 任意接口[] = [\n${代码区.map((a) => `  ${a}`).join(',\n')}\n]`,
+    `export var interfaceList: 任意接口[] = [`,
+    ...最终结果.map((a) => 计算完整名称(tsconfig路径, a)).map((a) => `  new ${a}(),`),
+    `]`,
     '',
-  ].join('\n')
+  ]
 
-  var outDir = path.dirname(outFilePath)
-  if (!existsSync(outDir)) {
-    mkdirSync(outDir, { recursive: true })
-  }
-
-  writeFileSync(outFilePath, finalTestFile)
+  var 输出文件夹 = path.dirname(输出文件路径)
+  if (!fs.existsSync(输出文件夹)) fs.mkdirSync(输出文件夹, { recursive: true })
+  fs.writeFileSync(输出文件路径, 最终代码.join('\n'))
 }
