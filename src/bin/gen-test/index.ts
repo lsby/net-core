@@ -122,7 +122,7 @@ export async function main(
     .filter((a) => a[1] == true)
     .map((a) => a[0])
     .filter((a) => a != null)
-  await log.debug(`最终筛选到 ${最终结果.length} 个测试用例`)
+  await log.debug(`最终筛选出 ${最终结果.length} 个测试用例`)
 
   var 最终代码 = [
     "import { test } from 'vitest'",
