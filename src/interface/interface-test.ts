@@ -1,5 +1,6 @@
-export abstract class 测试抽象类 {
+export abstract class 接口测试 {
   constructor() {}
+
   abstract 前置实现(): Promise<void>
   abstract 中置实现(): Promise<object>
   abstract 后置实现(中置结果: object): Promise<void>

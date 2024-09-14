@@ -1,7 +1,7 @@
 import { URL } from 'node:url'
 import type { Request } from 'express'
 import { z } from 'zod'
-import { 插件 } from '../interface/plug'
+import { 插件 } from '../plug'
 
 const zod类型表示 = z.object({})
 

@@ -1,9 +1,9 @@
 import { format } from 'node:util'
 import express from 'express'
 import { AnyZodObject, z } from 'zod'
-import { Global } from '../global/global'
-import { 包装插件项, 取Task插件内部类型, 合并插件结果, 插件, 插件项类型 } from '../interface/plug'
-import { 获得接口插件们 } from '../interface/type/interface-type-abstract'
+import { Global } from '../../global/global'
+import { 获得接口插件们 } from '../../interface/interface-type'
+import { 包装插件项, 取Task插件内部类型, 合并插件结果, 插件, 插件项类型 } from '../plug'
 
 export class JSON解析插件<Result extends AnyZodObject> extends 插件<z.ZodObject<{ body: Result }>> {
   private log = Global.getItem('log')
@@ -23,7 +23,7 @@ export class JSON解析插件<Result extends AnyZodObject> extends 插件<z.ZodO
 
       if (!parseResult.success) {
         await log.err('解析 JSON 失败：%o', parseResult.error)
-        throw new Error(format('Parse JSON body failed: %O', parseResult.error))
+        throw new Error(format('解析 JSON 失败: %O', parseResult.error))
       }
 
       await log.debug('成功解析 JSON：%o', parseResult.data.body)

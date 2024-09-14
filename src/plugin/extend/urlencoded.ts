@@ -1,7 +1,7 @@
 import { format } from 'node:util'
 import express from 'express'
 import type { z } from 'zod'
-import { 插件 } from '../interface/plug'
+import { 插件 } from '../plug'
 
 export class 表单解析插件<Result extends z.ZodObject<{ body: z.AnyZodObject }>> extends 插件<Result> {
   constructor(t: Result, opt: Parameters<typeof express.urlencoded>[0]) {
@@ -13,7 +13,7 @@ export class 表单解析插件<Result extends z.ZodObject<{ body: z.AnyZodObjec
       )
 
       const parseResult = t.safeParse({ body: req.body as unknown })
-      if (!parseResult.success) throw new Error(format('parse url encoded body failed: %O', parseResult.error))
+      if (!parseResult.success) throw new Error(format('解析url编码正文失败: %O', parseResult.error))
 
       return { body: parseResult.data.body }
     })
