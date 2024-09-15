@@ -6,31 +6,33 @@ import { 接口, 计算接口参数, 计算接口返回 } from '../interface-ins
 import { 接口类型, 接口类型正确结果, 接口类型错误结果 } from '../interface-type'
 
 export class JSON状态接口类型<
-  路径 extends string,
+  路径 extends string | null,
   方法 extends 'get' | 'post',
   插件们 extends Array<插件项类型>,
-  正确返回类型 extends z.ZodTypeAny,
-  错误返回类型 extends z.ZodTypeAny,
+  正确结果类型 extends z.ZodTypeAny,
+  错误结果类型 extends z.ZodTypeAny,
 > extends 接口类型<
   路径,
   方法,
   插件们,
   z.ZodObject<{
     status: z.ZodLiteral<'success'>
-    data: 正确返回类型
+    data: 正确结果类型
   }>,
   z.ZodObject<{
     status: z.ZodLiteral<'fail'>
-    data: 错误返回类型
+    data: 错误结果类型
   }>
 > {
-  constructor(path: 路径, method: 方法, 插件们: [...插件们], 正确返回类型: 正确返回类型, 错误返回类型: 错误返回类型) {
+  protected declare readonly ___类型保持符号?: [路径, 方法, 插件们, 正确结果类型, 错误结果类型]
+
+  constructor(path: 路径, method: 方法, 插件们: [...插件们], 正确结果类型: 正确结果类型, 错误结果类型: 错误结果类型) {
     super(
       path,
       method,
       插件们,
-      z.object({ status: z.literal('success'), data: 正确返回类型 }),
-      z.object({ status: z.literal('fail'), data: 错误返回类型 }),
+      z.object({ status: z.literal('success'), data: 正确结果类型 }),
+      z.object({ status: z.literal('fail'), data: 错误结果类型 }),
     )
   }
 }

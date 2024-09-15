@@ -81,15 +81,18 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
         `import * as ${netcore引入} from '@lsby/net-core'`,
         `import { z as ${zod引入} } from 'zod'`,
         `
-        type ${a.计算节点名称} = typeof ${变量名称} extends ${netcore引入}.接口类型<infer Path, infer Method, infer PreApis, infer SuccessSchema, infer ErrorSchema>
-          ? {
-              path: Path
-              method: Method
-              input: ${netcore引入}.合并JSON插件结果<PreApis>
-              successOutput: ${zod引入}.infer<SuccessSchema>
-              errorOutput: ${zod引入}.infer<ErrorSchema>
-            }
-          : never
+        type ${a.计算节点名称} =
+          typeof ${变量名称} extends ${netcore引入}.接口类型<infer Path, infer Method, infer PreApis, infer SuccessSchema, infer ErrorSchema>
+            ? Path extends string
+              ? {
+                  path: Path
+                  method: Method
+                  input: ${netcore引入}.合并JSON插件结果<PreApis>
+                  successOutput: ${zod引入}.infer<SuccessSchema>
+                  errorOutput: ${zod引入}.infer<ErrorSchema>
+                }
+              : never
+            : never
         `,
       ]
     }
