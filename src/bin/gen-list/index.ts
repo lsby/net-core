@@ -72,9 +72,22 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
   var 伴随的虚拟文件们 = 相关类节点们.map((a) => {
     var 类名字 = a.类节点.name?.text
     var 代码 = [
-      `import { 任意接口 } from '@lsby/net-core'`,
+      `import { 接口类型 } from '@lsby/net-core'`,
       `import {${类名字}} from "./${a.文件.fileName.split('/').at(-1)?.replaceAll('.ts', '')}"`,
-      `type 计算结果 = ${类名字} extends 任意接口 ? true : false`,
+      `
+      type 计算结果 =
+        ReturnType<${类名字}['获得接口类型']> extends 接口类型<
+          infer 路径,
+          infer 方法,
+          infer 插件们,
+          infer 正确结果类型,
+          infer 错误结果类型
+        >
+          ? 路径 extends string
+            ? true
+            : false
+          : false
+      `,
     ]
     return ts.createSourceFile(
       a.文件.fileName.replaceAll('.ts', '-' + randomUUID() + '.ts'),
@@ -118,14 +131,14 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
   await log.debug(`最终筛选出 ${最终结果.length} 个接口实现`)
 
   var 最终代码 = [
-    `import { 任意接口 } from '@lsby/net-core'`,
+    `import { 有效的接口 } from '@lsby/net-core'`,
     '',
     ...最终结果.map(
       (a) =>
         `import {${a.类节点.name?.text} as ${计算完整名称(tsconfig路径, a)}} from '${计算引入路径(输出文件路径, a)}'`,
     ),
     '',
-    `export var interfaceList: 任意接口[] = [`,
+    `export var interfaceList: 有效的接口[] = [`,
     ...最终结果.map((a) => 计算完整名称(tsconfig路径, a)).map((a) => `  new ${a}(),`),
     `]`,
     '',
