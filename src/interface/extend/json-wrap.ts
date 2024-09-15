@@ -1,8 +1,7 @@
 import { z } from 'zod'
-import { Either } from '@lsby/ts-fp-data'
 import { 插件项类型 } from '../../plugin/plug'
 import { 正确JSON结果, 正确结果, 错误JSON结果, 错误结果 } from '../../result/result'
-import { 接口, 计算接口参数, 计算接口返回 } from '../interface-inst'
+import { 接口, 计算接口返回 } from '../interface-inst'
 import { 接口类型, 接口类型正确结果, 接口类型错误结果 } from '../interface-type'
 
 export class JSON状态接口类型<
@@ -24,8 +23,6 @@ export class JSON状态接口类型<
     data: 错误结果类型
   }>
 > {
-  protected declare readonly ___类型保持符号?: [路径, 方法, 插件们, 正确结果类型, 错误结果类型]
-
   constructor(path: 路径, method: 方法, 插件们: [...插件们], 正确结果类型: 正确结果类型, 错误结果类型: 错误结果类型) {
     super(
       path,
@@ -38,12 +35,27 @@ export class JSON状态接口类型<
 }
 type 任意的JSON状态接口类型 = JSON状态接口类型<any, any, any, any, any>
 
-export type 计算JSON状态接口返回<接口类型描述> = Promise<
-  Either<z.infer<接口类型错误结果<接口类型描述>>['data'], z.infer<接口类型正确结果<接口类型描述>>['data']>
->
+export type 转换状态接口描述<A> =
+  A extends JSON状态接口类型<infer 路径, infer 方法, infer 插件们, infer 正确结果类型, infer 错误结果类型>
+    ? 接口类型<路径, 方法, 插件们, 正确结果类型, 错误结果类型>
+    : never
 
-export abstract class JSON状态接口<接口类型描述 extends 任意的JSON状态接口类型> extends 接口<接口类型描述> {
-  protected abstract override 业务行为实现(参数: 计算接口参数<接口类型描述>): 计算JSON状态接口返回<接口类型描述>
+export type 计算JSON状态接口返回<接口类型描述> = 计算接口返回<转换状态接口描述<接口类型描述>>
+
+export abstract class JSON状态接口<接口类型描述 extends 任意的JSON状态接口类型> extends 接口<
+  转换状态接口描述<接口类型描述>
+> {
+  abstract 获得JSON接口类型(): 接口类型描述
+  override 获得接口类型(): 转换状态接口描述<接口类型描述> {
+    var c = this.获得JSON接口类型()
+    return new 接口类型(
+      c.获得路径(),
+      c.获得方法(),
+      c.获得插件们(),
+      c.获得正确结果类型().shape.data,
+      c.获得错误结果类型().shape.data,
+    ) as any
+  }
   override async 转换业务结果到接口结果(
     业务结果: 计算接口返回<接口类型描述>,
   ): Promise<正确结果<z.TypeOf<接口类型正确结果<接口类型描述>>> | 错误结果<z.TypeOf<接口类型错误结果<接口类型描述>>>> {
