@@ -42,7 +42,7 @@ export type 计算JSON状态接口返回<接口类型描述> = Promise<
 
 export abstract class JSON状态接口<接口类型描述 extends 任意的JSON状态接口类型> extends 接口<接口类型描述> {
   protected abstract override 业务行为实现(参数: 计算接口参数<接口类型描述>): 计算JSON状态接口返回<接口类型描述>
-  override async 转换业务结果到API结果(
+  override async 转换业务结果到接口结果(
     业务结果: 计算接口返回<接口类型描述>,
   ): Promise<正确结果<z.TypeOf<接口类型正确结果<接口类型描述>>> | 错误结果<z.TypeOf<接口类型错误结果<接口类型描述>>>> {
     var c = await 业务结果
