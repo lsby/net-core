@@ -135,7 +135,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
     '',
     ...最终结果.map(
       (a) =>
-        `import {${a.类节点.name?.text} as ${计算完整名称(tsconfig路径, a)}} from '${计算引入路径(输出文件路径, a)}'`,
+        `import {${a.类节点.name?.text} as ${计算完整名称(tsconfig路径, a)}} from './${计算引入路径(输出文件路径, a)}'`,
     ),
     '',
     `export var interfaceList: 有效的接口[] = [`,

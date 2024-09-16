@@ -130,7 +130,7 @@ export async function main(
     '',
     ...最终结果.map(
       (a) =>
-        `import {${a.类节点.name?.text} as ${计算完整名称(tsconfig路径, a)}} from '${计算引入路径(输出文件路径, a)}'`,
+        `import {${a.类节点.name?.text} as ${计算完整名称(tsconfig路径, a)}} from './${计算引入路径(输出文件路径, a)}'`,
     ),
     '',
     ...最终结果
