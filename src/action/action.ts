@@ -38,36 +38,30 @@ export type 计算业务行为错误<A> = A extends 业务行为<infer _参数, 
 export type 计算业务行为返回<A> = A extends 业务行为<infer _参数, infer _错误, infer 返回> ? 返回 : never
 
 /**
- * ## 业务行为
+ * # 业务行为
  *
  * 业务行为是代码中业务逻辑的抽象表示
  * 其本质是一个执行特定业务逻辑的函数
+ *
+ * ## 特点
+ *
  * 其特点是:
  * - 业务相关: 比起普通函数, 特化了一部分逻辑, 以更好的适应业务逻辑的需要
- * - 类型安全: 遵循 先类型 后实现 的原则
+ * - 类型安全: 严格的类型控制
  * - 可组合: 基于该模型, 可以创建出各种具有想象力的组合模式
  *
  * ## 实现
  *
  * 对于业务行为而言, 至少应该明确:
- * - 参数: 该函数需要的信息
- * - 错误: 该函数可能发生的错误
- * - 返回: 该函数正确执行时返回的数据
+ * - 参数: 该函数需要的信息, 必须是对象
+ * - 错误: 该函数可能发生的错误, 错误只能是字符串, 如果不可能产生错误使用never
+ * - 返回: 该函数正确执行时返回的数据, 必须是对象
  *
- * 当编写一个业务行为时, 必须先明确以上值的类型, 然后继承该基类进行实现
+ * 当编写一个业务行为时, 必须先明确以上类型, 然后继承该基类进行实现
  *
- * 实现中, 可以获得参数.
+ * 实现中, 可以获得调用时提供的参数.
  * 实现中, 必须返回一个左值或一个右值, 当然也可能意外抛出错误
- * 当意外的抛出错误时, 会原封不动的抛出错误
- *
- * ## 组合
- *
- * 可以将业务逻辑进行组合, 创造出新的业务逻辑
- *
- * ## 使用
- *
- * 通过`运行业务行为`来执行该业务行为
- * 这将会得到实现中返回的结果
+ * 当意外的抛出错误时, 不同的调用方法处理不一样
  */
 export abstract class 业务行为<
   参数类型 extends 业务行为参数类型,
@@ -149,7 +143,7 @@ export abstract class 业务行为<
     f: (a: 计算业务行为返回<计算合并<X>>) => Promise<A>,
   ): 业务行为<计算业务行为参数<计算合并<X>>, 计算业务行为错误<计算合并<X>>, A> {
     return 业务行为.通过实现构造(async (参数) => {
-      var 所有结果 = await Promise.all(arr.map((a) => a.运行业务行为(参数)))
+      var 所有结果 = await Promise.all(arr.map((a) => a.业务行为实现(参数)))
       var 错误 = 所有结果.filter((a) => a.isLeft())[0]
       if (错误) return 错误
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -164,16 +158,27 @@ export abstract class 业务行为<
   // ================================= 设置 =================================
   设置参数<A extends Partial<参数类型>>(设置参数: A): 业务行为<Omit<参数类型, keyof A>, 错误类型, 返回类型> {
     return 业务行为.通过实现构造(async (参数) => {
-      return await this.运行业务行为({ ...设置参数, ...参数 } as any)
+      return await this.业务行为实现({ ...设置参数, ...参数 } as any)
     })
   }
 
   // ================================= 运行 =================================
+
+  /**
+   * 运行业务行为, 如果抛出错误, 则原封不动向上抛出
+   */
   async 运行业务行为(参数: 参数类型): Promise<Either<错误类型, 返回类型>> {
+    return await this.业务行为实现(参数)
+  }
+
+  /**
+   * 运行业务行为, 如果抛出错误, 则将错误值强制转换为字符串, 并包装为Error抛出
+   */
+  async 运行业务行为并包装(参数: 参数类型): Promise<Either<错误类型, 返回类型>> {
     try {
       return await this.业务行为实现(参数)
     } catch (e) {
-      throw e
+      throw new Error(String(e))
     }
   }
 
@@ -188,9 +193,9 @@ export abstract class 业务行为<
     b: 业务行为<返回类型, B错误类型, B返回类型>,
   ): 业务行为<参数类型, 错误类型 | B错误类型, B返回类型> {
     return 业务行为.通过实现构造(async (参数): Promise<Either<错误类型 | B错误类型, B返回类型>> => {
-      const 我的结果 = await this.运行业务行为(参数)
+      const 我的结果 = await this.业务行为实现(参数)
       if (我的结果.isLeft()) return new Left(我的结果.assertLeft().getLeft())
-      return b.运行业务行为(我的结果.assertRight().getRight())
+      return b.业务行为实现(我的结果.assertRight().getRight())
     })
   }
 
@@ -206,9 +211,9 @@ export abstract class 业务行为<
     b: 业务行为<B参数类型, B错误类型, B返回类型>,
   ): 计算混合组合<参数类型, 错误类型, 返回类型, B参数类型, B错误类型, B返回类型> {
     return 业务行为.通过实现构造(async (参数): Promise<Either<错误类型 | B错误类型, 返回类型 & B返回类型>> => {
-      const 我的结果 = await this.运行业务行为(参数)
+      const 我的结果 = await this.业务行为实现(参数)
       if (我的结果.isLeft()) return new Left(我的结果.assertLeft().getLeft())
-      var 对方结果 = await b.运行业务行为({ ...参数, ...我的结果.assertRight().getRight() } as any)
+      var 对方结果 = await b.业务行为实现({ ...参数, ...我的结果.assertRight().getRight() } as any)
       return 对方结果.map((a) => Object.assign(a, 我的结果.assertRight().getRight()))
     })
   }
@@ -218,7 +223,7 @@ export abstract class 业务行为<
     f: (a: 返回类型) => 新返回类型,
   ): 业务行为<参数类型, 错误类型, 新返回类型> {
     return 业务行为.通过实现构造(async (参数) => {
-      const 我的结果 = await this.运行业务行为(参数)
+      const 我的结果 = await this.业务行为实现(参数)
       if (我的结果.isLeft()) return new Left(我的结果.assertLeft().getLeft())
       return Either.pure(f(我的结果.assertRight().getRight()))
     })
@@ -227,7 +232,7 @@ export abstract class 业务行为<
     f: (a: 错误类型) => 新错误类型,
   ): 业务行为<参数类型, 新错误类型, 返回类型> {
     return 业务行为.通过实现构造(async (参数) => {
-      const 我的结果 = await this.运行业务行为(参数)
+      const 我的结果 = await this.业务行为实现(参数)
       if (我的结果.isLeft()) return new Left(f(我的结果.assertLeft().getLeft()))
       return Either.pure(我的结果.assertRight().getRight())
     })
@@ -246,9 +251,9 @@ export abstract class 业务行为<
     新返回类型 extends 业务行为返回类型,
   >(f: (a: 返回类型) => 业务行为<新参数类型, 新错误类型, 新返回类型>): 业务行为<新参数类型, 新错误类型, 新返回类型> {
     return 业务行为.通过实现构造(async (参数) => {
-      const 我的结果 = await this.运行业务行为(参数)
+      const 我的结果 = await this.业务行为实现(参数)
       if (我的结果.isLeft()) return new Left(我的结果.assertLeft().getLeft() as 新错误类型)
-      return f(我的结果.assertRight().getRight()).运行业务行为(参数)
+      return f(我的结果.assertRight().getRight()).业务行为实现(参数)
     })
   }
 }
