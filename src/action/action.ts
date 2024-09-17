@@ -19,11 +19,13 @@ type 计算混合单一组合<A, B> =
       ? 计算混合组合<A参数, A错误, A返回, B参数, B错误, B返回>
       : never
     : never
-type 计算混合组合数组<Arr> = Arr extends [infer x, infer y]
-  ? 计算混合单一组合<x, y>
-  : Arr extends [infer x, infer y, ...infer s]
-    ? 计算混合组合数组<[计算混合单一组合<x, y>, ...s]>
-    : never
+type 计算混合组合数组<Arr> = Arr extends [infer x]
+  ? x
+  : Arr extends [infer x, infer y]
+    ? 计算混合单一组合<x, y>
+    : Arr extends [infer x, infer y, ...infer s]
+      ? 计算混合组合数组<[计算混合单一组合<x, y>, ...s]>
+      : undefined
 type 计算合并<Arr> = Arr extends []
   ? 业务行为<{}, never, {}>
   : Arr extends [infer x, ...infer xs]
