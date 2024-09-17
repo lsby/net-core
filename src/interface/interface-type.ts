@@ -8,7 +8,7 @@ export type 接口类型正确结果<A> = A extends 接口类型<infer _A1, infe
 export type 接口类型错误结果<A> = A extends 接口类型<infer _A1, infer _A2, infer _A3, infer _A4, infer A5> ? A5 : never
 
 export class 接口类型<
-  路径 extends string | null,
+  路径 extends string,
   方法 extends 'get' | 'post',
   插件们 extends Array<插件项类型>,
   正确结果类型 extends z.ZodTypeAny,
@@ -41,5 +41,4 @@ export class 接口类型<
   }
 }
 export type 任意接口类型 = 接口类型<any, any, any, any, any>
-export type 有效的接口类型 = 接口类型<string, any, any, any, any>
 export type 获得接口插件们<接口类型描述> = 接口类型描述 extends 接口类型<any, any, infer 插件, any, any> ? 插件 : never
