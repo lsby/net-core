@@ -1,8 +1,8 @@
+import { Log } from '@lsby/ts-log'
 import { randomUUID } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import ts from 'typescript'
-import { Log } from '@lsby/ts-log'
 import { 附加代码 } from './addition'
 
 function 检查存在默认导出(源文件: ts.SourceFile): boolean {
@@ -92,7 +92,15 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
     ts.forEachChild(源文件, (node) => {
       if (ts.isTypeAliasDeclaration(node) && node.name.text === '计算结果') {
         const type = 类型检查器.getTypeAtLocation(node)
-        检查结果.push(类型检查器.typeToString(type))
+        检查结果.push(
+          类型检查器.typeToString(
+            type,
+            undefined,
+            ts.TypeFormatFlags.NoTruncation |
+              ts.TypeFormatFlags.AllowUniqueESSymbolType |
+              ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
+          ),
+        )
       }
     })
   }
