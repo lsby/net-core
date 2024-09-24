@@ -1,8 +1,8 @@
-import { Log } from '@lsby/ts-log'
 import { randomUUID } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import ts from 'typescript'
+import { Log } from '@lsby/ts-log'
 import { 附加代码 } from './addition'
 
 function 检查存在默认导出(源文件: ts.SourceFile): boolean {
@@ -108,7 +108,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
   var 最终结果 = Array.from(new Set(检查结果.filter((a) => a != 'any' && a != 'never' && a != 'unknown')))
   await log.debug(`最终筛选出 ${最终结果.length} 个接口类型`)
 
-  var 最终代码 = [`export type InterfaceType = [${最终结果.join(',')}]`, ...附加代码]
+  var 最终代码 = [`export type InterfaceType = [${最终结果.join(',')}]`, 附加代码]
 
   await log.debug('最终代码生成完成')
 
