@@ -73,6 +73,7 @@ export class 服务器 {
 
             await log.debug('没有命中任何资源')
             res.status(404)
+            res.end()
           })
         }
       } catch (e) {
