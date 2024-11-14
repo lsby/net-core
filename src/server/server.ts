@@ -32,8 +32,19 @@ export class 服务器 {
 
         await log.debug('收到请求, 路径: %o, 方法: %o', 请求路径, 请求方法)
 
-        await log.debug('尝试匹配接口...')
+        if (this.静态资源路径) this.静态资源路径 = this.静态资源路径.replace('./', '/')
+        if (this.静态资源路径 && req.method.toLowerCase() == 'get' && 请求路径.indexOf(this.静态资源路径)) {
+          await log.debug('尝试匹配静态资源...')
+          express.static(this.静态资源路径, {
+            setHeaders: async () => {
+              await log.debug('命中静态资源')
+            },
+          })(req, res, async () => {
+            await log.debug('没有命中静态资源')
+          })
+        }
 
+        await log.debug('尝试匹配接口...')
         const 目标接口 = this.接口们.find((接口) => {
           const 接口类型 = 接口.获得接口类型() as 任意接口类型
           return 请求路径 == 接口类型.获得路径() && 请求方法 == 接口类型.获得方法()
@@ -62,19 +73,9 @@ export class 服务器 {
         }
         await log.debug('没有命中接口')
 
-        if (this.静态资源路径 && req.method.toLowerCase() == 'get') {
-          await log.debug('尝试匹配静态资源...')
-          express.static(this.静态资源路径, {
-            setHeaders: async () => {
-              await log.debug('命中静态资源')
-            },
-          })(req, res, async () => {
-            await log.debug('没有命中静态资源')
-
-            await log.debug('没有命中任何资源')
-            res.status(404)
-          })
-        }
+        await log.debug('没有命中任何资源')
+        res.status(404)
+        res.end()
       } catch (e) {
         await log.err(e)
         res.status(500)
