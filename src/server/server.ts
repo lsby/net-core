@@ -41,41 +41,42 @@ export class 服务器 {
             },
           })(req, res, async () => {
             await log.debug('没有命中静态资源')
+
+            // todo 需要解决一下回调地狱
+            await log.debug('尝试匹配接口...')
+            const 目标接口 = this.接口们.find((接口) => {
+              const 接口类型 = 接口.获得接口类型() as 任意接口类型
+              return 请求路径 == 接口类型.获得路径() && 请求方法 == 接口类型.获得方法()
+            })
+            if (目标接口 != null) {
+              await log.debug('命中接口')
+
+              const 接口类型 = 目标接口.获得接口类型() as 任意接口类型
+              const 接口插件 = 接口类型.获得插件们() as Array<插件项类型>
+              await log.debug('找到 %o 个 插件, 准备执行...', 接口插件.length)
+
+              const 插件结果 = (
+                await Promise.all(接口插件.map(async (插件) => await (await 插件.run()).获得实现()(req, res)))
+              ).reduce((s, a) => Object.assign(s, a), {})
+              await log.debug('插件 执行完毕')
+
+              await log.debug('准备执行接口逻辑...')
+              const 接口结果 = await 目标接口.接口实现(插件结果)
+              await log.debug('接口逻辑执行完毕')
+
+              await log.debug('准备执行返回逻辑...')
+              await 接口结果.run(req, res)
+              await log.debug('返回逻辑执行完毕')
+
+              return
+            }
+            await log.debug('没有命中接口')
+
+            await log.debug('没有命中任何资源')
+            res.status(404)
+            res.end()
           })
         }
-
-        await log.debug('尝试匹配接口...')
-        const 目标接口 = this.接口们.find((接口) => {
-          const 接口类型 = 接口.获得接口类型() as 任意接口类型
-          return 请求路径 == 接口类型.获得路径() && 请求方法 == 接口类型.获得方法()
-        })
-        if (目标接口 != null) {
-          await log.debug('命中接口')
-
-          const 接口类型 = 目标接口.获得接口类型() as 任意接口类型
-          const 接口插件 = 接口类型.获得插件们() as Array<插件项类型>
-          await log.debug('找到 %o 个 插件, 准备执行...', 接口插件.length)
-
-          const 插件结果 = (
-            await Promise.all(接口插件.map(async (插件) => await (await 插件.run()).获得实现()(req, res)))
-          ).reduce((s, a) => Object.assign(s, a), {})
-          await log.debug('插件 执行完毕')
-
-          await log.debug('准备执行接口逻辑...')
-          const 接口结果 = await 目标接口.接口实现(插件结果)
-          await log.debug('接口逻辑执行完毕')
-
-          await log.debug('准备执行返回逻辑...')
-          await 接口结果.run(req, res)
-          await log.debug('返回逻辑执行完毕')
-
-          return
-        }
-        await log.debug('没有命中接口')
-
-        await log.debug('没有命中任何资源')
-        res.status(404)
-        res.end()
       } catch (e) {
         await log.err(e)
         res.status(500)
