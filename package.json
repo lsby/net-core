@@ -36,6 +36,7 @@
     "lodash": "^4.17.21",
     "short-uuid": "^5.2.0",
     "vitest": "^2.0.2",
+    "ws": "^8.18.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -43,6 +44,7 @@
     "@lsby/eslint-config": "^0.2.8",
     "@types/lodash": "^4.17.7",
     "@types/node": "^20.12.10",
+    "@types/ws": "^8.5.13",
     "@vitest/coverage-v8": "^2.0.2",
     "bumpp": "^9.4.1",
     "prettier": "3.2.5",
