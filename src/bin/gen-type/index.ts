@@ -46,12 +46,12 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
 
   var 伴随的虚拟文件们 = 相关源文件们.map((a) => {
     var 代码 = [
-      `import { 接口类型, 合并JSON插件结果 } from '@lsby/net-core'`,
+      `import { 接口类型, 合并JSON插件结果, 取第一个WS插件结果 } from '@lsby/net-core'`,
       `import { z } from 'zod'`,
       `import 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}"`,
       ``,
       `
-        type 计算结果 =
+        type JSON接口计算结果 =
           typeof 导入 extends 接口类型<infer Path, infer Method, infer PreApis, infer SuccessSchema, infer ErrorSchema>
             ? Path extends string
               ? {
@@ -61,6 +61,19 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
                   successOutput: z.infer<SuccessSchema>
                   errorOutput: z.infer<ErrorSchema>
                 }
+              : never
+            : never
+        type WS接口计算结果 =
+          typeof 导入 extends 接口类型<infer Path, infer Method, infer PreApis, infer SuccessSchema, infer ErrorSchema>
+            ? Path extends string
+              ? 取第一个WS插件结果<PreApis> extends infer R
+                ? {} extends R
+                  ? never
+                  : {
+                      path: Path
+                      data: 取第一个WS插件结果<PreApis>
+                    }
+                : never
               : never
             : never
         `,
@@ -87,12 +100,24 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
   })
   var 类型检查器 = 新项目.getTypeChecker()
 
-  var 检查结果: string[] = []
+  var JSON结果: string[] = []
+  var WS结果: string[] = []
   for (var 源文件 of 伴随的虚拟文件们) {
     ts.forEachChild(源文件, (node) => {
-      if (ts.isTypeAliasDeclaration(node) && node.name.text === '计算结果') {
+      if (ts.isTypeAliasDeclaration(node) && node.name.text === 'JSON接口计算结果') {
         const type = 类型检查器.getTypeAtLocation(node)
-        检查结果.push(
+        JSON结果.push(
+          类型检查器.typeToString(
+            type,
+            undefined,
+            ts.TypeFormatFlags.NoTruncation |
+              ts.TypeFormatFlags.AllowUniqueESSymbolType |
+              ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
+          ),
+        )
+      } else if (ts.isTypeAliasDeclaration(node) && node.name.text === 'WS接口计算结果') {
+        const type = 类型检查器.getTypeAtLocation(node)
+        WS结果.push(
           类型检查器.typeToString(
             type,
             undefined,
@@ -105,10 +130,17 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
     })
   }
 
-  var 最终结果 = Array.from(new Set(检查结果.filter((a) => a != 'any' && a != 'never' && a != 'unknown')))
-  await log.debug(`最终筛选出 ${最终结果.length} 个接口类型`)
+  var 最终结果_JSON = Array.from(new Set(JSON结果.filter((a) => a != 'any' && a != 'never' && a != 'unknown')))
+  await log.debug(`最终筛选出 ${最终结果_JSON.length} 个接口类型`)
 
-  var 最终代码 = [`export type InterfaceType = [${最终结果.join(',')}]`, 附加代码]
+  var 最终结果_WS = Array.from(new Set(WS结果.filter((a) => a != 'any' && a != 'never' && a != 'unknown')))
+  await log.debug(`最终筛选出 ${最终结果_WS.length} 个ws接口类型`)
+
+  var 最终代码 = [
+    `export type InterfaceType = [${最终结果_JSON.join(',')}]`,
+    `export type InterfaceWsType = [${最终结果_WS.join(',')}]`,
+    附加代码,
+  ]
 
   await log.debug('最终代码生成完成')
 

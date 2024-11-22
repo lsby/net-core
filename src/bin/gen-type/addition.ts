@@ -42,6 +42,17 @@ export type 从路径获得参数<Path, A = InterfaceType> = A extends []
         : 从路径获得参数<Path, xs>
       : never
     : never
+export type 从路径获得WS参数<Path, A = InterfaceWsType> = A extends []
+  ? never
+  : A extends [infer x, ...infer xs]
+    ? 'path' extends keyof x
+      ? x['path'] extends Path
+        ? 'data' extends keyof x
+          ? x['data']
+          : never
+        : 从路径获得WS参数<Path, xs>
+      : never
+    : never
 export type 从路径获得方法<Path, A = InterfaceType> = A extends []
   ? never
   : A extends [infer x, ...infer xs]
@@ -101,5 +112,8 @@ export type Get请求后端函数类型 = <路径 extends 元组转联合<Get接
 export type Post请求后端函数类型 = <路径 extends 元组转联合<Post接口路径们>>(
   路径: 路径,
   参数: 从路径获得参数<路径>,
+  ws信息回调?: (信息: 从路径获得WS参数<路径>) => void,
+  ws关闭回调?: (信息: CloseEvent) => void,
+  ws错误回调?: (信息: Event) => void,
 ) => Promise<从路径获得正确返回<路径> | 从路径获得错误返回<路径>>
 `

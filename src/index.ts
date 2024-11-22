@@ -11,6 +11,7 @@ export * from './plugin/extend/chinese-path'
 export * from './plugin/extend/custom-data'
 export * from './plugin/extend/json'
 export * from './plugin/extend/urlencoded'
+export * from './plugin/extend/web-socket'
 
 export * from './plugin/plug'
 
