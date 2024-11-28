@@ -3,6 +3,7 @@ import express from 'express'
 import { AnyZodObject, z } from 'zod'
 import { Global } from '../../global/global'
 import { 获得接口插件们 } from '../../interface/interface-type'
+import { 递归截断字符串 } from '../../tools/tools'
 import { 包装插件项, 取Task插件内部类型, 合并插件结果, 插件, 插件项类型 } from '../plug'
 
 export class JSON解析插件<Result extends AnyZodObject> extends 插件<Result> {
@@ -18,7 +19,7 @@ export class JSON解析插件<Result extends AnyZodObject> extends 插件<Result
         }),
       )
 
-      await log.debug('准备解析 JSON：%o', req.body)
+      await log.debug('准备解析 JSON：%o', 递归截断字符串(req.body))
       const parseResult = t.safeParse(req.body)
 
       if (!parseResult.success) {
@@ -26,7 +27,7 @@ export class JSON解析插件<Result extends AnyZodObject> extends 插件<Result
         throw new Error(format('解析 JSON 失败: %O', parseResult.error))
       }
 
-      await log.debug('成功解析 JSON：%o', parseResult.data)
+      await log.debug('成功解析 JSON')
       return parseResult.data
     })
   }

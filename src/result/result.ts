@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express'
 import { Global } from '../global/global'
+import { 递归截断字符串 } from '../tools/tools'
 
 export abstract class 结果<T> {
   protected declare readonly __类型保持符号?: T
@@ -21,7 +22,8 @@ export class 正确JSON结果<Data extends Record<string, unknown>> extends 正�
 
   async run(req: Request, res: Response): Promise<void> {
     var log = (await this.log).extend('正确JSON结果')
-    await log.debug('返回数据: %o', this.data)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    await log.debug('返回数据: %o', 递归截断字符串(this.data))
     res.send(this.data)
   }
 }
@@ -51,7 +53,7 @@ export class 错误JSON结果<Data> extends 错误结果<Data> {
 
   async run(req: Request, res: Response): Promise<void> {
     var log = (await this.log).extend('错误JSON结果')
-    await log.debug('返回数据: %o', this.data)
+    await log.debug('返回数据: %o', 递归截断字符串(this.data))
     res.send(this.data)
   }
 }
