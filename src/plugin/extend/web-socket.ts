@@ -27,6 +27,8 @@ export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
           .or(z.undefined()),
       }),
       async (req, _res) => {
+        var log = (await Global.getItem('log')).extend('webSocket插件')
+
         var wsId = req.headers['ws-client-id']
         var WebSocket管理者 = await Global.getItem('WebSocket管理者')
         var ws句柄: WebSocket | null = null
@@ -37,10 +39,18 @@ export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
         return {
           ws操作: {
             async 发送ws信息(信息: 信息): Promise<void> {
-              存在的ws句柄.send(JSON.stringify(信息))
+              try {
+                存在的ws句柄.send(JSON.stringify(信息))
+              } catch (e) {
+                await log.err(e)
+              }
             },
             async 关闭ws连接(): Promise<void> {
-              存在的ws句柄.close()
+              try {
+                存在的ws句柄.close()
+              } catch (e) {
+                await log.err(e)
+              }
             },
           },
         }
