@@ -3,7 +3,7 @@ import path from 'node:path'
 import { Command } from 'commander'
 import { main } from '.'
 
-const program = new Command()
+let program = new Command()
 
 program
   .name('生成测试文件')
@@ -12,9 +12,9 @@ program
   .argument('<outFilePath>', '输出文件路径')
   .argument('<filter>', '过滤器(正则)')
   .action(async (tsconfigPath: string, interfaceFolderPath: string, outFilePath: string, filter: string) => {
-    const absoluteTsconfigPath = path.resolve(tsconfigPath)
-    const absoluteApiFolderPath = path.resolve(interfaceFolderPath)
-    const absoluteOutputPath = path.resolve(outFilePath)
+    let absoluteTsconfigPath = path.resolve(tsconfigPath)
+    let absoluteApiFolderPath = path.resolve(interfaceFolderPath)
+    let absoluteOutputPath = path.resolve(outFilePath)
     await main(absoluteTsconfigPath, absoluteApiFolderPath, absoluteOutputPath, filter)
   })
 

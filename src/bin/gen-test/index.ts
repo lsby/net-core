@@ -6,7 +6,7 @@ import ts from 'typescript'
 import { Log } from '@lsby/ts-log'
 
 function 检查存在默认导出(源文件: ts.SourceFile): boolean {
-  for (const statement of 源文件.statements) {
+  for (let statement of 源文件.statements) {
     if (ts.isExportAssignment(statement) && statement.isExportEquals === undefined) {
       return true
     }
@@ -30,7 +30,7 @@ export async function main(
   输出文件路径: string,
   文件过滤表达式: string,
 ): Promise<void> {
-  var log = new Log('@lsby:net-core').extend('gen-test')
+  let log = new Log('@lsby:net-core').extend('gen-test')
 
   await log.debug('开始生成测试...')
   await log.debug(`tsconfig路径: ${tsconfig路径}`)
@@ -38,32 +38,32 @@ export async function main(
   await log.debug(`输出文件路径: ${输出文件路径}`)
   await log.debug(`文件过滤表达式: ${文件过滤表达式}`)
 
-  const tsconfig内容 = ts.parseConfigFileTextToJson(tsconfig路径, fs.readFileSync(tsconfig路径, 'utf8'))
+  let tsconfig内容 = ts.parseConfigFileTextToJson(tsconfig路径, fs.readFileSync(tsconfig路径, 'utf8'))
   if (tsconfig内容.error) {
     await log.err('无法解析 tsconfig.json', tsconfig内容.error)
     throw new Error('无法解析 tsconfig.json')
   }
-  const 解析后的tsconfig = ts.parseJsonConfigFileContent(tsconfig内容.config, ts.sys, path.resolve(tsconfig路径, '..'))
+  let 解析后的tsconfig = ts.parseJsonConfigFileContent(tsconfig内容.config, ts.sys, path.resolve(tsconfig路径, '..'))
   await log.debug('成功解析 tsconfig 文件...')
 
-  const 项目主机 = ts.createCompilerHost(解析后的tsconfig.options)
-  const 项目 = ts.createProgram(解析后的tsconfig.fileNames, 解析后的tsconfig.options, 项目主机)
+  let 项目主机 = ts.createCompilerHost(解析后的tsconfig.options)
+  let 项目 = ts.createProgram(解析后的tsconfig.fileNames, 解析后的tsconfig.options, 项目主机)
   await log.debug('成功读取项目...')
 
-  var 所有源文件 = 项目.getSourceFiles()
-  var 相关源文件们 = 所有源文件.filter((源文件) => {
-    var 源文件路径 = path.normalize(源文件.fileName)
+  let 所有源文件 = 项目.getSourceFiles()
+  let 相关源文件们 = 所有源文件.filter((源文件) => {
+    let 源文件路径 = path.normalize(源文件.fileName)
     if (!源文件路径.includes(目标路径)) return false
-    var 存在默认导出 = 检查存在默认导出(源文件)
+    let 存在默认导出 = 检查存在默认导出(源文件)
     if (!存在默认导出) return false
-    var 符合过滤表达式 = new RegExp(文件过滤表达式 || '.*').test(源文件路径)
+    let 符合过滤表达式 = new RegExp(文件过滤表达式 || '.*').test(源文件路径)
     if (!符合过滤表达式) return false
     return true
   })
   await log.debug(`筛选出 ${相关源文件们.length} 个相关源文件`)
 
-  var 伴随的虚拟文件们 = 相关源文件们.map((a) => {
-    var 代码 = [
+  let 伴随的虚拟文件们 = 相关源文件们.map((a) => {
+    let 代码 = [
       `import { 接口测试 } from '@lsby/net-core'`,
       `import 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}"`,
       ``,
@@ -76,41 +76,41 @@ export async function main(
     )
   })
 
-  const 新项目 = ts.createProgram({
+  let 新项目 = ts.createProgram({
     rootNames: [...项目.getSourceFiles().map((a) => a.fileName), ...伴随的虚拟文件们.map((a) => a.fileName)],
     options: 解析后的tsconfig.options,
     host: {
       ...项目主机,
       getSourceFile: (filename) => {
-        const 找到的虚拟文件 = 伴随的虚拟文件们.find((a) => a.fileName == filename)
+        let 找到的虚拟文件 = 伴随的虚拟文件们.find((a) => a.fileName == filename)
         if (找到的虚拟文件 != null) return 找到的虚拟文件
         return 项目.getSourceFile(filename)
       },
     },
     oldProgram: 项目,
   })
-  var 类型检查器 = 新项目.getTypeChecker()
+  let 类型检查器 = 新项目.getTypeChecker()
 
-  var 检查结果: boolean[] = []
-  for (var 源文件 of 伴随的虚拟文件们) {
-    var 结果 = false
+  let 检查结果: boolean[] = []
+  for (let 源文件 of 伴随的虚拟文件们) {
+    let 结果 = false
     ts.forEachChild(源文件, (node) => {
       if (ts.isTypeAliasDeclaration(node) && node.name.text === '计算结果') {
-        const type = 类型检查器.getTypeAtLocation(node)
-        var 文本结果 = 类型检查器.typeToString(type)
+        let type = 类型检查器.getTypeAtLocation(node)
+        let 文本结果 = 类型检查器.typeToString(type)
         if (文本结果 == 'true') 结果 = true
       }
     })
     检查结果.push(结果)
   }
 
-  var 最终结果 = L.zip(相关源文件们, 检查结果)
+  let 最终结果 = L.zip(相关源文件们, 检查结果)
     .filter((a) => a[1] == true)
     .map((a) => a[0])
     .filter((a) => a != null)
   await log.debug(`最终筛选出 ${最终结果.length} 个测试用例`)
 
-  var 最终代码 = [
+  let 最终代码 = [
     "import { test } from 'vitest'",
     "import './unit-test-prefix'",
     '',
@@ -122,7 +122,7 @@ export async function main(
 
   await log.debug('最终代码生成完成')
 
-  var 输出文件夹 = path.dirname(输出文件路径)
+  let 输出文件夹 = path.dirname(输出文件路径)
   if (!fs.existsSync(输出文件夹)) fs.mkdirSync(输出文件夹, { recursive: true })
   fs.writeFileSync(输出文件路径, 最终代码.join('\n'))
 

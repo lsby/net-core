@@ -1,4 +1,4 @@
-export var 附加代码 = `
+export let 附加代码 = `
 export type 元组转联合<T> = T extends any[] ? T[number] : never
 
 export type 所有接口路径们<A = InterfaceType> = A extends []
