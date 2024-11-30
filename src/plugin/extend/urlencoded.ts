@@ -12,7 +12,7 @@ export class 表单解析插件<Result extends z.AnyZodObject> extends 插件<Re
         }),
       )
 
-      const parseResult = t.safeParse(req.body)
+      let parseResult = t.safeParse(req.body)
       if (!parseResult.success) throw new Error(format('解析url编码正文失败: %O', parseResult.error))
 
       return parseResult.data

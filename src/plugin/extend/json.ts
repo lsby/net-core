@@ -11,7 +11,7 @@ export class JSON解析插件<Result extends AnyZodObject> extends 插件<Result
 
   constructor(t: Result, opt: Parameters<typeof express.json>[0]) {
     super(t, async (req, res) => {
-      var log = (await this.log).extend('JSON解析插件')
+      let log = (await this.log).extend('JSON解析插件')
 
       await new Promise((pRes, _rej) =>
         express.json(opt)(req, res, () => {
@@ -20,7 +20,7 @@ export class JSON解析插件<Result extends AnyZodObject> extends 插件<Result
       )
 
       await log.debug('准备解析 JSON：%o', 递归截断字符串(req.body))
-      const parseResult = t.safeParse(req.body)
+      let parseResult = t.safeParse(req.body)
 
       if (!parseResult.success) {
         await log.err('解析 JSON 失败：%o', parseResult.error)

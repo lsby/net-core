@@ -27,12 +27,12 @@ export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
           .or(z.undefined()),
       }),
       async (req, _res) => {
-        var wsId = req.headers['ws-client-id']
-        var WebSocket管理者 = await Global.getItem('WebSocket管理者')
-        var ws句柄: WebSocket | null = null
+        let wsId = req.headers['ws-client-id']
+        let WebSocket管理者 = await Global.getItem('WebSocket管理者')
+        let ws句柄: WebSocket | null = null
         if (typeof wsId == 'string') ws句柄 = await WebSocket管理者.获得句柄(wsId)
         if (!ws句柄) return { ws操作: undefined }
-        var 存在的ws句柄 = ws句柄
+        let 存在的ws句柄 = ws句柄
 
         return {
           ws操作: {

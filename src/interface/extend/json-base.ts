@@ -20,7 +20,7 @@ export class JSON接口<接口类型描述 extends 任意接口类型> extends �
     return this.接口类型描述
   }
   override async 接口实现(参数: 计算接口参数<接口类型描述>): 计算接口返回<接口类型描述> {
-    var c = await this.业务行为.运行业务行为(参数)
+    let c = await this.业务行为.运行业务行为(参数)
     if (c.isLeft()) return new 错误JSON结果(c.assertLeft().getLeft())
     return new 正确JSON结果(c.assertRight().getRight())
   }
