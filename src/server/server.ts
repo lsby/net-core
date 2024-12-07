@@ -26,7 +26,7 @@ export class 服务器 {
 
     app.use(async (req: Request, res: Response) => {
       let 请求id = short().new()
-      let log = (await this.log).extend('请求').extend(请求id)
+      let log = (await this.log).extend(请求id).extend('控制器')
 
       try {
         let 请求路径 = req.path
@@ -48,7 +48,7 @@ export class 服务器 {
           await log.debug('找到 %o 个 插件, 准备执行...', 接口插件.length)
 
           let 插件结果 = (
-            await Promise.all(接口插件.map(async (插件) => await (await 插件.run()).运行(req, res, { 请求id: 请求id })))
+            await Promise.all(接口插件.map(async (插件) => await (await 插件.run()).运行(req, res, { 请求id })))
           ).reduce((s, a) => Object.assign(s, a), {})
           await log.debug('插件 执行完毕')
 
@@ -57,7 +57,7 @@ export class 服务器 {
           await log.debug('接口逻辑执行完毕')
 
           await log.debug('准备执行返回逻辑...')
-          await 接口结果.run(req, res)
+          await 接口结果.run(req, res, { 请求id })
           await log.debug('返回逻辑执行完毕')
 
           return
