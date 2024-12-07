@@ -38,7 +38,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
         await log.debug('检查 ws-client-id 头信息', { wsId })
 
         if (typeof wsId == 'string') {
-          await log.debug('尝试获取 WebSocket 句柄', { wsId })
+          await log.debug('尝试获取 WebSocket 句柄')
           ws句柄 = await WebSocket管理者.获得句柄(wsId)
         }
 
@@ -49,7 +49,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
 
         let 存在的ws句柄 = ws句柄
 
-        await log.debug('WebSocket 句柄已准备好', { wsId })
+        await log.debug('WebSocket 句柄已准备好')
 
         return {
           ws操作: {
@@ -61,7 +61,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
                     log.err('发送 WebSocket 信息失败', { 错误: err }).catch(console.error)
                     return rej(err)
                   }
-                  log.info('WebSocket 信息发送成功', { 信息 }).catch(console.error)
+                  log.debug('WebSocket 信息发送成功').catch(console.error)
                   return res()
                 })
               })
