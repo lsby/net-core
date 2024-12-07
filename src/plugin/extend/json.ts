@@ -10,8 +10,8 @@ export class JSON解析插件<Result extends AnyZodObject> extends 插件<Result
   private log = Global.getItem('log')
 
   constructor(t: Result, opt: Parameters<typeof express.json>[0]) {
-    super(t, async (req, res) => {
-      let log = (await this.log).extend('JSON解析插件')
+    super(t, async (req, res, 附加参数) => {
+      let log = (await this.log).extend(附加参数.请求id).extend('JSON解析插件')
 
       await new Promise((pRes, _rej) =>
         express.json(opt)(req, res, () => {

@@ -25,7 +25,8 @@ export class 服务器 {
     let app = express()
 
     app.use(async (req: Request, res: Response) => {
-      let log = (await this.log).extend('请求').extend(short().new())
+      let 请求id = short().new()
+      let log = (await this.log).extend('请求').extend(请求id)
 
       try {
         let 请求路径 = req.path
@@ -47,7 +48,7 @@ export class 服务器 {
           await log.debug('找到 %o 个 插件, 准备执行...', 接口插件.length)
 
           let 插件结果 = (
-            await Promise.all(接口插件.map(async (插件) => await (await 插件.run()).获得实现()(req, res)))
+            await Promise.all(接口插件.map(async (插件) => await (await 插件.run()).运行(req, res, { 请求id: 请求id })))
           ).reduce((s, a) => Object.assign(s, a), {})
           await log.debug('插件 执行完毕')
 

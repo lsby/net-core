@@ -2,20 +2,24 @@ import type { Request, Response } from 'express'
 import type { z } from 'zod'
 import { Task } from '@lsby/ts-fp-data'
 
+export type 附加参数类型 = {
+  请求id: string
+}
+
 export class 插件<Obj extends z.AnyZodObject> {
   protected declare readonly __类型保持符号?: Obj
 
   constructor(
     private 类型: Obj,
-    private 实现: (req: Request, res: Response) => Promise<z.infer<Obj>>,
+    private 实现: (req: Request, res: Response, 附加参数: 附加参数类型) => Promise<z.infer<Obj>>,
   ) {}
 
   获得类型(): Obj {
     return this.类型
   }
 
-  获得实现(): (req: Request, res: Response) => Promise<z.infer<Obj>> {
-    return this.实现
+  运行(req: Request, res: Response, 附加参数: 附加参数类型): Promise<z.infer<Obj>> {
+    return this.实现(req, res, 附加参数)
   }
 }
 
