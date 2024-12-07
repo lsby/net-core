@@ -91,7 +91,7 @@ export class 服务器 {
     // 创建 WebSocket 服务器并复用 HTTP 服务器
     let wss = new WebSocketServer({ server })
     wss.on('connection', async (ws: WebSocket, req) => {
-      let log = (await this.log).extend('WebSocket').extend(short().new())
+      let log = (await this.log).extend(short().new()).extend('WebSocket')
       await log.debug(`WebSocket 请求连接: ${req.url}`)
 
       let WebSocket管理者 = await Global.getItem('WebSocket管理者')
