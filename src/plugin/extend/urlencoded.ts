@@ -18,7 +18,7 @@ export class 表单解析插件<Result extends z.AnyZodObject> extends 插件<Re
       )
 
       let parseResult = t.safeParse(req.body)
-      if (!parseResult.success) {
+      if (parseResult.success === false) {
         await log.err('解析url编码正文失败: %O', parseResult.error)
         throw new Error(format('解析url编码正文失败: %O', parseResult.error))
       }

@@ -21,7 +21,7 @@ export class JSON解析插件<Result extends AnyZodObject> extends 插件<Result
       await log.debug('准备解析 JSON：%o', 递归截断字符串(req.body))
       let parseResult = t.safeParse(req.body)
 
-      if (!parseResult.success) {
+      if (parseResult.success === false) {
         await log.err('解析 JSON 失败：%o', parseResult.error)
         throw new Error(format('解析 JSON 失败: %O', parseResult.error))
       }
