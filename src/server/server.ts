@@ -5,9 +5,10 @@ import express from 'express'
 import short from 'short-uuid'
 import { WebSocket, WebSocketServer } from 'ws'
 import { Global } from '../global/global'
-import { 任意接口 } from '../interface/interface-inst'
-import { 任意接口类型 } from '../interface/interface-type'
-import { 插件项类型 } from '../plugin/plug'
+import { 任意接口, 接口方法类型, 接口路径类型 } from '../interface/interface-base'
+import { 任意的接口逻辑 } from '../interface/interface-logic'
+import { 任意的接口结果转换器 } from '../interface/interface-result'
+import { 递归截断字符串 } from '../tools/tools'
 
 export class 服务器 {
   private log = Global.getItem('log')
@@ -35,33 +36,30 @@ export class 服务器 {
         await log.debug('收到请求, 路径: %o, 方法: %o', 请求路径, 请求方法)
 
         await log.debug('尝试匹配接口...')
-
         let 目标接口 = this.接口们.find((接口) => {
-          let 接口类型 = 接口.获得接口类型() as 任意接口类型
-          return 请求路径 == 接口类型.获得路径() && 请求方法 == 接口类型.获得方法()
+          let 接口方法 = 接口.获得方法() as 接口方法类型
+          let 接口路径 = 接口.获得路径() as 接口路径类型
+          return 请求方法 == 接口方法 && 请求路径 == 接口路径
         })
         if (目标接口 != null) {
           await log.debug('命中接口')
 
-          let 接口类型 = 目标接口.获得接口类型() as 任意接口类型
-          let 接口插件 = 接口类型.获得插件们() as Array<插件项类型>
-          await log.debug('找到 %o 个 插件, 准备执行...', 接口插件.length)
+          let 接口逻辑 = 目标接口.获得逻辑() as 任意的接口逻辑
+          let 接口返回 = 目标接口.获得结果转换器() as 任意的接口结果转换器
 
-          let 插件结果 = (
-            await Promise.all(接口插件.map(async (插件) => await (await 插件.run()).运行(req, res, { 请求id })))
-          ).reduce((s, a) => Object.assign(s, a), {})
-          await log.debug('插件 执行完毕')
-
-          await log.debug('准备执行接口逻辑...')
-          let 接口结果 = await 目标接口.接口实现(插件结果)
+          await log.debug('调用接口逻辑...')
+          let 接口结果 = await 接口逻辑.运行(req, res, {}, { 请求id })
           await log.debug('接口逻辑执行完毕')
 
           await log.debug('准备执行返回逻辑...')
-          await 接口结果.run(req, res, { 请求id })
+          let 最终结果 = 接口返回.实现(接口结果) as unknown
+          await log.debug('返回数据: %o', 递归截断字符串(最终结果))
+          res.send(最终结果)
           await log.debug('返回逻辑执行完毕')
 
           return
         }
+
         await log.debug('没有命中接口')
 
         if (this.静态资源路径 && req.method.toLowerCase() == 'get') {

@@ -2,9 +2,8 @@ import { format } from 'node:util'
 import express from 'express'
 import { AnyZodObject, z } from 'zod'
 import { Global } from '../../global/global'
-import { 获得接口插件们 } from '../../interface/interface-type'
 import { 递归截断字符串 } from '../../tools/tools'
-import { 包装插件项, 取Task插件内部类型, 合并插件结果, 插件, 插件项类型 } from '../plug'
+import { 包装插件项, 取Task插件内部类型, 插件, 插件项类型 } from '../plug'
 
 export class JSON解析插件<Result extends AnyZodObject> extends 插件<Result> {
   private log = Global.getItem('log')
@@ -41,9 +40,8 @@ export type 合并JSON插件结果<Arr extends Array<插件项类型>> = Arr ext
     ? x extends infer 插件项
       ? xs extends Array<插件项类型>
         ? 插件项 extends 任意JSON解析插件项
-          ? z.infer<取Task插件内部类型<插件项>> & 合并插件结果<xs>
+          ? z.infer<取Task插件内部类型<插件项>> & 合并JSON插件结果<xs>
           : 合并JSON插件结果<xs>
         : {}
       : {}
     : {}
-export type 从接口类型获得JSON参数<接口类型描述> = 合并JSON插件结果<获得接口插件们<接口类型描述>>
