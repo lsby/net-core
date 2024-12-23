@@ -11,7 +11,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
           发送ws信息: z.ZodFunction<z.ZodTuple<[信息], null>, z.ZodPromise<z.ZodVoid>>
           关闭ws连接: z.ZodFunction<z.ZodTuple<[], null>, z.ZodPromise<z.ZodVoid>>
         }>,
-        z.ZodUndefined,
+        z.ZodNull,
       ]
     >
   }>
@@ -26,7 +26,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
             发送ws信息: z.function(z.tuple([信息描述]), z.promise(z.void())),
             关闭ws连接: z.function(z.tuple([]), z.promise(z.void())),
           })
-          .or(z.undefined()),
+          .or(z.null()),
       }),
       async (req, _res, 附加参数) => {
         let log = (await this.log).extend(附加参数.请求id).extend('ws插件')
@@ -37,14 +37,14 @@ export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
 
         await log.debug('检查 ws-client-id 头信息', { wsId })
 
-        if (typeof wsId == 'string') {
+        if (typeof wsId === 'string') {
           await log.debug('尝试获取 WebSocket 句柄')
           ws句柄 = await WebSocket管理者.获得句柄(wsId)
         }
 
-        if (!ws句柄) {
+        if (ws句柄 === null) {
           await log.err('未能获取到有效的 WebSocket 句柄')
-          return { ws操作: undefined }
+          return { ws操作: null }
         }
 
         let 存在的ws句柄 = ws句柄
@@ -57,7 +57,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
               await log.debug('发送 WebSocket 信息', { 信息 })
               return new Promise((res, rej) => {
                 存在的ws句柄.send(JSON.stringify(信息), (err) => {
-                  if (err) {
+                  if ((err ?? null) !== null) {
                     log.err('发送 WebSocket 信息失败', { 错误: err }).catch(console.error)
                     return rej(err)
                   }

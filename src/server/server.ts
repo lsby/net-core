@@ -36,12 +36,13 @@ export class 服务器 {
         await log.debug('收到请求, 路径: %o, 方法: %o', 请求路径, 请求方法)
 
         await log.debug('尝试匹配接口...')
-        let 目标接口 = this.接口们.find((接口) => {
-          let 接口方法 = 接口.获得方法() as 接口方法类型
-          let 接口路径 = 接口.获得路径() as 接口路径类型
-          return 请求方法 == 接口方法 && 请求路径 == 接口路径
-        })
-        if (目标接口 != null) {
+        let 目标接口 =
+          this.接口们.find((接口) => {
+            let 接口方法 = 接口.获得方法() as 接口方法类型
+            let 接口路径 = 接口.获得路径() as 接口路径类型
+            return 请求方法 === 接口方法 && 请求路径 === 接口路径
+          }) ?? null
+        if (目标接口 !== null) {
           await log.debug('命中接口')
 
           let 接口逻辑 = 目标接口.获得逻辑() as 任意的接口逻辑
@@ -62,9 +63,10 @@ export class 服务器 {
 
         await log.debug('没有命中接口')
 
-        if (this.静态资源路径 && req.method.toLowerCase() == 'get') {
+        let 静态资源路径 = this.静态资源路径 ?? null
+        if (静态资源路径 !== null && req.method.toLowerCase() === 'get') {
           await log.debug('尝试匹配静态资源...')
-          express.static(this.静态资源路径, {
+          express.static(静态资源路径, {
             setHeaders: async () => {
               await log.debug('命中静态资源')
             },
@@ -93,10 +95,10 @@ export class 服务器 {
       await log.debug(`WebSocket 请求连接: ${req.url}`)
 
       let WebSocket管理者 = await Global.getItem('WebSocket管理者')
-      let 客户端id = req.url?.split('?id=')[1]
+      let 客户端id = req.url?.split('?id=')[1] ?? null
 
-      if (!客户端id) return ws.close(4001, '缺少客户端 ID')
-      if ((await WebSocket管理者.查询连接存在(客户端id)) == true) return ws.close(4002, '客户端 ID 已存在')
+      if (客户端id === null) return ws.close(4001, '缺少客户端 ID')
+      if ((await WebSocket管理者.查询连接存在(客户端id)) === true) return ws.close(4002, '客户端 ID 已存在')
       let 存在的客户端id = 客户端id
 
       await WebSocket管理者.增加连接(客户端id, ws)
@@ -117,8 +119,8 @@ export class 服务器 {
     return {
       ip: Object.values(networkInterfaces())
         .flat()
-        .flatMap((address) => (address !== undefined ? [address] : []))
-        .map((wrappedAddress) => wrappedAddress.address)
+        .flatMap((address) => ((address ?? null) !== null ? [address] : []))
+        .map((wrappedAddress) => wrappedAddress?.address)
         .map((address) => `http://${address}:${this.端口}`),
       server,
     }

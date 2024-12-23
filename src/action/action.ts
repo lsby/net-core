@@ -146,8 +146,8 @@ export abstract class 业务行为<
   ): 业务行为<计算业务行为参数<计算合并<X>>, 计算业务行为错误<计算合并<X>>, A> {
     return 业务行为.通过实现构造(async (参数) => {
       let 所有结果 = await Promise.all(arr.map((a) => a.业务行为实现(参数)))
-      let 错误 = 所有结果.filter((a) => a.isLeft())[0]
-      if (错误) return 错误
+      let 错误 = 所有结果.filter((a) => a.isLeft())[0] ?? null
+      if (错误 !== null) return 错误
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       let 正确结果合并 = 所有结果.map((a) => a.assertRight().getRight()).reduce((s, a) => Object.assign(s, a), {})
       return new Right(await f(正确结果合并))
