@@ -56,7 +56,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
         获得接口逻辑类型,
         获得接口错误形式,
       } from '@lsby/net-core'
-      import 导入 from './index'
+      import 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}",
 
       type jsonPath = 获得接口路径类型<typeof 导入>
       type jsonMethod = 获得接口方法类型<typeof 导入>
@@ -87,10 +87,12 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
 
       type WS接口计算结果 = wsPath extends infer _
         ? wsData extends infer _
-          ? {
-              path: wsPath
-              data: wsData
-            }
+          ? wsData extends Record<string, never>
+            ? never
+            : {
+                path: wsPath
+                data: wsData
+              }
           : never
         : never
     `
