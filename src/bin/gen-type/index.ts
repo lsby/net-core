@@ -45,44 +45,56 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
   await log.debug(`筛选出 ${相关源文件们.length} 个相关源文件`)
 
   let 伴随的虚拟文件们 = 相关源文件们.map((a) => {
-    let 代码 = [
-      `import { 接口类型, 合并JSON插件结果, 取第一个WS插件结果 } from '@lsby/net-core'`,
-      `import { z } from 'zod'`,
-      `import 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}"`,
-      ``,
-      `
-        type JSON接口计算结果 =
-          typeof 导入 extends 接口类型<infer Path, infer Method, infer PreApis, infer SuccessSchema, infer ErrorSchema>
-            ? Path extends string
-              ? {
-                  path: Path
-                  method: Method
-                  input: 合并JSON插件结果<PreApis>
-                  successOutput: z.infer<SuccessSchema>
-                  errorOutput: z.infer<ErrorSchema>
-                }
-              : never
-            : never
-        type WS接口计算结果 =
-          typeof 导入 extends 接口类型<infer Path, infer Method, infer PreApis, infer SuccessSchema, infer ErrorSchema>
-            ? Path extends string
-              ? 取第一个WS插件结果<PreApis> extends infer R
-                ? {} extends R
-                  ? never
-                  : {
-                      path: Path
-                      data: 取第一个WS插件结果<PreApis>
-                    }
+    let 代码 = `
+      import {
+        取第一个WS插件结果,
+        合并JSON插件结果,
+        获得接口方法类型,
+        获得接口正确形式,
+        获得接口路径类型,
+        获得接口逻辑插件类型,
+        获得接口逻辑类型,
+        获得接口错误形式,
+      } from '@lsby/net-core'
+      import 导入 from './index'
+
+      type jsonPath = 获得接口路径类型<typeof 导入>
+      type jsonMethod = 获得接口方法类型<typeof 导入>
+      type jsonInput = 合并JSON插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
+      type jsonErrorOutput = 获得接口错误形式<typeof 导入>
+      type jsonSuccessOutput = 获得接口正确形式<typeof 导入>
+
+      type JSON接口计算结果 = jsonPath extends infer _
+        ? jsonMethod extends infer _
+          ? jsonInput extends infer _
+            ? jsonErrorOutput extends infer _
+              ? jsonSuccessOutput extends infer _
+                ? {
+                    path: jsonPath
+                    method: jsonMethod
+                    input: jsonInput
+                    errorOutput: jsonErrorOutput
+                    successOutput: jsonSuccessOutput
+                  }
                 : never
               : never
             : never
-        `,
-    ]
-    return ts.createSourceFile(
-      a.fileName.replaceAll('.ts', '-' + randomUUID() + '.ts'),
-      代码.join('\n'),
-      ts.ScriptTarget.Latest,
-    )
+          : never
+        : never
+
+      type wsPath = 获得接口路径类型<typeof 导入>
+      type wsData = 取第一个WS插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
+
+      type WS接口计算结果 = wsPath extends infer _
+        ? wsData extends infer _
+          ? {
+              path: wsPath
+              data: wsData
+            }
+          : never
+        : never
+    `
+    return ts.createSourceFile(a.fileName.replaceAll('.ts', '-' + randomUUID() + '.ts'), 代码, ts.ScriptTarget.Latest)
   })
 
   let 新项目 = ts.createProgram({
@@ -111,6 +123,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
             type,
             undefined,
             ts.TypeFormatFlags.NoTruncation |
+              ts.TypeFormatFlags.NoTypeReduction |
               ts.TypeFormatFlags.AllowUniqueESSymbolType |
               ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
           ),
@@ -122,6 +135,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
             type,
             undefined,
             ts.TypeFormatFlags.NoTruncation |
+              ts.TypeFormatFlags.NoTypeReduction |
               ts.TypeFormatFlags.AllowUniqueESSymbolType |
               ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
           ),
