@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import path from 'node:path'
 import { Command } from 'commander'
+import path from 'node:path'
 import { main } from '.'
 
 let program = new Command()

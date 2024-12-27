@@ -1,8 +1,8 @@
+import { Log } from '@lsby/ts-log'
 import { randomUUID } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import ts from 'typescript'
-import { Log } from '@lsby/ts-log'
 import { 附加代码 } from './addition'
 
 function 检查存在默认导出(源文件: ts.SourceFile): boolean {
