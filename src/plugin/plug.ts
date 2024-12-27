@@ -1,6 +1,6 @@
+import { Task } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
 import type { z } from 'zod'
-import { Task } from '@lsby/ts-fp-data'
 
 export type 插件附加参数 = {
   请求id: string

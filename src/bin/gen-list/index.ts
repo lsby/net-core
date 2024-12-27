@@ -1,9 +1,9 @@
+import { Log } from '@lsby/ts-log'
+import L from 'lodash'
 import { randomUUID } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import L from 'lodash'
 import ts from 'typescript'
-import { Log } from '@lsby/ts-log'
 
 function 检查存在默认导出(源文件: ts.SourceFile): boolean {
   for (let statement of 源文件.statements) {

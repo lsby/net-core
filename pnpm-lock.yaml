@@ -46,11 +46,11 @@ importers:
         specifier: ^4.2.1
         version: 4.2.1(prettier@3.3.3)
       '@lsby/eslint-config':
-        specifier: ^0.2.17
-        version: 0.2.17(@lsby/eslint-plugin@0.0.8(eslint@8.57.0))(@types/eslint@9.6.1)(eslint-config-prettier@9.1.0(eslint@8.57.0))(eslint-plugin-jsdoc@50.5.0(eslint@8.57.0))(eslint-plugin-react-hooks@4.6.2(eslint@8.57.0))(eslint-plugin-react@7.37.2(eslint@8.57.0))(eslint-plugin-sort-class-members@1.20.0(eslint@8.57.0))(eslint@8.57.0)(typescript-eslint@8.7.0(eslint@8.57.0)(typescript@5.5.4))(typescript@5.5.4)
+        specifier: ^0.2.19
+        version: 0.2.19(@lsby/eslint-plugin@0.0.10(eslint@8.57.0))(@types/eslint@9.6.1)(eslint-config-prettier@9.1.0(eslint@8.57.0))(eslint-plugin-jsdoc@50.5.0(eslint@8.57.0))(eslint-plugin-react-hooks@4.6.2(eslint@8.57.0))(eslint-plugin-react@7.37.2(eslint@8.57.0))(eslint-plugin-sort-class-members@1.20.0(eslint@8.57.0))(eslint@8.57.0)(typescript-eslint@8.7.0(eslint@8.57.0)(typescript@5.5.4))(typescript@5.5.4)
       '@lsby/eslint-plugin':
-        specifier: ^0.0.8
-        version: 0.0.8(eslint@8.57.0)
+        specifier: ^0.0.10
+        version: 0.0.10(eslint@8.57.0)
       '@types/lodash':
         specifier: ^4.17.7
         version: 4.17.7
@@ -573,10 +573,10 @@ packages:
     resolution: {integrity: sha512-f5DRIOZf7wxogefH03RjMPMdBF7ADTWUMoOs9kaJo06EfwF+aFhMZMDZxHg/Xe12hptN9xoZjGso2fdjapBRIA==}
     engines: {node: '>=10'}
 
-  '@lsby/eslint-config@0.2.17':
-    resolution: {integrity: sha512-nXn8a+sVkdT98GmQ6mQyUN7jQedC6/MuXtd9gqlqO9sZNuAUe6BB7xVUiprt4bBaRAUU+iqn76MjtC6/zI1iMw==}
+  '@lsby/eslint-config@0.2.19':
+    resolution: {integrity: sha512-FF10mnGFVdQdxYtcYy1N3NVZn1dj4k3F4Yqu65tDF4LdXOBwHrxM93otDi1Tl4cB3pwdDaUqux4XgeyxMWi6Lg==}
     peerDependencies:
-      '@lsby/eslint-plugin': ^0.0.8
+      '@lsby/eslint-plugin': ^0.0.10
       '@types/eslint': ^9.6.1
       eslint: ^8.57.0
       eslint-config-prettier: ^9.1.0
@@ -587,8 +587,8 @@ packages:
       typescript: <5.6.0
       typescript-eslint: 8.7.0
 
-  '@lsby/eslint-plugin@0.0.8':
-    resolution: {integrity: sha512-4NthzMLm91mPnuzo82sXq9k6WaPlM/XVE+kgFgLViToOuHcC526wSsZOoFnMoZ/xa+aXQgniwOuqqjRwO2o+1g==}
+  '@lsby/eslint-plugin@0.0.10':
+    resolution: {integrity: sha512-gn/C2rbNo7Pvh0XE5OWSDwriAeysyjcBm4ejVyv5X7z9EAhwqsCggBSJMBx2XsCCWfbzagIBZPpcmEKWmN111w==}
     peerDependencies:
       eslint: ^8.56.0
 
@@ -3122,9 +3122,9 @@ snapshots:
       string-argv: 0.3.2
       type-detect: 4.0.8
 
-  '@lsby/eslint-config@0.2.17(@lsby/eslint-plugin@0.0.8(eslint@8.57.0))(@types/eslint@9.6.1)(eslint-config-prettier@9.1.0(eslint@8.57.0))(eslint-plugin-jsdoc@50.5.0(eslint@8.57.0))(eslint-plugin-react-hooks@4.6.2(eslint@8.57.0))(eslint-plugin-react@7.37.2(eslint@8.57.0))(eslint-plugin-sort-class-members@1.20.0(eslint@8.57.0))(eslint@8.57.0)(typescript-eslint@8.7.0(eslint@8.57.0)(typescript@5.5.4))(typescript@5.5.4)':
+  '@lsby/eslint-config@0.2.19(@lsby/eslint-plugin@0.0.10(eslint@8.57.0))(@types/eslint@9.6.1)(eslint-config-prettier@9.1.0(eslint@8.57.0))(eslint-plugin-jsdoc@50.5.0(eslint@8.57.0))(eslint-plugin-react-hooks@4.6.2(eslint@8.57.0))(eslint-plugin-react@7.37.2(eslint@8.57.0))(eslint-plugin-sort-class-members@1.20.0(eslint@8.57.0))(eslint@8.57.0)(typescript-eslint@8.7.0(eslint@8.57.0)(typescript@5.5.4))(typescript@5.5.4)':
     dependencies:
-      '@lsby/eslint-plugin': 0.0.8(eslint@8.57.0)
+      '@lsby/eslint-plugin': 0.0.10(eslint@8.57.0)
       '@types/eslint': 9.6.1
       eslint: 8.57.0
       eslint-config-prettier: 9.1.0(eslint@8.57.0)
@@ -3135,7 +3135,7 @@ snapshots:
       typescript: 5.5.4
       typescript-eslint: 8.7.0(eslint@8.57.0)(typescript@5.5.4)
 
-  '@lsby/eslint-plugin@0.0.8(eslint@8.57.0)':
+  '@lsby/eslint-plugin@0.0.10(eslint@8.57.0)':
     dependencies:
       eslint: 8.57.0
 
@@ -3161,7 +3161,7 @@ snapshots:
 
   '@lsby/ts-log@0.0.3(@types/node@20.12.10)':
     dependencies:
-      debug: 4.3.5
+      debug: 4.3.7
       vitest: 2.0.2(@types/node@20.12.10)
       zod: 3.23.8
     transitivePeerDependencies:
