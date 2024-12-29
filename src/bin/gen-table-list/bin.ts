@@ -6,7 +6,7 @@ import { main } from '.'
 let program = new Command()
 
 program
-  .name('生成接口文件列表')
+  .name('生成表接口文件列表')
   .argument('<tsconfigPath>', 'tsconfig文件路径')
   .argument('<interfaceFolderPath>', '接口文件夹路径')
   .argument('<outFilePath>', '输出文件路径')

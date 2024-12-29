@@ -5,6 +5,8 @@ export * from './interface/interface-logic'
 export * from './interface/interface-result'
 export * from './interface/interface-test'
 
+export * from './interface-table/interface-table'
+
 export * from './plugin/extend/chinese-path'
 export * from './plugin/extend/custom-data'
 export * from './plugin/extend/json'

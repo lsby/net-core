@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { 可调用的接口逻辑, 获得接口逻辑正确类型, 获得接口逻辑错误类型 } from './interface-logic'
+import { 可调用接口逻辑, 获得接口逻辑正确类型, 获得接口逻辑错误类型 } from './interface-logic'
 import { 接口结果转换器 } from './interface-result'
 
 export type 接口路径类型 = string
@@ -11,7 +11,7 @@ export type 接口方法类型 = 'get' | 'post'
 export class 接口<
   路径类型 extends 接口路径类型,
   方法类型 extends 接口方法类型,
-  逻辑类型 extends 可调用的接口逻辑,
+  逻辑类型 extends 可调用接口逻辑,
   接口错误形式Zod extends z.ZodTypeAny,
   接口正确形式Zod extends z.ZodTypeAny,
   接口结果转换器类型 extends 接口结果转换器<

@@ -56,7 +56,7 @@ export abstract class 接口逻辑<
   错误类型 extends 接口逻辑错误类型,
   返回类型 extends 接口逻辑正确类型,
 > {
-  static 混合<逻辑们 extends 任意的接口逻辑[]>(逻辑们: [...逻辑们]): 计算混合组合数组<逻辑们> {
+  static 混合<逻辑们 extends 任意接口逻辑[]>(逻辑们: [...逻辑们]): 计算混合组合数组<逻辑们> {
     return 逻辑们.reduce((s, a) => s.混合(a)) as any
   }
 
@@ -143,8 +143,8 @@ export abstract class 接口逻辑<
   }
 }
 
-export type 任意的接口逻辑 = 接口逻辑<any, any, any, any>
-export type 可调用的接口逻辑 = 接口逻辑<any, Record<string, never>, any, any>
+export type 任意接口逻辑 = 接口逻辑<any, any, any, any>
+export type 可调用接口逻辑 = 接口逻辑<any, Record<string, never>, any, any>
 export type 获得接口逻辑插件类型<A> = A extends 接口逻辑<infer X, any, any, any> ? X : never
 export type 获得接口逻辑附加参数类型<A> = A extends 接口逻辑<any, infer X, any, any> ? X : never
 export type 获得接口逻辑错误类型<A> = A extends 接口逻辑<any, any, infer X, any> ? X : never
