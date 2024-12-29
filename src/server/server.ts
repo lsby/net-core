@@ -6,10 +6,10 @@ import { networkInterfaces } from 'node:os'
 import short from 'short-uuid'
 import { WebSocket, WebSocketServer } from 'ws'
 import { Global } from '../global/global'
+import { 任意接口 } from '../interface-api/interface-base'
+import { 任意接口逻辑 } from '../interface-api/interface-logic'
+import { 任意接口结果转换器, 常用形式转换器 } from '../interface-api/interface-result'
 import { 任意虚拟表 } from '../interface-table/interface-table'
-import { 任意接口 } from '../interface/interface-base'
-import { 任意接口逻辑 } from '../interface/interface-logic'
-import { 任意接口结果转换器, 常用形式转换器 } from '../interface/interface-result'
 import { 递归截断字符串 } from '../tools/tools'
 
 type 虚拟表操作类型 = 'add' | 'del' | 'set' | 'get'
@@ -76,7 +76,7 @@ export class 服务器 {
       await log.debug('没有命中任何资源')
       res.status(404).end()
     } catch (error) {
-      await log.err(error)
+      await log.error(error)
       res.status(500).send('服务器内部错误')
     }
   }
@@ -202,7 +202,7 @@ export class 服务器 {
       let 客户端id = req.url?.split('?id=')[1] ?? null
 
       if (客户端id === null) {
-        await log.err('连接请求缺少客户端 ID')
+        await log.error('连接请求缺少客户端 ID')
         return this.关闭WebSocket连接(ws, log, 4001, '缺少客户端 ID')
       }
 
@@ -212,7 +212,7 @@ export class 服务器 {
       let 是否已存在 = await WebSocket管理者.查询连接存在(客户端id)
 
       if (是否已存在) {
-        await log.err('客户端 ID 已存在: %s', 客户端id)
+        await log.error('客户端 ID 已存在: %s', 客户端id)
         return this.关闭WebSocket连接(ws, log, 4002, '客户端 ID 已存在')
       }
 
@@ -225,7 +225,7 @@ export class 服务器 {
       })
 
       ws.on('error', async (err) => {
-        await log.err('WebSocket 出现错误, 客户端 ID: %s, 错误: %o', 客户端id, err)
+        await log.error('WebSocket 出现错误, 客户端 ID: %s, 错误: %o', 客户端id, err)
         await WebSocket管理者.删除连接(客户端id)
       })
     })
@@ -237,7 +237,7 @@ export class 服务器 {
 
     wss.on('error', async (err) => {
       let log = logBase
-      await log.err('WebSocket 服务器发生错误: %o', err)
+      await log.error('WebSocket 服务器发生错误: %o', err)
     })
   }
 

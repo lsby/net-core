@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { 接口逻辑 } from '../interface/interface-logic'
+import { 接口逻辑 } from '../interface-api/interface-logic'
 import { 插件项类型 } from '../plugin/plug'
 
 // 修改这些定义的时候 计算类型的bin也需要改

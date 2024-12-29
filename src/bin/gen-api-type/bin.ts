@@ -6,14 +6,15 @@ import { main } from '.'
 let program = new Command()
 
 program
-  .name('生成接口文件列表')
+  .name('生成api接口类型文件')
   .argument('<tsconfigPath>', 'tsconfig文件路径')
   .argument('<interfaceFolderPath>', '接口文件夹路径')
   .argument('<outFilePath>', '输出文件路径')
-  .action(async (tsconfigPath: string, interfaceFolderPath: string, outFilePath: string) => {
+  .action(async (tsconfigPath: string, interfaceFolderPath: string, outputPath: string) => {
     let absoluteTsconfigPath = path.resolve(tsconfigPath)
     let absoluteApiFolderPath = path.resolve(interfaceFolderPath)
-    let absoluteOutputPath = path.resolve(outFilePath)
+    let absoluteOutputPath = path.resolve(outputPath)
+
     await main(absoluteTsconfigPath, absoluteApiFolderPath, absoluteOutputPath)
   })
 

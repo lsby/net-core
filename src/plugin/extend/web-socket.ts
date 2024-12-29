@@ -43,7 +43,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
         }
 
         if (ws句柄 === null) {
-          await log.err('未能获取到有效的 WebSocket 句柄')
+          await log.error('未能获取到有效的 WebSocket 句柄')
           return { ws操作: null }
         }
 
@@ -58,7 +58,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
               return new Promise((res, rej) => {
                 存在的ws句柄.send(JSON.stringify(信息), (err) => {
                   if ((err ?? null) !== null) {
-                    log.err('发送 WebSocket 信息失败', { 错误: err }).catch(console.error)
+                    log.error('发送 WebSocket 信息失败', { 错误: err }).catch(console.error)
                     return rej(err)
                   }
                   log.debug('WebSocket 信息发送成功').catch(console.error)

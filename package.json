@@ -7,11 +7,11 @@
     "import": "./dist/esm/index.js"
   },
   "bin": {
-    "lsby-net-core-gen-list": "./dist/bin/gen-list/bin.cjs",
+    "lsby-net-core-gen-api-list": "./dist/bin/gen-api-list/bin.cjs",
+    "lsby-net-core-gen-api-type": "./dist/bin/gen-api-type/bin.cjs",
     "lsby-net-core-gen-table-list": "./dist/bin/gen-table-list/bin.cjs",
     "lsby-net-core-gen-table-type": "./dist/bin/gen-table-type/bin.cjs",
-    "lsby-net-core-gen-test": "./dist/bin/gen-test/bin.cjs",
-    "lsby-net-core-gen-type": "./dist/bin/gen-type/bin.cjs"
+    "lsby-net-core-gen-test": "./dist/bin/gen-test/bin.cjs"
   },
   "files": [
     "dist"
@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@lsby/ts-global": "^0.0.5",
-    "@lsby/ts-log": "^0.0.3",
+    "@lsby/ts-log": "^0.1.0",
     "commander": "^12.1.0",
     "express": "^4.19.2",
     "lodash": "^4.17.21",
