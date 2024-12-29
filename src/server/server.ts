@@ -6,16 +6,20 @@ import { networkInterfaces } from 'node:os'
 import short from 'short-uuid'
 import { WebSocket, WebSocketServer } from 'ws'
 import { Global } from '../global/global'
+import { 任意虚拟表 } from '../interface-table/interface-table'
 import { 任意接口 } from '../interface/interface-base'
-import { 任意的接口逻辑 } from '../interface/interface-logic'
-import { 任意的接口结果转换器 } from '../interface/interface-result'
+import { 任意接口逻辑 } from '../interface/interface-logic'
+import { 任意接口结果转换器, 常用形式转换器 } from '../interface/interface-result'
 import { 递归截断字符串 } from '../tools/tools'
+
+type 虚拟表操作类型 = 'add' | 'del' | 'set' | 'get'
 
 export class 服务器 {
   private log = Global.getItem('log')
 
   constructor(
     private 接口们: 任意接口[],
+    private 虚拟表们: { new (构造参数: any): 任意虚拟表; 资源路径: string }[],
     private 端口: number,
     private 静态资源路径?: string,
   ) {}
@@ -56,6 +60,18 @@ export class 服务器 {
         return
       }
 
+      // 匹配虚拟表
+      if (请求方法 === 'post') {
+        let 目标虚拟表 = this.虚拟表们.find((虚拟表) => 请求路径.startsWith(虚拟表.资源路径)) ?? null
+        if (目标虚拟表 !== null) {
+          let 虚拟表操作 = this.解析虚拟表操作(目标虚拟表.资源路径, 请求路径)
+          if (虚拟表操作 !== null) {
+            await this.处理虚拟表逻辑(req, res, log, 虚拟表操作, 目标虚拟表, 请求id)
+            return
+          }
+        }
+      }
+
       // 未命中资源
       await log.debug('没有命中任何资源')
       res.status(404).end()
@@ -87,8 +103,8 @@ export class 服务器 {
   }
 
   private async 处理接口逻辑(req: Request, res: Response, log: Log, 目标接口: 任意接口, 请求id: string): Promise<void> {
-    let 接口逻辑 = 目标接口.获得逻辑() as 任意的接口逻辑
-    let 结果转换器 = 目标接口.获得结果转换器() as 任意的接口结果转换器
+    let 接口逻辑 = 目标接口.获得逻辑() as 任意接口逻辑
+    let 结果转换器 = 目标接口.获得结果转换器() as 任意接口结果转换器
 
     await log.debug('调用接口逻辑...')
     let 接口结果 = await 接口逻辑.运行(req, res, {}, { 请求id })
@@ -99,6 +115,80 @@ export class 服务器 {
 
     res.send(最终结果)
     await log.debug('返回逻辑执行完毕')
+  }
+
+  private async 处理虚拟表逻辑(
+    req: Request,
+    res: Response,
+    log: Log,
+    虚拟表操作: 虚拟表操作类型,
+    目标虚拟表: { new (构造参数: any): 任意虚拟表 },
+    请求id: string,
+  ): Promise<void> {
+    await log.debug('调用虚拟表逻辑...')
+
+    await log.debug('调用json解析...')
+    await new Promise((pRes, _rej) =>
+      express.json({})(req, res, () => {
+        pRes(null)
+      }),
+    )
+    await log.debug('json解析完成')
+
+    await log.debug('虚拟表: %O', 目标虚拟表.name)
+    await log.debug('操作: %O', 虚拟表操作)
+
+    await log.debug('提取构造参数...')
+    let 构造参数 = (req.body?.['construction'] ?? null) as unknown
+    if (构造参数 === null) throw new Error('构造参数不能为空')
+    await log.debug('构造参数: %O', 构造参数)
+
+    let 虚拟表实例 = new 目标虚拟表(构造参数)
+    let 结果: 任意接口逻辑
+    switch (虚拟表操作) {
+      case 'add': {
+        await log.debug('调用逻辑: 增')
+        结果 = await 虚拟表实例.增(req.body?.['value'])
+        await log.debug('调用结束')
+        break
+      }
+      case 'del': {
+        await log.debug('调用逻辑: 删')
+        结果 = await 虚拟表实例.删(req.body?.['where'])
+        await log.debug('调用结束')
+        break
+      }
+      case 'set': {
+        await log.debug('调用逻辑: 改')
+        结果 = await 虚拟表实例.改(req.body?.['value'], req.body?.['where'])
+        await log.debug('调用结束')
+        break
+      }
+      case 'get': {
+        await log.debug('调用逻辑: 查')
+        结果 = await 虚拟表实例.查(req.body?.['where'], req.body?.['page'], req.body?.['sort'])
+        await log.debug('调用结束')
+        break
+      }
+      default: {
+        throw new Error(`意外的操作: ${虚拟表操作}`)
+      }
+    }
+
+    let 最终结果 = new 常用形式转换器().实现(await 结果.运行(req, res, {}, { 请求id: 请求id }))
+    await log.debug('返回数据: %o', 递归截断字符串(最终结果))
+
+    res.send(最终结果)
+    await log.debug('返回逻辑执行完毕')
+  }
+
+  private 解析虚拟表操作(资源路径: string, 请求路径: string): 虚拟表操作类型 | null {
+    let 分解 = 请求路径.split('/')
+    let 操作 = 分解.at(-1) ?? null
+    let 解析资源路径 = 分解.slice(0, -1).join('/')
+    if (解析资源路径 !== 资源路径) return null
+    if (操作 !== 'add' && 操作 !== 'del' && 操作 !== 'set' && 操作 !== 'get') return null
+    return 操作
   }
 
   private async 初始化WebSocket(server: http.Server): Promise<void> {

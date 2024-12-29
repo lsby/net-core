@@ -15,7 +15,7 @@ export abstract class 接口结果转换器<
   abstract 实现(数据: Either<实现错误类型, 实现正确类型>): 接口错误形式 | 接口正确形式
 }
 
-export type 任意的接口结果转换器 = 接口结果转换器<any, any, any, any>
+export type 任意接口结果转换器 = 接口结果转换器<any, any, any, any>
 
 export class 常用形式转换器<
   实现错误类型 extends 接口逻辑错误类型,

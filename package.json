@@ -8,6 +8,8 @@
   },
   "bin": {
     "lsby-net-core-gen-list": "./dist/bin/gen-list/bin.cjs",
+    "lsby-net-core-gen-table-list": "./dist/bin/gen-table-list/bin.cjs",
+    "lsby-net-core-gen-table-type": "./dist/bin/gen-table-type/bin.cjs",
     "lsby-net-core-gen-test": "./dist/bin/gen-test/bin.cjs",
     "lsby-net-core-gen-type": "./dist/bin/gen-type/bin.cjs"
   },
