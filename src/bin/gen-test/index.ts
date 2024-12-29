@@ -41,7 +41,7 @@ export async function main(
   let tsconfig内容 = ts.parseConfigFileTextToJson(tsconfig路径, fs.readFileSync(tsconfig路径, 'utf8'))
   let tsconfig内容错误 = tsconfig内容.error ?? null
   if (tsconfig内容错误 !== null) {
-    await log.err('无法解析 tsconfig.json', tsconfig内容错误)
+    await log.error('无法解析 tsconfig.json', tsconfig内容错误)
     throw new Error('无法解析 tsconfig.json')
   }
   let 解析后的tsconfig = ts.parseJsonConfigFileContent(tsconfig内容.config, ts.sys, path.resolve(tsconfig路径, '..'))

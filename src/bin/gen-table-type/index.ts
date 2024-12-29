@@ -27,7 +27,7 @@ function 检查存在默认导出(源文件: ts.SourceFile): boolean {
 }
 
 export async function main(tsconfig路径: string, 目标路径: string, 输出文件路径: string): Promise<void> {
-  let log = new Log('@lsby:net-core').extend('gen-type')
+  let log = new Log('@lsby:net-core').extend('gen-table-type')
 
   await log.debug('开始生成类型...')
   await log.debug(`tsconfig路径: ${tsconfig路径}`)
@@ -37,7 +37,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
   let tsconfig内容 = ts.parseConfigFileTextToJson(tsconfig路径, fs.readFileSync(tsconfig路径, 'utf8'))
   let tsconfig内容错误 = tsconfig内容.error ?? null
   if (tsconfig内容错误 !== null) {
-    await log.err('无法解析 tsconfig.json: ' + tsconfig内容错误.messageText)
+    await log.error('无法解析 tsconfig.json: ' + tsconfig内容错误.messageText)
     throw new Error('无法解析 tsconfig.json')
   }
   let 解析后的tsconfig = ts.parseJsonConfigFileContent(tsconfig内容.config, ts.sys, path.resolve(tsconfig路径, '..'))
