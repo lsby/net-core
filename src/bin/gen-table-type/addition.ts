@@ -4,8 +4,8 @@ export type 条件<列定义> =
   是any<列定义> extends true
     ? any
     :
-        | { [K in keyof 列定义]: { 列: K; 符号: '=' | '<>'; 值: 列定义[K][] } }[keyof 列定义]
-        | { [K in keyof 列定义]: { 列: K; 符号: 'in' | 'not in'; 值: null } }[keyof 列定义]
+        | { [K in keyof 列定义]: { 列: K; 符号: '=' | '<>'; 值: 列定义[K] } }[keyof 列定义]
+        | { [K in keyof 列定义]: { 列: K; 符号: 'in' | 'not in'; 值: 列定义[K][] } }[keyof 列定义]
         | { [K in keyof 列定义]: { 列: K; 符号: 'is' | 'is not'; 值: null } }[keyof 列定义]
         | {
             [K in keyof 列定义]: 列定义[K] extends string ? { 列: K; 符号: 'like' | 'not like'; 值: string } : never
