@@ -133,15 +133,12 @@ export class 服务器 {
         pRes(null)
       }),
     )
-    await log.debug('json解析完成')
-
-    await log.debug('虚拟表: %O', 目标虚拟表.name)
-    await log.debug('操作: %O', 虚拟表操作)
+    await log.debug('json解析完成: %o', 递归截断字符串(req.body))
 
     await log.debug('提取构造参数...')
     let 构造参数 = (req.body?.['construction'] ?? null) as unknown
     if (构造参数 === null) throw new Error('构造参数不能为空')
-    await log.debug('构造参数: %O', 构造参数)
+    await log.debug('提取构造参数成功: %o', 构造参数)
 
     let 虚拟表实例 = new 目标虚拟表(构造参数)
     let 结果: 任意接口逻辑
@@ -149,25 +146,21 @@ export class 服务器 {
       case 'add': {
         await log.debug('调用逻辑: 增')
         结果 = await 虚拟表实例.增(req.body?.['value'])
-        await log.debug('调用结束')
         break
       }
       case 'del': {
         await log.debug('调用逻辑: 删')
         结果 = await 虚拟表实例.删(req.body?.['where'])
-        await log.debug('调用结束')
         break
       }
       case 'set': {
         await log.debug('调用逻辑: 改')
         结果 = await 虚拟表实例.改(req.body?.['value'], req.body?.['where'])
-        await log.debug('调用结束')
         break
       }
       case 'get': {
         await log.debug('调用逻辑: 查')
         结果 = await 虚拟表实例.查(req.body?.['where'], req.body?.['page'], req.body?.['sort'])
-        await log.debug('调用结束')
         break
       }
       default: {
@@ -176,8 +169,9 @@ export class 服务器 {
     }
 
     let 最终结果 = new 常用形式转换器().实现(await 结果.运行(req, res, {}, { 请求id: 请求id }))
-    await log.debug('返回数据: %o', 递归截断字符串(最终结果))
+    await log.debug('调用结束')
 
+    await log.debug('返回数据: %o', 递归截断字符串(最终结果))
     res.send(最终结果)
     await log.debug('返回逻辑执行完毕')
   }

@@ -104,7 +104,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
             增包装结果: { status: 'fail'; data: 增错误 } | { status: 'success'; data:{} }
             删包装结果: { status: 'fail'; data: 删错误 } | { status: 'success'; data:{} }
             改包装结果: { status: 'fail'; data: 改错误 } | { status: 'success'; data:{} }
-            查包装结果: { status: 'fail'; data: 改错误 } | { status: 'success'; data: 翻译列描述<z.infer<列描述Zod>>[] }
+            查包装结果: { status: 'fail'; data: 查错误 } | { status: 'success'; data: 翻译列描述<z.infer<列描述Zod>>[] }
           }
         : never
     `

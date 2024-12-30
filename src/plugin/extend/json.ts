@@ -23,7 +23,7 @@ export class JSON解析插件<Result extends AnyZodObject> extends 插件<Result
 
       if (parseResult.success === false) {
         await log.error('解析 JSON 失败：%o', parseResult.error)
-        throw new Error(format('解析 JSON 失败: %O', parseResult.error))
+        throw new Error(format('解析 JSON 失败: %o', parseResult.error))
       }
 
       await log.debug('成功解析 JSON')
