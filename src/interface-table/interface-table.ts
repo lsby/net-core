@@ -3,16 +3,21 @@ import { 接口逻辑 } from '../interface-api/interface-logic'
 import { 插件项类型 } from '../plugin/plug'
 
 // 修改这些定义的时候 计算类型的bin也需要改
-export type 基本类型 = string | number | boolean | null
-export type 条件<列名称们> =
-  | { 列名称: 列名称们; 符号: '=' | '<>'; 值: 基本类型 }
-  | { 列名称: 列名称们; 符号: '>' | '<' | '>=' | '<='; 值: number | string }
-  | { 列名称: 列名称们; 符号: 'like' | 'not like'; 值: string }
-  | { 列名称: 列名称们; 符号: 'in' | 'not in'; 值: 基本类型[] }
-  | { 列名称: 列名称们; 符号: 'is' | 'is not'; 值: 基本类型 }
-export type 条件组<列名称们> =
-  | { 模式: '直接条件'; 值: 条件<列名称们> }
-  | { 模式: '组合条件'; 组合模式: '与' | '或'; 条件们: 条件<列名称们>[] }
+export type 是any<T> = 0 extends 1 & T ? true : false
+export type 条件<列定义> =
+  是any<列定义> extends true
+    ? any
+    :
+        | { [K in keyof 列定义]: { 列: K; 符号: '=' | '<>'; 值: 列定义[K][] } }[keyof 列定义]
+        | { [K in keyof 列定义]: { 列: K; 符号: 'in' | 'not in'; 值: null } }[keyof 列定义]
+        | { [K in keyof 列定义]: { 列: K; 符号: 'is' | 'is not'; 值: null } }[keyof 列定义]
+        | {
+            [K in keyof 列定义]: 列定义[K] extends string ? { 列: K; 符号: 'like' | 'not like'; 值: string } : never
+          }[keyof 列定义]
+        | {
+            [K in keyof 列定义]: 列定义[K] extends number ? { 列: K; 符号: '>' | '<' | '>=' | '<='; 值: number } : never
+          }[keyof 列定义]
+export type 条件组<列定义 extends object> = 条件<列定义>[]
 export type 分页选项 = {
   页数: number
   大小: number
@@ -28,7 +33,9 @@ export type 翻译自定义类型<A> = A extends '字符串'
     : A extends '布尔'
       ? boolean
       : never
-export type 翻译列描述<对象> = { [key in keyof 对象]: 翻译自定义类型<对象[key]> }
+export type 翻译列描述<对象> = 是any<对象> extends true ? any : { [key in keyof 对象]: 翻译自定义类型<对象[key]> }
+export type 翻译列描述带空<对象> =
+  是any<对象> extends true ? any : { [key in keyof 对象]: 翻译自定义类型<对象[key]> | undefined }
 
 /**
  * # 虚拟表
@@ -75,41 +82,15 @@ export abstract class 虚拟表<
   constructor(protected 构造参数: z.infer<构造参数类型>) {}
 
   abstract 增(数据们: Partial<z.infer<列类型>>[]): Promise<接口逻辑<插件项类型[], {}, z.infer<增错误>, {}>>
-  abstract 删(筛选条件: 条件组<keyof z.infer<列类型>>): Promise<接口逻辑<插件项类型[], {}, z.infer<删错误>, {}>>
+  abstract 删(筛选条件: 条件组<翻译列描述<z.infer<列类型>>>): Promise<接口逻辑<插件项类型[], {}, z.infer<删错误>, {}>>
   abstract 改(
     新值: Partial<z.infer<列类型>>,
-    筛选条件: 条件组<keyof z.infer<列类型>>,
+    筛选条件: 条件组<翻译列描述<z.infer<列类型>>>,
   ): Promise<接口逻辑<插件项类型[], {}, z.infer<改错误>, {}>>
   abstract 查(
-    筛选条件?: 条件组<keyof z.infer<列类型>>,
+    筛选条件?: 条件组<翻译列描述<z.infer<列类型>>>,
     分页条件?: 分页选项,
     排序条件?: 排序选项<keyof z.infer<列类型>>,
-  ): Promise<接口逻辑<插件项类型[], {}, z.infer<查错误>, 翻译列描述<z.infer<列类型>>[]>>
+  ): Promise<接口逻辑<插件项类型[], {}, z.infer<查错误>, 翻译列描述带空<z.infer<列类型>>[]>>
 }
 export type 任意虚拟表 = 虚拟表<any, any, any, any, any, any>
-
-export type 扁平化条件组项<列名称们> = { 组合模式: '与' | '或'; 条件: 条件<列名称们> }
-export function 扁平化条件组<列名称们>(条件组: 条件组<列名称们>[]): 扁平化条件组项<列名称们>[] {
-  let 扁平化条件: 扁平化条件组项<列名称们>[] = []
-
-  for (let 条件组项 of 条件组) {
-    switch (条件组项.模式) {
-      case '直接条件':
-        扁平化条件.push({
-          组合模式: '与',
-          条件: 条件组项.值,
-        })
-        break
-      case '组合条件':
-        for (let 条件项 of 条件组项.条件们) {
-          扁平化条件.push({
-            组合模式: 条件组项.组合模式,
-            条件: 条件项,
-          })
-        }
-        break
-    }
-  }
-
-  return 扁平化条件
-}
