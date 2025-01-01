@@ -79,7 +79,7 @@ export abstract class 虚拟表<
 
   protected declare readonly __类型保持符号?: [构造参数类型, 列类型, 增错误, 删错误, 改错误, 查错误]
 
-  constructor(protected 构造参数: z.infer<构造参数类型>) {}
+  constructor(protected 构造参数: 翻译列描述<z.infer<构造参数类型>>) {}
 
   abstract 增(数据们: Partial<z.infer<列类型>>[]): Promise<接口逻辑<插件项类型[], {}, z.infer<增错误>, {}>>
   abstract 删(筛选条件: 条件组<翻译列描述<z.infer<列类型>>>): Promise<接口逻辑<插件项类型[], {}, z.infer<删错误>, {}>>

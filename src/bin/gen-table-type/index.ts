@@ -80,7 +80,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
         ? {
             路径: 路径
 
-            构造参数: 导入 extends 虚拟表<infer X, any, any, any, any, any> ? z.infer<X> : never
+            构造参数: 导入 extends 虚拟表<infer X, any, any, any, any, any> ? 翻译列描述<z.infer<X>> : never
             列类型: 翻译列描述<z.infer<列描述Zod>>
 
             增参数_数据们: Partial<翻译列描述<z.infer<列描述Zod>>>[]
