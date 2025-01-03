@@ -145,22 +145,22 @@ export class 服务器 {
     switch (虚拟表操作) {
       case 'add': {
         await log.debug('调用逻辑: 增')
-        结果 = await 虚拟表实例.增(req.body?.['value'])
+        结果 = await 虚拟表实例.调用增(req.body)
         break
       }
       case 'del': {
         await log.debug('调用逻辑: 删')
-        结果 = await 虚拟表实例.删(req.body?.['where'])
+        结果 = await 虚拟表实例.调用改(req.body)
         break
       }
       case 'set': {
         await log.debug('调用逻辑: 改')
-        结果 = await 虚拟表实例.改(req.body?.['value'], req.body?.['where'])
+        结果 = await 虚拟表实例.调用改(req.body)
         break
       }
       case 'get': {
         await log.debug('调用逻辑: 查')
-        结果 = await 虚拟表实例.查(req.body?.['where'], req.body?.['page'], req.body?.['sort'])
+        结果 = await 虚拟表实例.调用查(req.body)
         break
       }
       default: {
