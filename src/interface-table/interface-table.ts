@@ -144,5 +144,27 @@ export abstract class 虚拟表<
     分页条件?: 分页选项,
     排序条件?: 排序选项<keyof z.infer<列形状>>,
   ): Promise<接口逻辑<插件项类型[], {}, z.infer<查错误>, 翻译查询列描述<z.infer<列形状>>[]>>
+
+  调用增(body: { value: 翻译插入列描述<z.infer<列形状>>[] }): Promise<接口逻辑<插件项类型[], {}, z.infer<增错误>, {}>> {
+    return this.增(body.value)
+  }
+  调用删(body: {
+    where: 条件组<翻译列描述<z.infer<列形状>>>
+  }): Promise<接口逻辑<插件项类型[], {}, z.infer<删错误>, {}>> {
+    return this.删(body.where)
+  }
+  调用改(body: {
+    value: Partial<z.infer<列形状>>
+    where: 条件组<翻译列描述<z.infer<列形状>>>
+  }): Promise<接口逻辑<插件项类型[], {}, z.infer<改错误>, {}>> {
+    return this.改(body.value, body.where)
+  }
+  调用查(body: {
+    where?: 条件组<翻译列描述<z.infer<列形状>>>
+    page?: 分页选项
+    sort?: 排序选项<keyof z.infer<列形状>>
+  }): Promise<接口逻辑<插件项类型[], {}, z.infer<查错误>, 翻译查询列描述<z.infer<列形状>>[]>> {
+    return this.查(body.where, body.page, body.sort)
+  }
 }
 export type 任意虚拟表 = 虚拟表<any, any, any, any, any, any>
