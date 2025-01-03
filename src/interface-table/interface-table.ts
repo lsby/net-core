@@ -33,9 +33,52 @@ export type 翻译自定义类型<A> = A extends '字符串'
     : A extends '布尔'
       ? boolean
       : never
-export type 翻译列描述<对象> = 是any<对象> extends true ? any : { [key in keyof 对象]: 翻译自定义类型<对象[key]> }
-export type 翻译列描述带空<对象> =
-  是any<对象> extends true ? any : { [key in keyof 对象]: 翻译自定义类型<对象[key]> | undefined }
+export type 翻译列描述<对象> =
+  是any<对象> extends true
+    ? any
+    : { [key in keyof 对象]: '类型' extends keyof 对象[key] ? 翻译自定义类型<对象[key]['类型']> : never }
+export type 翻译查询列描述<对象> =
+  是any<对象> extends true
+    ? any
+    : {
+        [key in keyof 对象]: '类型' extends keyof 对象[key]
+          ? '可空' extends keyof 对象[key]
+            ? 对象[key]['可空'] extends 'false'
+              ? 翻译自定义类型<对象[key]['类型']>
+              : 翻译自定义类型<对象[key]['类型']> | undefined
+            : never
+          : never
+      }
+export type 翻译插入列描述<对象> =
+  是any<对象> extends true
+    ? any
+    : 归约数组对象<
+        联合转元组<
+          未定义对象转可选对象<{
+            [key in keyof 对象]: '类型' extends keyof 对象[key]
+              ? '可选' extends keyof 对象[key]
+                ? 对象[key]['可选'] extends 'false'
+                  ? 翻译自定义类型<对象[key]['类型']>
+                  : 翻译自定义类型<对象[key]['类型']> | undefined
+                : never
+              : never
+          }>
+        >
+      >
+export type 未定义对象转可选对象<X> = {
+  [key in keyof X]: undefined extends X[key] ? { [k in key]?: X[key] } : { [k in key]: X[key] }
+}[keyof X]
+
+type 归约数组对象<Arr> = Arr extends [] ? {} : Arr extends [infer x, ...infer xs] ? x & 归约数组对象<xs> : never
+
+type 联合转换成函数<X> = X extends any ? (a: (x: any) => X) => any : never
+type 函数转换成与<X> = (X extends any ? X : never) extends (a: infer A) => any ? A : never
+type 取最后一个<X> = 函数转换成与<联合转换成函数<X>> extends (x: any) => infer A ? A : never
+type 联合转元组<X> = [X] extends [never]
+  ? []
+  : 取最后一个<X> extends infer Last
+    ? [...联合转元组<Exclude<X, Last>>, Last]
+    : never
 
 /**
  * # 虚拟表
@@ -69,7 +112,16 @@ export type 翻译列描述带空<对象> =
  */
 export abstract class 虚拟表<
   构造参数类型 extends z.AnyZodObject,
-  列类型 extends z.ZodObject<Record<string, z.ZodLiteral<'字符串'> | z.ZodLiteral<'数字'> | z.ZodLiteral<'布尔'>>>,
+  列形状 extends z.ZodObject<
+    Record<
+      string,
+      z.ZodObject<{
+        类型: z.ZodLiteral<'字符串'> | z.ZodLiteral<'数字'> | z.ZodLiteral<'布尔'>
+        可选: z.ZodLiteral<'true'> | z.ZodLiteral<'false'>
+        可空: z.ZodLiteral<'true'> | z.ZodLiteral<'false'>
+      }>
+    >
+  >,
   增错误 extends z.ZodEnum<[string, ...string[]]> | z.ZodNever,
   删错误 extends z.ZodEnum<[string, ...string[]]> | z.ZodNever,
   改错误 extends z.ZodEnum<[string, ...string[]]> | z.ZodNever,
@@ -77,20 +129,20 @@ export abstract class 虚拟表<
 > {
   static 资源路径: string
 
-  protected declare readonly __类型保持符号?: [构造参数类型, 列类型, 增错误, 删错误, 改错误, 查错误]
+  protected declare readonly __类型保持符号?: [构造参数类型, 列形状, 增错误, 删错误, 改错误, 查错误]
 
-  constructor(protected 构造参数: 翻译列描述<z.infer<构造参数类型>>) {}
+  constructor(protected 构造参数: z.infer<构造参数类型>) {}
 
-  abstract 增(数据们: Partial<z.infer<列类型>>[]): Promise<接口逻辑<插件项类型[], {}, z.infer<增错误>, {}>>
-  abstract 删(筛选条件: 条件组<翻译列描述<z.infer<列类型>>>): Promise<接口逻辑<插件项类型[], {}, z.infer<删错误>, {}>>
+  abstract 增(数据们: 翻译插入列描述<z.infer<列形状>>[]): Promise<接口逻辑<插件项类型[], {}, z.infer<增错误>, {}>>
+  abstract 删(筛选条件: 条件组<翻译列描述<z.infer<列形状>>>): Promise<接口逻辑<插件项类型[], {}, z.infer<删错误>, {}>>
   abstract 改(
-    新值: Partial<z.infer<列类型>>,
-    筛选条件: 条件组<翻译列描述<z.infer<列类型>>>,
+    新值: Partial<z.infer<列形状>>,
+    筛选条件: 条件组<翻译列描述<z.infer<列形状>>>,
   ): Promise<接口逻辑<插件项类型[], {}, z.infer<改错误>, {}>>
   abstract 查(
-    筛选条件?: 条件组<翻译列描述<z.infer<列类型>>>,
+    筛选条件?: 条件组<翻译列描述<z.infer<列形状>>>,
     分页条件?: 分页选项,
-    排序条件?: 排序选项<keyof z.infer<列类型>>,
-  ): Promise<接口逻辑<插件项类型[], {}, z.infer<查错误>, 翻译列描述带空<z.infer<列类型>>[]>>
+    排序条件?: 排序选项<keyof z.infer<列形状>>,
+  ): Promise<接口逻辑<插件项类型[], {}, z.infer<查错误>, 翻译查询列描述<z.infer<列形状>>[]>>
 }
 export type 任意虚拟表 = 虚拟表<any, any, any, any, any, any>

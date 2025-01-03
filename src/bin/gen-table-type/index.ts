@@ -59,7 +59,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
 
   let 伴随的虚拟文件们 = 相关源文件们.map((a) => {
     let 代码 = `
-      import { 分页选项, 排序选项, 条件组, 翻译列描述, 翻译列描述带空, 虚拟表 } from '@lsby/net-core'
+      import { 分页选项, 排序选项, 条件组, 翻译列描述, 翻译查询列描述, 翻译插入列描述, 虚拟表 } from '@lsby/net-core'
       import { z } from 'zod'
       import 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}",
 
@@ -80,10 +80,9 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
         ? {
             路径: 路径
 
-            构造参数: 导入 extends 虚拟表<infer X, any, any, any, any, any> ? 翻译列描述<z.infer<X>> : never
-            列类型: 翻译列描述<z.infer<列描述Zod>>
+            构造参数: 导入 extends 虚拟表<infer X, any, any, any, any, any> ? z.infer<X> : never
 
-            增参数_数据们: Partial<翻译列描述<z.infer<列描述Zod>>>[]
+            增参数_数据们: 翻译插入列描述<z.infer<列描述Zod>>[]
             删参数_筛选条件: 条件组<翻译列描述<z.infer<列描述Zod>>>
             改参数_新值: Partial<翻译列描述<z.infer<列描述Zod>>>
             改参数_筛选条件: 条件组<翻译列描述<z.infer<列描述Zod>>>
@@ -99,12 +98,12 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
             增原始正确值: {}
             删原始正确值: {}
             改原始正确值: {}
-            查原始正确值: 翻译列描述带空<z.infer<列描述Zod>>[]
+            查原始正确值: 翻译查询列描述<z.infer<列描述Zod>>[]
 
             增包装结果: { status: 'fail'; data: 增错误 } | { status: 'success'; data:{} }
             删包装结果: { status: 'fail'; data: 删错误 } | { status: 'success'; data:{} }
             改包装结果: { status: 'fail'; data: 改错误 } | { status: 'success'; data:{} }
-            查包装结果: { status: 'fail'; data: 查错误 } | { status: 'success'; data: 翻译列描述带空<z.infer<列描述Zod>>[] }
+            查包装结果: { status: 'fail'; data: 查错误 } | { status: 'success'; data: 翻译查询列描述<z.infer<列描述Zod>>[] }
           }
         : never
     `
