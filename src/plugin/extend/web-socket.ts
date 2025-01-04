@@ -54,11 +54,11 @@ export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
         return {
           ws操作: {
             async 发送ws信息(信息: 信息): Promise<void> {
-              await log.debug('发送 WebSocket 信息', { 信息 })
+              await log.debug('发送 WebSocket 信息: %O', 信息)
               return new Promise((res, rej) => {
                 存在的ws句柄.send(JSON.stringify(信息), (err) => {
                   if ((err ?? null) !== null) {
-                    log.error('发送 WebSocket 信息失败', { 错误: err }).catch(console.error)
+                    log.error('发送 WebSocket 信息失败: %O', err).catch(console.error)
                     return rej(err)
                   }
                   log.debug('WebSocket 信息发送成功').catch(console.error)
