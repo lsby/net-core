@@ -150,7 +150,7 @@ export class 服务器 {
       }
       case 'del': {
         await log.debug('调用逻辑: 删')
-        结果 = await 虚拟表实例.调用改(req.body)
+        结果 = await 虚拟表实例.调用删(req.body)
         break
       }
       case 'set': {
