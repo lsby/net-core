@@ -203,9 +203,9 @@ export class 服务器 {
       await log.debug('解析客户端 ID: %s', 客户端id)
 
       let WebSocket管理者 = await Global.getItem('WebSocket管理者')
-      let 是否已存在 = await WebSocket管理者.查询连接存在(客户端id)
+      let 连接已存在 = await WebSocket管理者.查询连接存在(客户端id)
 
-      if (是否已存在) {
+      if (连接已存在) {
         await log.error('客户端 ID 已存在: %s', 客户端id)
         return this.关闭WebSocket连接(ws, log, 4002, '客户端 ID 已存在')
       }
