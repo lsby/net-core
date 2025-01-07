@@ -3,13 +3,17 @@ import { z } from 'zod'
 import { Global } from '../../global/global'
 import { 包装插件项, 取Task插件类型, 插件, 插件项类型 } from '../plug'
 
-export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
+export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> extends 插件<
   z.ZodObject<{
     ws操作: z.ZodUnion<
       [
         z.ZodObject<{
           发送ws信息: z.ZodFunction<z.ZodTuple<[信息], null>, z.ZodPromise<z.ZodVoid>>
           关闭ws连接: z.ZodFunction<z.ZodTuple<[], null>, z.ZodPromise<z.ZodVoid>>
+          设置清理函数: z.ZodFunction<
+            z.ZodTuple<[z.ZodFunction<z.ZodTuple<[], null>, z.ZodPromise<z.ZodVoid>>], null>,
+            z.ZodPromise<z.ZodVoid>
+          >
         }>,
         z.ZodNull,
       ]
@@ -25,6 +29,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
           .object({
             发送ws信息: z.function(z.tuple([信息描述]), z.promise(z.void())),
             关闭ws连接: z.function(z.tuple([]), z.promise(z.void())),
+            设置清理函数: z.function(z.tuple([z.function(z.tuple([]), z.promise(z.void()))]), z.promise(z.void())),
           })
           .or(z.null()),
       }),
@@ -36,11 +41,14 @@ export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
         let ws句柄: WebSocket | null = null
 
         await log.debug('检查 ws-client-id 头信息', { wsId })
-
-        if (typeof wsId === 'string') {
-          await log.debug('尝试获取 WebSocket 句柄')
-          ws句柄 = await WebSocket管理者.获得句柄(wsId)
+        if (typeof wsId !== 'string') {
+          await log.error('未能获取到有效的 WebSocket Id')
+          return { ws操作: null }
         }
+        let 存在的wsId = wsId
+
+        await log.debug('尝试获取 WebSocket 句柄')
+        ws句柄 = await WebSocket管理者.获得句柄(存在的wsId)
 
         if (ws句柄 === null) {
           await log.error('未能获取到有效的 WebSocket 句柄')
@@ -69,6 +77,9 @@ export class WebSocket插件<信息 extends z.AnyZodObject> extends 插件<
             async 关闭ws连接(): Promise<void> {
               await log.debug('关闭 WebSocket 连接')
               存在的ws句柄.close()
+            },
+            async 设置清理函数(清理函数): Promise<void> {
+              await WebSocket管理者.设置清理函数(存在的wsId, 清理函数)
             },
           },
         }
