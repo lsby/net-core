@@ -37,6 +37,9 @@ export type 翻译列描述<对象> =
   是any<对象> extends true
     ? any
     : { [key in keyof 对象]: '类型' extends keyof 对象[key] ? 翻译自定义类型<对象[key]['类型']> : never }
+
+// 可空: 允许为null
+// 可选: 插入时可以不提供, 有默认值
 export type 翻译查询列描述<对象> =
   是any<对象> extends true
     ? any
@@ -72,8 +75,8 @@ export type 翻译修改值列描述<对象> =
         联合转元组<
           未定义对象转可选对象<{
             [key in keyof 对象]: '类型' extends keyof 对象[key]
-              ? '可选' extends keyof 对象[key]
-                ? 对象[key]['可选'] extends 'false'
+              ? '可空' extends keyof 对象[key]
+                ? 对象[key]['可空'] extends 'false'
                   ? 翻译自定义类型<对象[key]['类型']>
                   : 翻译自定义类型<对象[key]['类型']> | null
                 : never
