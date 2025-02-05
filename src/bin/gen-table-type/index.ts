@@ -59,7 +59,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
 
   let 伴随的虚拟文件们 = 相关源文件们.map((a) => {
     let 代码 = `
-      import { 分页选项, 排序选项, 条件组, 翻译列描述, 翻译查询列描述, 翻译插入列描述, 虚拟表 } from '@lsby/net-core'
+      import { 分页选项, 排序选项, 条件组, 翻译列描述, 翻译查询列描述, 翻译插入列描述, 虚拟表, 翻译修改值列描述 } from '@lsby/net-core'
       import { z } from 'zod'
       import 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}",
 
@@ -84,7 +84,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
 
             增参数_数据们: 翻译插入列描述<z.infer<列描述Zod>>[]
             删参数_筛选条件: 条件组<翻译列描述<z.infer<列描述Zod>>>
-            改参数_新值: Partial<翻译列描述<z.infer<列描述Zod>>>
+            改参数_新值: Partial<翻译修改值列描述<z.infer<列描述Zod>>>
             改参数_筛选条件: 条件组<翻译列描述<z.infer<列描述Zod>>>
             查参数_筛选条件: 条件组<翻译列描述<z.infer<列描述Zod>>>
             查参数_分页条件: 分页选项
