@@ -65,6 +65,22 @@ export type 翻译插入列描述<对象> =
           }>
         >
       >
+export type 翻译修改值列描述<对象> =
+  是any<对象> extends true
+    ? any
+    : 归约数组对象<
+        联合转元组<
+          未定义对象转可选对象<{
+            [key in keyof 对象]: '类型' extends keyof 对象[key]
+              ? '可选' extends keyof 对象[key]
+                ? 对象[key]['可选'] extends 'false'
+                  ? 翻译自定义类型<对象[key]['类型']>
+                  : 翻译自定义类型<对象[key]['类型']> | null
+                : never
+              : never
+          }>
+        >
+      >
 export type 未定义对象转可选对象<X> = {
   [key in keyof X]: undefined extends X[key] ? { [k in key]?: X[key] } : { [k in key]: X[key] }
 }[keyof X]
