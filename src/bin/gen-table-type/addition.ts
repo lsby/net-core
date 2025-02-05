@@ -41,7 +41,7 @@ export type 翻译查询列描述<对象> =
           ? '可空' extends keyof 对象[key]
             ? 对象[key]['可空'] extends 'false'
               ? 翻译自定义类型<对象[key]['类型']>
-              : 翻译自定义类型<对象[key]['类型']> | undefined
+              : 翻译自定义类型<对象[key]['类型']> | null
             : never
           : never
       }
