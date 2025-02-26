@@ -63,7 +63,7 @@ export class 服务器 {
       // 匹配虚拟表
       if (请求方法 === 'post') {
         let 目标虚拟表 =
-          this.虚拟表们.find((虚拟表) => 请求路径.split('/').slice(-1).join('/') === 虚拟表.资源路径) ?? null
+          this.虚拟表们.find((虚拟表) => 请求路径.split('/').slice(0, -1).join('/') === 虚拟表.资源路径) ?? null
         if (目标虚拟表 !== null) {
           let 虚拟表操作 = this.解析虚拟表操作(目标虚拟表.资源路径, 请求路径)
           if (虚拟表操作 !== null) {
