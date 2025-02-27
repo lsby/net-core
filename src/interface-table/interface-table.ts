@@ -155,7 +155,7 @@ export abstract class 虚拟表<
   abstract 增(数据们: 翻译插入列描述<z.infer<列形状>>[]): Promise<接口逻辑<插件项类型[], {}, z.infer<增错误>, {}>>
   abstract 删(筛选条件: 条件组<翻译列描述<z.infer<列形状>>>): Promise<接口逻辑<插件项类型[], {}, z.infer<删错误>, {}>>
   abstract 改(
-    新值: Partial<z.infer<列形状>>,
+    新值: Partial<翻译修改值列描述<z.infer<列形状>>>,
     筛选条件: 条件组<翻译列描述<z.infer<列形状>>>,
   ): Promise<接口逻辑<插件项类型[], {}, z.infer<改错误>, {}>>
   abstract 查(
@@ -173,7 +173,7 @@ export abstract class 虚拟表<
     return this.删(body.where)
   }
   调用改(body: {
-    value: Partial<z.infer<列形状>>
+    value: Partial<翻译修改值列描述<z.infer<列形状>>>
     where: 条件组<翻译列描述<z.infer<列形状>>>
   }): Promise<接口逻辑<插件项类型[], {}, z.infer<改错误>, {}>> {
     return this.改(body.value, body.where)
