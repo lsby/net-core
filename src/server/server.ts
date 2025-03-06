@@ -47,12 +47,6 @@ export class 服务器 {
 
       await log.debug('收到请求, 路径: %o, 方法: %o', 请求路径, 请求方法)
 
-      // 静态资源处理
-      let 静态资源路径 = this.静态资源路径 ?? null
-      if (静态资源路径 !== null && 请求方法 === 'get' && (await this.处理静态资源(req, res, log))) {
-        return
-      }
-
       // 匹配接口
       let 目标接口 = this.接口们.find((接口) => 请求方法 === 接口.获得方法() && 请求路径 === 接口.获得路径()) ?? null
       if (目标接口 !== null) {
@@ -71,6 +65,12 @@ export class 服务器 {
             return
           }
         }
+      }
+
+      // 静态资源处理
+      let 静态资源路径 = this.静态资源路径 ?? null
+      if (静态资源路径 !== null && 请求方法 === 'get' && (await this.处理静态资源(req, res, log))) {
+        return
       }
 
       // 未命中资源
