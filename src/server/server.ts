@@ -1,6 +1,7 @@
 import { Log } from '@lsby/ts-log'
 import type { Request, Response } from 'express'
 import express from 'express'
+import { readFile } from 'node:fs/promises'
 import type * as http from 'node:http'
 import { networkInterfaces } from 'node:os'
 import short from 'short-uuid'
@@ -22,6 +23,7 @@ export class 服务器 {
     private 虚拟表们: { new (构造参数: any): 任意虚拟表; 资源路径: string }[],
     private 端口: number,
     private 静态资源路径?: string,
+    private 默认get文件路径?: string,
   ) {}
 
   async run(): Promise<{
@@ -71,6 +73,17 @@ export class 服务器 {
       let 静态资源路径 = this.静态资源路径 ?? null
       if (静态资源路径 !== null && 请求方法 === 'get' && (await this.处理静态资源(req, res, log))) {
         return
+      }
+
+      // 处理默认get文件
+      if (this.默认get文件路径 !== void 0 && 请求方法 === 'get') {
+        try {
+          let 默认文件内容 = await readFile(this.默认get文件路径, { encoding: 'utf-8' })
+          res.send(默认文件内容)
+          return
+        } catch (e) {
+          await log.error('返回默认get文件内容失败: %o', String(e))
+        }
       }
 
       // 未命中资源
