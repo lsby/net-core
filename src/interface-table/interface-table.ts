@@ -152,7 +152,9 @@ export abstract class 虚拟表<
 
   constructor(protected 构造参数: z.infer<构造参数类型>) {}
 
-  abstract 增(数据们: 翻译插入列描述<z.infer<列形状>>[]): Promise<接口逻辑<插件项类型[], {}, z.infer<增错误>, {}>>
+  abstract 增(
+    数据们: 翻译插入列描述<z.infer<列形状>>[],
+  ): Promise<接口逻辑<插件项类型[], { data: { insertId: string }[] }, z.infer<增错误>, {}>>
   abstract 删(筛选条件: 条件组<翻译列描述<z.infer<列形状>>>): Promise<接口逻辑<插件项类型[], {}, z.infer<删错误>, {}>>
   abstract 改(
     新值: Partial<翻译修改值列描述<z.infer<列形状>>>,
@@ -164,7 +166,9 @@ export abstract class 虚拟表<
     排序条件?: 排序选项<keyof z.infer<列形状>>,
   ): Promise<接口逻辑<插件项类型[], {}, z.infer<查错误>, 翻译查询列描述<z.infer<列形状>>[]>>
 
-  调用增(body: { value: 翻译插入列描述<z.infer<列形状>>[] }): Promise<接口逻辑<插件项类型[], {}, z.infer<增错误>, {}>> {
+  调用增(body: {
+    value: 翻译插入列描述<z.infer<列形状>>[]
+  }): Promise<接口逻辑<插件项类型[], { data: { insertId: string }[] }, z.infer<增错误>, {}>> {
     return this.增(body.value)
   }
   调用删(body: {
