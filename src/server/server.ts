@@ -24,6 +24,7 @@ export class 服务器 {
 
   async run(): Promise<{
     ip: string[]
+    api: string[]
     server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>
   }> {
     let app = express()
@@ -32,7 +33,7 @@ export class 服务器 {
     let server = app.listen(this.端口)
     await this.初始化WebSocket(server)
 
-    return { ip: this.获取本地地址(), server }
+    return { ip: this.获取本地地址(), api: this.接口们.map((a) => a.获得路径() as string), server }
   }
 
   private async 处理请求(req: Request, res: Response): Promise<void> {
