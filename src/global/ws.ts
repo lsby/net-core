@@ -1,8 +1,10 @@
 import { WebSocket } from 'ws'
+import { Global } from './global'
 
 type id = string
 
 export class WebSocket管理者 {
+  private log = Global.getItem('log').then((a) => a.extend('WebSocket管理者'))
   private 清理函数表: Record<string, () => Promise<void>> = {}
 
   constructor(private 连接表: Record<id, WebSocket | null>) {}
@@ -21,8 +23,13 @@ export class WebSocket管理者 {
     return this.连接表[id] ?? null
   }
   async 删除连接(id: string): Promise<void> {
+    let log = await this.log
     let 清理函数 = this.清理函数表[id]
-    await 清理函数?.()
+    try {
+      await 清理函数?.()
+    } catch (err) {
+      await log.error(`清理连接失败, id: ${id}, 错误: ${err}`)
+    }
     delete this.连接表[id]
     delete this.清理函数表[id]
   }
