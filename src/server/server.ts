@@ -9,18 +9,14 @@ import { WebSocket, WebSocketServer } from 'ws'
 import { Global } from '../global/global'
 import { 任意接口 } from '../interface-api/interface-base'
 import { 任意接口逻辑 } from '../interface-api/interface-logic'
-import { 任意接口结果转换器, 常用形式转换器 } from '../interface-api/interface-result'
-import { 任意虚拟表 } from '../interface-table/interface-table'
+import { 任意接口结果转换器 } from '../interface-api/interface-result'
 import { 递归截断字符串 } from '../tools/tools'
-
-type 虚拟表操作类型 = 'add' | 'del' | 'set' | 'get'
 
 export class 服务器 {
   private log = Global.getItem('log')
 
   constructor(
     private 接口们: 任意接口[],
-    private 虚拟表们: { new (构造参数: any): 任意虚拟表; 资源路径: string }[],
     private 端口: number,
     private 静态资源路径?: string,
     private 默认get文件路径?: string,
@@ -54,19 +50,6 @@ export class 服务器 {
       if (目标接口 !== null) {
         await this.处理接口逻辑(req, res, log, 目标接口, 请求id)
         return
-      }
-
-      // 匹配虚拟表
-      if (请求方法 === 'post') {
-        let 目标虚拟表 =
-          this.虚拟表们.find((虚拟表) => 请求路径.split('/').slice(0, -1).join('/') === 虚拟表.资源路径) ?? null
-        if (目标虚拟表 !== null) {
-          let 虚拟表操作 = this.解析虚拟表操作(目标虚拟表.资源路径, 请求路径)
-          if (虚拟表操作 !== null) {
-            await this.处理虚拟表逻辑(req, res, log, 虚拟表操作, 目标虚拟表, 请求id)
-            return
-          }
-        }
       }
 
       // 静态资源处理
@@ -129,74 +112,6 @@ export class 服务器 {
 
     res.send(最终结果)
     await log.debug('返回逻辑执行完毕')
-  }
-
-  private async 处理虚拟表逻辑(
-    req: Request,
-    res: Response,
-    log: Log,
-    虚拟表操作: 虚拟表操作类型,
-    目标虚拟表: { new (构造参数: any): 任意虚拟表 },
-    请求id: string,
-  ): Promise<void> {
-    await log.debug('调用虚拟表逻辑...')
-
-    await log.debug('调用json解析...')
-    await new Promise((pRes, _rej) =>
-      express.json({})(req, res, () => {
-        pRes(null)
-      }),
-    )
-    await log.debug('json解析完成: %o', 递归截断字符串(req.body))
-
-    await log.debug('提取构造参数...')
-    let 构造参数 = (req.body?.['construction'] ?? null) as unknown
-    if (构造参数 === null) throw new Error('构造参数不能为空')
-    await log.debug('提取构造参数成功: %o', 构造参数)
-
-    let 虚拟表实例 = new 目标虚拟表(构造参数)
-    let 结果: 任意接口逻辑
-    switch (虚拟表操作) {
-      case 'add': {
-        await log.debug('调用逻辑: 增')
-        结果 = await 虚拟表实例.调用增(req.body)
-        break
-      }
-      case 'del': {
-        await log.debug('调用逻辑: 删')
-        结果 = await 虚拟表实例.调用删(req.body)
-        break
-      }
-      case 'set': {
-        await log.debug('调用逻辑: 改')
-        结果 = await 虚拟表实例.调用改(req.body)
-        break
-      }
-      case 'get': {
-        await log.debug('调用逻辑: 查')
-        结果 = await 虚拟表实例.调用查(req.body)
-        break
-      }
-      default: {
-        throw new Error(`意外的操作: ${虚拟表操作}`)
-      }
-    }
-
-    let 最终结果 = new 常用形式转换器().实现(await 结果.运行(req, res, {}, { 请求id: 请求id }))
-    await log.debug('调用结束')
-
-    await log.debug('返回数据: %o', 递归截断字符串(最终结果))
-    res.send(最终结果)
-    await log.debug('返回逻辑执行完毕')
-  }
-
-  private 解析虚拟表操作(资源路径: string, 请求路径: string): 虚拟表操作类型 | null {
-    let 分解 = 请求路径.split('/')
-    let 操作 = 分解.at(-1) ?? null
-    let 解析资源路径 = 分解.slice(0, -1).join('/')
-    if (解析资源路径 !== 资源路径) return null
-    if (操作 !== 'add' && 操作 !== 'del' && 操作 !== 'set' && 操作 !== 'get') return null
-    return 操作
   }
 
   private async 初始化WebSocket(server: http.Server): Promise<void> {
