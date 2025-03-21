@@ -9,8 +9,6 @@
   "bin": {
     "lsby-net-core-gen-api-list": "./dist/bin/gen-api-list/bin.cjs",
     "lsby-net-core-gen-api-type": "./dist/bin/gen-api-type/bin.cjs",
-    "lsby-net-core-gen-table-list": "./dist/bin/gen-table-list/bin.cjs",
-    "lsby-net-core-gen-table-type": "./dist/bin/gen-table-type/bin.cjs",
     "lsby-net-core-gen-test": "./dist/bin/gen-test/bin.cjs"
   },
   "files": [
