@@ -160,7 +160,7 @@ export class 服务器 {
   }
 
   private async 关闭WebSocket连接(ws: WebSocket, log: Log, code: number, reason: string): Promise<void> {
-    await log.debug(`关闭 WebSocket 连接, 原因: ${reason}`)
+    await log.debug(`关闭 WebSocket 连接, 代码: ${code}, 原因: ${reason}`)
     ws.close(code, reason)
   }
 
