@@ -126,7 +126,7 @@ export class 服务器 {
       let 客户端id = req.url?.split('?id=')[1] ?? null
       if (客户端id === null) {
         await log.error('缺少客户端id')
-        return this.关闭WebSocket连接(ws, log, 1006, '缺少客户端id')
+        return this.关闭WebSocket连接(ws, log, 1011, '缺少客户端id')
       }
 
       let WebSocket管理器 = await Global.getItem('WebSocket管理器')

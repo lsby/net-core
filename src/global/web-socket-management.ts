@@ -93,7 +93,7 @@ export class WebSocket管理器 {
     this.连接表[id].已错误 = false
     this.连接表[id].数据发送中 = false
     this.连接表[id].缓存发送中 = false
-    旧句柄?.close(1006, '新连接替换旧连接')
+    旧句柄?.close(1011, '新连接替换旧连接')
 
     await log.info('发送旧连接缓存')
     this.连接表[id].缓存发送中 = true
