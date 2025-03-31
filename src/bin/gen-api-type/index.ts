@@ -199,8 +199,6 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
   await log.debug(`最终筛选出 ${最终结果_导出类型.length} 个导出类型`)
 
   let 最终代码 = [
-    `import { GetNetCoreExportTypeName, GetNetCoreExportTypeDefine } from '@lsby/net-core'`,
-    '',
     ...最终结果_导出类型,
     `export type InterfaceType = [${最终结果_JSON.join(',')}]`,
     `export type InterfaceWsType = [${最终结果_WS.join(',')}]`,
