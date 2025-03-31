@@ -56,15 +56,16 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
         获得接口逻辑插件类型,
         获得接口逻辑类型,
         获得接口错误形式,
+        GetNetCoreExportTypeName,
+        GetNetCoreExportTypeDefine
       } from '@lsby/net-core'
-      import 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}",
+      import 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}"
 
       type jsonPath = 获得接口路径类型<typeof 导入>
       type jsonMethod = 获得接口方法类型<typeof 导入>
       type jsonInput = 合并JSON插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
       type jsonErrorOutput = 获得接口错误形式<typeof 导入>
       type jsonSuccessOutput = 获得接口正确形式<typeof 导入>
-
       type JSON接口计算结果 = jsonPath extends infer _
         ? jsonMethod extends infer _
           ? jsonInput extends infer _
@@ -85,7 +86,6 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
 
       type wsPath = 获得接口路径类型<typeof 导入>
       type wsData = 取第一个WS插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
-
       type WS接口计算结果 = wsPath extends infer _
         ? wsData extends infer _
           ? wsData extends Record<string, never>
@@ -96,6 +96,9 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
               }
           : never
         : never
+
+      type 导出类型名称 = GetNetCoreExportTypeName<导入>
+      type 导出类型定义 = GetNetCoreExportTypeDefine<导入>
     `
     return ts.createSourceFile(a.fileName.replaceAll('.ts', '-' + randomUUID() + '.ts'), 代码, ts.ScriptTarget.Latest)
   })
@@ -117,6 +120,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
 
   let JSON结果: string[] = []
   let WS结果: string[] = []
+  let 导出类型: string[] = []
   for (let 源文件 of 伴随的虚拟文件们) {
     ts.forEachChild(源文件, (node) => {
       if (ts.isTypeAliasDeclaration(node) && node.name.text === 'JSON接口计算结果') {
@@ -145,6 +149,44 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
         )
       }
     })
+
+    let 导出类型名称: string | undefined = void 0
+    let 导出类型定义: string | undefined = void 0
+    ts.forEachChild(源文件, (node) => {
+      if (ts.isTypeAliasDeclaration(node) && node.name.text === '导出类型名称') {
+        let type = 类型检查器.getTypeAtLocation(node)
+        let 字符串结果 = 类型检查器.typeToString(
+          type,
+          void 0,
+          ts.TypeFormatFlags.NoTruncation |
+            ts.TypeFormatFlags.NoTypeReduction |
+            ts.TypeFormatFlags.AllowUniqueESSymbolType |
+            ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
+        )
+        if (字符串结果 !== 'unknown') {
+          导出类型名称 = JSON.parse(字符串结果) as string
+        }
+      }
+      if (ts.isTypeAliasDeclaration(node) && node.name.text === '导出类型定义') {
+        let type = 类型检查器.getTypeAtLocation(node)
+        let 字符串结果 = 类型检查器.typeToString(
+          type,
+          void 0,
+          ts.TypeFormatFlags.NoTruncation |
+            ts.TypeFormatFlags.NoTypeReduction |
+            ts.TypeFormatFlags.AllowUniqueESSymbolType |
+            ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
+        )
+        if (字符串结果 !== 'unknown') {
+          导出类型定义 = type.symbol.declarations?.[0]?.getText()
+        }
+      }
+    })
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (导出类型名称 !== void 0 && 导出类型定义 !== void 0) {
+      导出类型.push(`export type ${导出类型名称} = ${导出类型定义}`)
+    }
   }
 
   let 最终结果_JSON = Array.from(new Set(JSON结果.filter((a) => a !== 'any' && a !== 'never' && a !== 'unknown')))
@@ -153,7 +195,13 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
   let 最终结果_WS = Array.from(new Set(WS结果.filter((a) => a !== 'any' && a !== 'never' && a !== 'unknown')))
   await log.debug(`最终筛选出 ${最终结果_WS.length} 个ws接口类型`)
 
+  let 最终结果_导出类型 = Array.from(new Set(导出类型.filter((a) => a !== 'any' && a !== 'never' && a !== 'unknown')))
+  await log.debug(`最终筛选出 ${最终结果_导出类型.length} 个导出类型`)
+
   let 最终代码 = [
+    `import { GetNetCoreExportTypeName, GetNetCoreExportTypeDefine } from '@lsby/net-core'`,
+    '',
+    ...最终结果_导出类型,
     `export type InterfaceType = [${最终结果_JSON.join(',')}]`,
     `export type InterfaceWsType = [${最终结果_WS.join(',')}]`,
     附加代码,
