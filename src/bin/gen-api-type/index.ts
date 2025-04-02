@@ -81,7 +81,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
                         input: jsonInput
                         errorOutput: jsonErrorOutput
                         successOutput: jsonSuccessOutput
-                        webSocketData?: wsData
+                        webSocketData: wsData
                       }
                     : never
                   : never
