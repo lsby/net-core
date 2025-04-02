@@ -110,25 +110,12 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
   let 类型检查器 = 新项目.getTypeChecker()
 
   let JSON结果: string[] = []
-  let WS结果: string[] = []
   let 导出类型: string[] = []
   for (let 源文件 of 伴随的虚拟文件们) {
     ts.forEachChild(源文件, (node) => {
       if (ts.isTypeAliasDeclaration(node) && node.name.text === 'JSON接口计算结果') {
         let type = 类型检查器.getTypeAtLocation(node)
         JSON结果.push(
-          类型检查器.typeToString(
-            type,
-            void 0,
-            ts.TypeFormatFlags.NoTruncation |
-              ts.TypeFormatFlags.NoTypeReduction |
-              ts.TypeFormatFlags.AllowUniqueESSymbolType |
-              ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
-          ),
-        )
-      } else if (ts.isTypeAliasDeclaration(node) && node.name.text === 'WS接口计算结果') {
-        let type = 类型检查器.getTypeAtLocation(node)
-        WS结果.push(
           类型检查器.typeToString(
             type,
             void 0,
@@ -183,16 +170,13 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
   let 最终结果_JSON = Array.from(new Set(JSON结果.filter((a) => a !== 'any' && a !== 'never' && a !== 'unknown')))
   await log.debug(`最终筛选出 ${最终结果_JSON.length} 个json接口类型`)
 
-  let 最终结果_WS = Array.from(new Set(WS结果.filter((a) => a !== 'any' && a !== 'never' && a !== 'unknown')))
-  await log.debug(`最终筛选出 ${最终结果_WS.length} 个ws接口类型`)
-
   let 最终结果_导出类型 = Array.from(new Set(导出类型.filter((a) => a !== 'any' && a !== 'never' && a !== 'unknown')))
   await log.debug(`最终筛选出 ${最终结果_导出类型.length} 个导出类型`)
 
   let 最终代码 = [
+    // ..
     ...最终结果_导出类型,
     `export type InterfaceType = [${最终结果_JSON.join(',')}]`,
-    `export type InterfaceWsType = [${最终结果_WS.join(',')}]`,
     附加代码,
   ]
 
