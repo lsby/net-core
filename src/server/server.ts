@@ -109,7 +109,7 @@ export class 服务器 {
     await log.debug('接口逻辑执行完毕')
 
     let 最终结果 = 结果转换器.实现(接口结果) as unknown
-    await log.debug('返回数据: %o', 递归截断字符串(最终结果))
+    await log.debug('返回数据: %o', JSON.stringify(递归截断字符串(最终结果)))
 
     res.send(最终结果)
     await log.debug('返回逻辑执行完毕')
