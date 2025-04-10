@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@lsby/ts-global": "^0.0.5",
-    "@lsby/ts-log": "^0.1.1",
+    "@lsby/ts-log": "^0.1.2",
     "commander": "^12.1.0",
     "express": "^4.19.2",
     "lodash": "^4.17.21",

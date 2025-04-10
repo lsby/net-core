@@ -168,7 +168,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
             类型定义类型 = 'aliasSymbol'
             导出类型定义 = type.aliasSymbol.declarations?.[0]?.getText()
           } else {
-            console.log('无法找到类型定义')
+            log.warnSync(`无法找到类型定义`)
           }
         }
       }
