@@ -15,8 +15,8 @@ importers:
         specifier: ^0.0.5
         version: 0.0.5(@types/node@20.12.10)
       '@lsby/ts-log':
-        specifier: ^0.1.1
-        version: 0.1.1(@types/node@20.12.10)
+        specifier: ^0.1.2
+        version: 0.1.2(@types/node@20.12.10)
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.21
@@ -598,8 +598,8 @@ packages:
   '@lsby/ts-global@0.0.5':
     resolution: {integrity: sha512-AwqWfOKleUpXUNJ7CBeXJURvIbzQbdggqyrFLqJFTfYi0lq7tIrZBZsBKwerddjbLj6AjFY5Tq0rhBm7Ar7yEQ==}
 
-  '@lsby/ts-log@0.1.1':
-    resolution: {integrity: sha512-T66Bq2wPTGXTihdL7KUHsnMc5m/daB4kOvKIghOcixGmOU7mlrm/Aa2cKRL/5eMTxiQceyslg61xMgNerdGKHQ==}
+  '@lsby/ts-log@0.1.2':
+    resolution: {integrity: sha512-uaw/L56XqE95gA0MElZHcLlQ9vQ0OpmZ71O4ARb4NljMRbsEHlouv8ZT4qpdZysPNaenV3ivFPog/qXXAsSzDA==}
     hasBin: true
 
   '@nodelib/fs.scandir@2.1.5':
@@ -3159,7 +3159,7 @@ snapshots:
       - supports-color
       - terser
 
-  '@lsby/ts-log@0.1.1(@types/node@20.12.10)':
+  '@lsby/ts-log@0.1.2(@types/node@20.12.10)':
     dependencies:
       debug: 4.3.7
       vitest: 2.0.2(@types/node@20.12.10)
