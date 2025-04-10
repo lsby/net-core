@@ -132,6 +132,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
 
     let 导出类型名称: string | undefined = void 0
     let 导出类型定义: string | undefined = void 0
+    let 类型定义类型: 'symbol' | 'aliasSymbol' | null = null
     ts.forEachChild(源文件, (node) => {
       if (ts.isTypeAliasDeclaration(node) && node.name.text === '导出类型名称') {
         let type = 类型检查器.getTypeAtLocation(node)
@@ -147,6 +148,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
           导出类型名称 = JSON.parse(字符串结果) as string
         }
       }
+
       if (ts.isTypeAliasDeclaration(node) && node.name.text === '导出类型定义') {
         let type = 类型检查器.getTypeAtLocation(node)
         let 字符串结果 = 类型检查器.typeToString(
@@ -158,14 +160,32 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
             ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
         )
         if (字符串结果 !== 'unknown') {
-          导出类型定义 = type.symbol.declarations?.[0]?.getText()
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          if (type.symbol !== void 0) {
+            类型定义类型 = 'symbol'
+            导出类型定义 = type.symbol.declarations?.[0]?.getText()
+          } else if (type.aliasSymbol !== void 0) {
+            类型定义类型 = 'aliasSymbol'
+            导出类型定义 = type.aliasSymbol.declarations?.[0]?.getText()
+          } else {
+            console.log('无法找到类型定义')
+          }
         }
       }
     })
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (导出类型名称 !== void 0 && 导出类型定义 !== void 0) {
-      导出类型.push(`export type ${导出类型名称} = ${导出类型定义}`)
+      switch (类型定义类型 as 'symbol' | 'aliasSymbol' | null) {
+        case 'symbol':
+          导出类型.push(`export type ${导出类型名称} = ${导出类型定义}`)
+          break
+        case 'aliasSymbol':
+          导出类型.push(`${导出类型定义}`)
+          break
+        default:
+          break
+      }
     }
   }
 
