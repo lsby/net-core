@@ -3,7 +3,6 @@ import { randomUUID } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import ts from 'typescript'
-import { 附加代码 } from './addition'
 
 function 检查存在默认导出(源文件: ts.SourceFile): boolean {
   for (let statement of 源文件.statements) {
@@ -196,10 +195,9 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
   await log.debug(`最终筛选出 ${最终结果_导出类型.length} 个导出类型`)
 
   let 最终代码 = [
-    // ..
+    `// 该文件由脚本自动生成, 请勿修改.`,
     ...最终结果_导出类型,
     `export type InterfaceType = [${最终结果_JSON.join(',')}]`,
-    附加代码,
   ]
 
   await log.debug('最终代码生成完成')
