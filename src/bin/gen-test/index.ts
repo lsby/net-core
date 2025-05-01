@@ -112,6 +112,7 @@ export async function main(
   await log.debug(`最终筛选出 ${最终结果.length} 个测试用例`)
 
   let 最终代码 = [
+    `// 该文件由脚本自动生成, 请勿修改.`,
     "import { test } from 'vitest'",
     "import './unit-test-prefix'",
     '',

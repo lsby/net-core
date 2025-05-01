@@ -104,6 +104,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
   await log.debug(`最终筛选出 ${最终结果.length} 个api接口实现`)
 
   let 最终代码 = [
+    `// 该文件由脚本自动生成, 请勿修改.`,
     `import { 任意接口 } from '@lsby/net-core'`,
     '',
     ...最终结果.map((a) => `import ${计算完整名称(tsconfig路径, a)} from './${计算引入路径(输出文件路径, a)}'`),
