@@ -42,3 +42,23 @@ export class 常用形式转换器<
     }
   }
 }
+
+export class 延时直接形式转换器<
+  T,
+  实现错误类型 extends 接口逻辑错误类型,
+  实现正确类型 extends Record<'fn', () => T>,
+> extends 接口结果转换器<实现错误类型, 实现正确类型, { status: 'fail'; data: 实现错误类型 }, T> {
+  override 实现(数据: Either<实现错误类型, 实现正确类型>): { status: 'fail'; data: 实现错误类型 } | T {
+    switch (数据.getTag()) {
+      case 'Left': {
+        return { status: 'fail', data: 数据.assertLeft().getLeft() }
+      }
+      case 'Right': {
+        return 数据.assertRight().getRight().fn()
+      }
+      default: {
+        throw new Error('意外的数据标记')
+      }
+    }
+  }
+}
