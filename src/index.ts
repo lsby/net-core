@@ -1,9 +1,9 @@
 export * from './action/action.bak'
 
-export * from './interface-api/interface-base'
-export * from './interface-api/interface-logic'
-export * from './interface-api/interface-result'
-export * from './interface-api/interface-test'
+export * from './interface/interface-base'
+export * from './interface/interface-logic'
+export * from './interface/interface-result'
+export * from './interface/interface-test'
 
 export * from './plugin/extend/chinese-path'
 export * from './plugin/extend/custom-data'
