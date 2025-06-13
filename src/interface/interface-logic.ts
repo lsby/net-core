@@ -89,12 +89,6 @@ export abstract class 接口逻辑<
   abstract 获得插件们(): [...插件类型]
   abstract 实现(参数: 合并插件结果<插件类型>, 逻辑附加参数: 逻辑附加参数类型): Promise<Either<错误类型, 返回类型>>
 
-  设置逻辑附加参数<A extends Partial<逻辑附加参数类型>>(
-    设置参数: A,
-  ): 接口逻辑<插件类型, Omit<逻辑附加参数类型, keyof A>, 错误类型, 返回类型> {
-    return 接口逻辑.构造(this.获得插件们(), this.实现, 设置参数)
-  }
-
   async 运行(
     req: Request,
     res: Response,
@@ -149,3 +143,18 @@ export type 获得接口逻辑插件类型<A> = A extends 接口逻辑<infer X, 
 export type 获得接口逻辑附加参数类型<A> = A extends 接口逻辑<any, infer X, any, any> ? X : never
 export type 获得接口逻辑错误类型<A> = A extends 接口逻辑<any, any, infer X, any> ? X : never
 export type 获得接口逻辑正确类型<A> = A extends 接口逻辑<any, any, any, infer X> ? X : never
+
+export abstract class 接口逻辑组件<
+  插件类型 extends 插件项类型[],
+  逻辑附加参数类型 extends 接口逻辑附加参数类型,
+  错误类型 extends 接口逻辑错误类型,
+  返回类型 extends 接口逻辑正确类型,
+> extends 接口逻辑<插件类型, 逻辑附加参数类型, 错误类型, 返回类型> {
+  constructor(private 插件们: [...插件类型]) {
+    super()
+  }
+
+  override 获得插件们(): [...插件类型] {
+    return this.插件们
+  }
+}
