@@ -24,3 +24,4 @@ export * from './symbol/export-type'
 export * from './types/export-type'
 
 export * from './wrapper/common-wrapper'
+export * from './wrapper/deferred-result-wrapper'
