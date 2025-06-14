@@ -22,3 +22,5 @@ export * from './server/server'
 export * from './symbol/export-type'
 
 export * from './types/export-type'
+
+export * from './wrapper/common-wrapper'
