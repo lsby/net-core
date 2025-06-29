@@ -33,7 +33,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
           .or(z.null()),
       }),
       async (req, _res, 附加参数) => {
-        let log = (await this.log).extend(附加参数.请求id).extend('webSocket插件')
+        let log = 附加参数.log.extend('webSocket插件')
         let WebSocket管理器 = await Global.getItem('WebSocket管理器')
 
         let wsId = req.headers['ws-client-id']

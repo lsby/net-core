@@ -9,7 +9,7 @@ export class 表单解析插件<Result extends z.AnyZodObject> extends 插件<Re
 
   constructor(t: Result, opt: Parameters<typeof express.urlencoded>[0]) {
     super(t, async (req, res, 附加参数) => {
-      let log = (await this.log).extend(附加参数.请求id).extend('JSON解析插件')
+      let log = 附加参数.log.extend('JSON解析插件')
 
       await new Promise((pRes, _rej) =>
         express.urlencoded({ extended: true, ...opt })(req, res, () => {
