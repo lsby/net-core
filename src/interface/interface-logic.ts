@@ -1,7 +1,8 @@
 import { Either } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
 import { Global } from '../global/global'
-import { 合并插件结果, 插件附加参数, 插件项类型 } from '../plugin/plug'
+import { 合并插件结果, 插件项类型 } from '../plugin/plug'
+import { 请求附加参数类型 } from '../server/server'
 
 type 计算混合单一组合<A, B> =
   A extends 接口逻辑<infer A插件类型, infer A附加参数, infer A错误, infer A返回>
@@ -67,15 +68,23 @@ export abstract class 接口逻辑<
     返回类型 extends 接口逻辑正确类型,
   >(
     插件们: [...插件类型],
-    实现: (参数: 合并插件结果<插件类型>, 逻辑附加参数: 逻辑附加参数类型) => Promise<Either<错误类型, 返回类型>>,
+    实现: (
+      参数: 合并插件结果<插件类型>,
+      逻辑附加参数: 逻辑附加参数类型,
+      请求附加参数: 请求附加参数类型,
+    ) => Promise<Either<错误类型, 返回类型>>,
     逻辑附加参数?: Partial<逻辑附加参数类型> | undefined,
   ): 接口逻辑<插件类型, 逻辑附加参数类型, 错误类型, 返回类型> {
     let c = new (class extends 接口逻辑<插件类型, 逻辑附加参数类型, 错误类型, 返回类型> {
       override 获得插件们(): [...插件类型] {
         return 插件们
       }
-      override 实现(参数: 合并插件结果<插件类型>, 逻辑附加参数: 逻辑附加参数类型): Promise<Either<错误类型, 返回类型>> {
-        return 实现(参数, 逻辑附加参数)
+      override 实现(
+        参数: 合并插件结果<插件类型>,
+        逻辑附加参数: 逻辑附加参数类型,
+        请求附加参数: 请求附加参数类型,
+      ): Promise<Either<错误类型, 返回类型>> {
+        return 实现(参数, 逻辑附加参数, 请求附加参数)
       }
     })()
     c.内部的逻辑附加参数 = 逻辑附加参数 ?? {}
@@ -87,13 +96,17 @@ export abstract class 接口逻辑<
   protected declare readonly __类型保持符号?: [插件类型, 逻辑附加参数类型, 错误类型, 返回类型]
 
   abstract 获得插件们(): [...插件类型]
-  abstract 实现(参数: 合并插件结果<插件类型>, 逻辑附加参数: 逻辑附加参数类型): Promise<Either<错误类型, 返回类型>>
+  abstract 实现(
+    参数: 合并插件结果<插件类型>,
+    逻辑附加参数: 逻辑附加参数类型,
+    请求附加参数: 请求附加参数类型,
+  ): Promise<Either<错误类型, 返回类型>>
 
   async 运行(
     req: Request,
     res: Response,
     传入的逻辑附加参数: 逻辑附加参数类型,
-    传入的插件附加参数: 插件附加参数,
+    传入的插件附加参数: 请求附加参数类型,
   ): Promise<Either<错误类型, 返回类型>> {
     let log = (await Global.getItem('log')).extend(传入的插件附加参数.请求id).extend('接口逻辑')
 
@@ -110,7 +123,11 @@ export abstract class 接口逻辑<
     await log.debug('插件 执行完毕')
 
     await log.debug('准备执行接口实现...')
-    let 实现结果 = await this.实现(合并插件结果 as any, Object.assign(this.内部的逻辑附加参数, 传入的逻辑附加参数))
+    let 实现结果 = await this.实现(
+      合并插件结果 as any,
+      Object.assign(this.内部的逻辑附加参数, 传入的逻辑附加参数),
+      传入的插件附加参数,
+    )
     await log.debug('接口实现执行完毕')
 
     return 实现结果
@@ -129,10 +146,10 @@ export abstract class 接口逻辑<
     返回类型 & 输入的返回类型
   > {
     let self = this
-    return 接口逻辑.构造([...this.获得插件们(), ...输入.获得插件们()], async (参数, 逻辑附加参数) => {
-      let c = await self.实现(参数 as any, 逻辑附加参数)
+    return 接口逻辑.构造([...this.获得插件们(), ...输入.获得插件们()], async (参数, 逻辑附加参数, 请求附加参数) => {
+      let c = await self.实现(参数 as any, 逻辑附加参数, 请求附加参数)
       if (c.isLeft()) return c as any
-      return await 输入.实现(参数 as any, Object.assign(逻辑附加参数, c.assertRight().getRight()))
+      return await 输入.实现(参数 as any, Object.assign(逻辑附加参数, c.assertRight().getRight()), 请求附加参数)
     })
   }
 }
