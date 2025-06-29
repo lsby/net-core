@@ -13,7 +13,7 @@ import { 任意接口结果转换器 } from '../interface/interface-result'
 import { 递归截断字符串 } from '../tools/tools'
 
 export type 请求附加参数类型 = {
-  请求id: string
+  log: Log
 }
 
 export class 服务器 {
@@ -42,7 +42,9 @@ export class 服务器 {
 
   private async 处理请求(req: Request, res: Response): Promise<void> {
     let 请求id = short().new()
-    let log = (await this.log).extend(请求id).extend('控制器')
+    let 主log = (await this.log).extend(请求id)
+
+    let log = 主log.extend('控制器')
 
     try {
       let { path: 请求路径, method } = req
@@ -53,7 +55,7 @@ export class 服务器 {
       // 匹配接口
       let 目标接口 = this.接口们.find((接口) => 请求方法 === 接口.获得方法() && 请求路径 === 接口.获得路径()) ?? null
       if (目标接口 !== null) {
-        await this.处理接口逻辑(req, res, log, 目标接口, 请求id)
+        await this.处理接口逻辑(req, res, 目标接口, { log: 主log })
         return
       }
 
@@ -104,12 +106,19 @@ export class 服务器 {
     return 命中
   }
 
-  private async 处理接口逻辑(req: Request, res: Response, log: Log, 目标接口: 任意接口, 请求id: string): Promise<void> {
+  private async 处理接口逻辑(
+    req: Request,
+    res: Response,
+    目标接口: 任意接口,
+    请求附加参数: 请求附加参数类型,
+  ): Promise<void> {
+    let log = 请求附加参数.log.extend('处理接口逻辑')
+
     let 接口逻辑 = 目标接口.获得逻辑() as 任意接口逻辑
     let 结果转换器 = 目标接口.获得结果转换器() as 任意接口结果转换器
 
     await log.debug('调用接口逻辑...')
-    let 接口结果 = await 接口逻辑.运行(req, res, {}, { 请求id })
+    let 接口结果 = await 接口逻辑.运行(req, res, {}, 请求附加参数)
     await log.debug('接口逻辑执行完毕')
 
     let 最终结果 = 结果转换器.实现(接口结果) as unknown
@@ -121,7 +130,7 @@ export class 服务器 {
 
   private async 初始化WebSocket(server: http.Server): Promise<void> {
     let wss = new WebSocketServer({ server })
-    let logBase = (await this.log).extend('web-socket')
+    let logBase = await this.log
 
     wss.on('connection', async (ws: WebSocket, req) => {
       let log = logBase.extend(short().new()).extend('WebSocket')

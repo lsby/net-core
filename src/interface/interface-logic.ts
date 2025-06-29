@@ -1,6 +1,5 @@
 import { Either } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
-import { Global } from '../global/global'
 import { 合并插件结果, 插件项类型 } from '../plugin/plug'
 import { 请求附加参数类型 } from '../server/server'
 
@@ -108,7 +107,7 @@ export abstract class 接口逻辑<
     传入的逻辑附加参数: 逻辑附加参数类型,
     传入的插件附加参数: 请求附加参数类型,
   ): Promise<Either<错误类型, 返回类型>> {
-    let log = (await Global.getItem('log')).extend(传入的插件附加参数.请求id).extend('接口逻辑')
+    let log = 传入的插件附加参数.log.extend('接口逻辑')
 
     let 插件们 = this.获得插件们()
 

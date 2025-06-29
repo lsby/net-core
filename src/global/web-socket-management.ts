@@ -2,7 +2,7 @@ import { WebSocket } from 'ws'
 import { Global } from './global'
 
 export class WebSocket管理器 {
-  private log = Global.getItem('log').then((a) => a.extend('WebSocket管理器'))
+  private log = Global.getItem('log').then((a) => a.extend('@lsby:net-core').extend('WebSocket管理器'))
   private 连接表: Record<
     string,
     {
@@ -19,7 +19,7 @@ export class WebSocket管理器 {
   > = {}
 
   private async 关闭并删除连接(id: string, code: number, 说明: string): Promise<void> {
-    let log = (await this.log).extend('关闭并删除连接').extend(id)
+    let log = (await this.log).extend(id).extend('关闭并删除连接')
 
     try {
       await this.连接表[id]?.清理函数?.()
@@ -31,7 +31,7 @@ export class WebSocket管理器 {
     delete this.连接表[id]
   }
   private async 销毁判定(id: string): Promise<void> {
-    let log = (await this.log).extend('销毁判定').extend(id)
+    let log = (await this.log).extend(id).extend('销毁判定')
 
     let 连接 = this.连接表[id]
     if (连接 === void 0) {
@@ -69,7 +69,7 @@ export class WebSocket管理器 {
   }
 
   async 增加或替换连接(id: string, ws: WebSocket): Promise<void> {
-    let log = (await this.log).extend('增加或替换连接').extend(id)
+    let log = (await this.log).extend(id).extend('增加或替换连接')
 
     if (this.连接表[id] === void 0) {
       this.连接表[id] = {
@@ -104,7 +104,7 @@ export class WebSocket管理器 {
     await log.info('发送旧连接缓存完成')
   }
   async 设置清理函数(id: string, 清理函数: () => Promise<void>): Promise<void> {
-    let log = (await this.log).extend('设置清理函数').extend(id)
+    let log = (await this.log).extend(id).extend('设置清理函数')
     if (this.连接表[id] === void 0) {
       await log.error(`无法找到连接`)
       return
@@ -113,7 +113,7 @@ export class WebSocket管理器 {
   }
 
   private async 发送信息_内部(id: string, data: any): Promise<void> {
-    let log = (await this.log).extend('发送信息(内部)').extend(id)
+    let log = (await this.log).extend(id).extend('发送信息(内部)')
 
     while (this.连接表[id]?.数据发送中 === true) {
       await log.info('数据发送中, 将退避.')
@@ -149,7 +149,7 @@ export class WebSocket管理器 {
     })
   }
   async 发送信息(id: string, data: any): Promise<void> {
-    let log = (await this.log).extend('发送信息').extend(id)
+    let log = (await this.log).extend(id).extend('发送信息')
 
     if (this.连接表[id]?.已完成 === true) {
       await log.error('连接已完成, 无法发送数据.')
