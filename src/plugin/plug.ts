@@ -1,10 +1,7 @@
 import { Task } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
 import type { z } from 'zod'
-
-export type 插件附加参数 = {
-  请求id: string
-}
+import { 请求附加参数类型 } from '../server/server'
 
 /**
  * 类似express中的中间件, 做一些前置过程, 例如解析参数, 解析文件等.
@@ -16,14 +13,14 @@ export class 插件<Obj extends z.AnyZodObject> {
 
   constructor(
     private 类型: Obj,
-    private 实现: (req: Request, res: Response, 附加参数: 插件附加参数) => Promise<z.infer<Obj>>,
+    private 实现: (req: Request, res: Response, 附加参数: 请求附加参数类型) => Promise<z.infer<Obj>>,
   ) {}
 
   获得类型(): Obj {
     return this.类型
   }
 
-  运行(req: Request, res: Response, 附加参数: 插件附加参数): Promise<z.infer<Obj>> {
+  运行(req: Request, res: Response, 附加参数: 请求附加参数类型): Promise<z.infer<Obj>> {
     return this.实现(req, res, 附加参数)
   }
 }
