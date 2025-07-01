@@ -1,4 +1,4 @@
-import { Either } from '@lsby/ts-fp-data'
+import { Either, Right } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
 import { 合并插件结果, 插件项类型 } from '../plugin/plug'
 import { 请求附加参数类型 } from '../server/server'
@@ -56,8 +56,15 @@ export abstract class 接口逻辑<
   错误类型 extends 接口逻辑错误类型,
   返回类型 extends 接口逻辑正确类型,
 > {
+  /**
+   * @deprecated 类型计算有一些错误, 暂时无法解决
+   */
   static 混合<逻辑们 extends 任意接口逻辑[]>(逻辑们: [...逻辑们]): 计算混合组合数组<逻辑们> {
     return 逻辑们.reduce((s, a) => s.混合(a)) as any
+  }
+
+  static 空逻辑(): 接口逻辑<[], {}, never, {}> {
+    return 接口逻辑.构造([], async () => new Right({}))
   }
 
   static 构造<
