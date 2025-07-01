@@ -2,7 +2,7 @@ import express from 'express'
 import { format } from 'node:util'
 import { AnyZodObject, z } from 'zod'
 import { Global } from '../../global/global'
-import { 递归截断字符串 } from '../../tools/tools'
+import { 递归截断字符串 } from '../../help/help'
 import { 包装插件项, 取Task插件内部类型, 插件, 插件项类型 } from '../plug'
 
 export class JSON解析插件<Result extends AnyZodObject> extends 插件<Result> {

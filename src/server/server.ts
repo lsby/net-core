@@ -7,10 +7,10 @@ import { networkInterfaces } from 'node:os'
 import short from 'short-uuid'
 import { WebSocket, WebSocketServer } from 'ws'
 import { Global } from '../global/global'
+import { 递归截断字符串 } from '../help/help'
 import { 任意接口 } from '../interface/interface-base'
 import { 任意接口逻辑 } from '../interface/interface-logic'
 import { 任意接口结果转换器 } from '../interface/interface-result'
-import { 递归截断字符串 } from '../tools/tools'
 
 export type 请求附加参数类型 = {
   log: Log

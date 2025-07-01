@@ -1,3 +1,16 @@
+export function 构造元组<T extends any[]>(args: [...T]): T {
+  return args
+}
+// export function 构造对象<K extends string, V>(key: K, value: V): { [P in K]: V } {
+//   return { [key]: value } as any
+// }
+export function 构造对象<K extends string, V>(key: K, value: V): Record<K, V> {
+  return { [key]: value } as any
+}
+
+export type 去除只读<T> = T extends readonly [...infer U] ? U : never
+export type 类型相等<A, B> = A extends B ? (B extends A ? true : false) : false
+
 export function 截断字符串(内容: string): string {
   let 最大日志长度 = 1000
 
