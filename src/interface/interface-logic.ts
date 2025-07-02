@@ -4,6 +4,8 @@ import { 联合转元组 } from '../help/help'
 import { 合并插件结果, 插件项类型 } from '../plugin/plug'
 import { 请求附加参数类型 } from '../server/server'
 
+export type 空对象 = Record<any, never>
+
 export type 接口逻辑错误类型 = string | never
 export type 接口逻辑正确类型 = Record<string, any>
 export type 接口逻辑附加参数类型 = Record<string, any>
@@ -43,7 +45,7 @@ export abstract class 接口逻辑<
   错误类型 extends 接口逻辑错误类型,
   返回类型 extends 接口逻辑正确类型,
 > {
-  static 空逻辑(): 接口逻辑<[], {}, never, {}> {
+  static 空逻辑(): 接口逻辑<[], 空对象, never, 空对象> {
     return 接口逻辑.构造([], async () => new Right({}))
   }
 
@@ -141,7 +143,7 @@ export abstract class 接口逻辑<
 }
 
 export type 任意接口逻辑 = 接口逻辑<any, any, any, any>
-export type 可调用接口逻辑 = 接口逻辑<any, Record<string, never>, any, any>
+export type 可调用接口逻辑 = 接口逻辑<any, 空对象, any, any>
 export type 获得接口逻辑插件类型<A> = A extends 接口逻辑<infer X, any, any, any> ? X : never
 export type 获得接口逻辑附加参数类型<A> = A extends 接口逻辑<any, infer X, any, any> ? X : never
 export type 获得接口逻辑错误类型<A> = A extends 接口逻辑<any, any, infer X, any> ? X : never
