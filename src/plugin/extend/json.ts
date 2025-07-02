@@ -3,6 +3,7 @@ import { format } from 'node:util'
 import { AnyZodObject, z } from 'zod'
 import { Global } from '../../global/global'
 import { 递归截断字符串 } from '../../help/help'
+import { 获得接口逻辑插件类型 } from '../../interface/interface-logic'
 import { 包装插件项, 取Task插件内部类型, 插件, 插件项类型 } from '../plug'
 
 export class JSON解析插件<Result extends AnyZodObject> extends 插件<Result> {
@@ -45,3 +46,5 @@ export type 合并JSON插件结果<Arr extends Array<插件项类型>> = Arr ext
         : {}
       : {}
     : {}
+
+export type 计算接口逻辑JSON参数<接口逻辑> = 合并JSON插件结果<获得接口逻辑插件类型<接口逻辑>>

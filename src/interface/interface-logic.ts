@@ -1,5 +1,6 @@
 import { Either, Right } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
+import { 联合转元组 } from '../help/help'
 import { 合并插件结果, 插件项类型 } from '../plugin/plug'
 import { 请求附加参数类型 } from '../server/server'
 
@@ -167,17 +168,7 @@ export type 获得接口逻辑附加参数类型<A> = A extends 接口逻辑<any
 export type 获得接口逻辑错误类型<A> = A extends 接口逻辑<any, any, infer X, any> ? X : never
 export type 获得接口逻辑正确类型<A> = A extends 接口逻辑<any, any, any, infer X> ? X : never
 
-export abstract class 接口逻辑组件<
-  插件类型 extends 插件项类型[],
-  逻辑附加参数类型 extends 接口逻辑附加参数类型,
-  错误类型 extends 接口逻辑错误类型,
-  返回类型 extends 接口逻辑正确类型,
-> extends 接口逻辑<插件类型, 逻辑附加参数类型, 错误类型, 返回类型> {
-  constructor(private 插件们: [...插件类型]) {
-    super()
-  }
-
-  override 获得插件们(): [...插件类型] {
-    return this.插件们
-  }
+export type 计算接口逻辑错误结果<接口逻辑> = 联合转元组<获得接口逻辑错误类型<接口逻辑>>
+export type 计算接口逻辑正确结果<接口逻辑> = {
+  [k in keyof 获得接口逻辑正确类型<接口逻辑>]: 获得接口逻辑正确类型<接口逻辑>[k]
 }
