@@ -6,7 +6,7 @@ import { 常用延时直接形式转换器 } from '../interface/interface-result
 export class 常用延时直接形式接口封装<
   路径类型 extends 接口路径类型,
   方法类型 extends 接口方法类型,
-  逻辑类型 extends 接口逻辑<any, 空对象, z.infer<接口错误形式Zod>, () => z.infer<接口正确形式Zod>>,
+  逻辑类型 extends 接口逻辑<any, 空对象, z.infer<接口错误形式Zod>, () => z.infer<接口正确形式Zod>, any>,
   接口错误形式Zod extends z.ZodTypeAny,
   接口正确形式Zod extends z.ZodTypeAny,
 > extends 接口<
