@@ -122,18 +122,19 @@ export class 服务器 {
     let 接口结果 = await 接口逻辑.运行(req, res, {}, 请求附加参数)
     await log.debug('接口逻辑执行完毕')
 
-    switch (接口结果.getTag()) {
-      case 'Left':
-        接口结果 = 接口结果.map((a) => (目标接口.获得接口错误形式Zod() as z.ZodTypeAny).parse(a))
-        break
-      case 'Right':
-        接口结果 = 接口结果.map((a) => (目标接口.获得接口正确形式Zod() as z.ZodTypeAny).parse(a))
-        break
-    }
-    await log.debug('接口逻辑返回数据校验完毕: %o', 接口结果)
+    let 最终结果: unknown
+    let 转换结果 = 结果转换器.实现(接口结果) as unknown
+    let 错误结果 = (目标接口.获得接口错误形式Zod() as z.ZodTypeAny).safeParse(转换结果)
+    let 正确结果 = (目标接口.获得接口正确形式Zod() as z.ZodTypeAny).safeParse(转换结果)
 
-    let 最终结果 = 结果转换器.实现(接口结果) as unknown
-    await log.debug('返回数据: %o', JSON.stringify(递归截断字符串(最终结果)))
+    if (错误结果.success === true) {
+      最终结果 = 错误结果.data
+    } else if (正确结果.success === true) {
+      最终结果 = 正确结果.data
+    } else {
+      throw new Error(`转换结果无法通过校验: ${JSON.stringify(递归截断字符串(转换结果))}`)
+    }
+    await log.debug('最终结果: %o', 最终结果)
 
     res.send(最终结果)
     await log.debug('返回逻辑执行完毕')
