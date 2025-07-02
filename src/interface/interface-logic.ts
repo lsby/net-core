@@ -150,6 +150,7 @@ export type 获得接口逻辑附加参数类型<A> = A extends 接口逻辑<any
 export type 获得接口逻辑错误类型<A> = A extends 接口逻辑<any, any, infer X, any> ? X : never
 export type 获得接口逻辑正确类型<A> = A extends 接口逻辑<any, any, any, infer X> ? X : never
 
+export type 计算接口逻辑参数<接口逻辑> = 合并插件结果<获得接口逻辑插件类型<接口逻辑>>
 export type 计算接口逻辑错误结果<接口逻辑> = 联合转元组<获得接口逻辑错误类型<接口逻辑>>
 export type 计算接口逻辑正确结果<接口逻辑> = {
   [k in keyof 获得接口逻辑正确类型<接口逻辑>]: 获得接口逻辑正确类型<接口逻辑>[k]
