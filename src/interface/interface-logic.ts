@@ -5,6 +5,7 @@ import { 合并插件结果, 插件项类型 } from '../plugin/plug'
 import { 请求附加参数类型 } from '../server/server'
 
 export type 空对象 = Record<any, never>
+export type 兼容空对象 = Record<any, unknown>
 
 export type 接口逻辑错误类型 = string | never
 export type 接口逻辑正确类型 = Record<string, any>
@@ -45,7 +46,7 @@ export abstract class 接口逻辑<
   错误类型 extends 接口逻辑错误类型,
   返回类型 extends 接口逻辑正确类型,
 > {
-  static 空逻辑(): 接口逻辑<[], 空对象, never, 空对象> {
+  static 空逻辑(): 接口逻辑<[], 空对象, never, 兼容空对象> {
     return 接口逻辑.构造([], async () => new Right({}))
   }
 
