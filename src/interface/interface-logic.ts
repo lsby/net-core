@@ -123,11 +123,19 @@ export abstract class 接口逻辑<
     错误类型 | 输入的错误类型,
     返回类型 & 输入的返回类型
   > {
-    let self = this
     return 接口逻辑.构造([...this.获得插件们(), ...输入.获得插件们()], async (参数, 逻辑附加参数, 请求附加参数) => {
-      let c = await self.实现(参数 as any, 逻辑附加参数, 请求附加参数)
-      if (c.isLeft()) return c as any
-      return await 输入.实现(参数 as any, { ...逻辑附加参数, ...c.assertRight().getRight() }, 请求附加参数)
+      let 上层调用结果 = await this.实现(参数 as any, 逻辑附加参数, 请求附加参数)
+      if (上层调用结果.isLeft()) return 上层调用结果 as any
+
+      let 传给下一层的 = { ...逻辑附加参数, ...上层调用结果.assertRight().getRight() }
+      let 下层调用结果 = await 输入.实现(
+        参数 as any,
+        { ...逻辑附加参数, ...上层调用结果.assertRight().getRight() },
+        请求附加参数,
+      )
+
+      let 最终返回结果 = 下层调用结果.map((a) => ({ ...传给下一层的, ...a }))
+      return 最终返回结果
     })
   }
 }
