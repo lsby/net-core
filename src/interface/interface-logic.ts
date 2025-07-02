@@ -39,7 +39,7 @@ export type 接口逻辑附加参数类型 = Record<string, any>
  */
 export abstract class 接口逻辑<
   插件类型 extends 插件项类型[],
-  需求逻辑附加参数类型 extends 接口逻辑附加参数类型,
+  逻辑附加参数类型 extends 接口逻辑附加参数类型,
   错误类型 extends 接口逻辑错误类型,
   返回类型 extends 接口逻辑正确类型,
 > {
@@ -47,26 +47,26 @@ export abstract class 接口逻辑<
     return 接口逻辑.构造([], async () => new Right({}))
   }
 
-  static 完整构造<
+  static 构造<
     插件类型 extends 插件项类型[],
-    需求逻辑附加参数类型 extends 接口逻辑附加参数类型,
+    逻辑附加参数类型 extends 接口逻辑附加参数类型,
     错误类型 extends 接口逻辑错误类型,
     返回类型 extends 接口逻辑正确类型,
   >(
     插件们: [...插件类型],
     实现: (
       参数: 合并插件结果<插件类型>,
-      逻辑附加参数: 需求逻辑附加参数类型,
+      逻辑附加参数: 逻辑附加参数类型,
       请求附加参数: 请求附加参数类型,
     ) => Promise<Either<错误类型, 返回类型>>,
-  ): 接口逻辑<插件类型, 需求逻辑附加参数类型, 错误类型, 返回类型> {
-    let c = new (class extends 接口逻辑<插件类型, 需求逻辑附加参数类型, 错误类型, 返回类型> {
+  ): 接口逻辑<插件类型, 逻辑附加参数类型, 错误类型, 返回类型> {
+    let c = new (class extends 接口逻辑<插件类型, 逻辑附加参数类型, 错误类型, 返回类型> {
       override 获得插件们(): [...插件类型] {
         return 插件们
       }
       override 实现(
         参数: 合并插件结果<插件类型>,
-        逻辑附加参数: 需求逻辑附加参数类型,
+        逻辑附加参数: 逻辑附加参数类型,
         请求附加参数: 请求附加参数类型,
       ): Promise<Either<错误类型, 返回类型>> {
         return 实现(参数, 逻辑附加参数, 请求附加参数)
@@ -75,38 +75,22 @@ export abstract class 接口逻辑<
     return c
   }
 
-  static 构造<
-    插件类型 extends 插件项类型[],
-    需求逻辑附加参数类型 extends 接口逻辑附加参数类型,
-    错误类型 extends 接口逻辑错误类型,
-    返回类型 extends 接口逻辑正确类型,
-  >(
-    插件们: [...插件类型],
-    实现: (
-      参数: 合并插件结果<插件类型>,
-      逻辑附加参数: 需求逻辑附加参数类型,
-      请求附加参数: 请求附加参数类型,
-    ) => Promise<Either<错误类型, 返回类型>>,
-  ): 接口逻辑<插件类型, 需求逻辑附加参数类型, 错误类型, 返回类型> {
-    return this.完整构造(插件们, 实现)
-  }
-
-  protected declare readonly __类型保持符号?: [插件类型, 需求逻辑附加参数类型, 错误类型, 返回类型]
+  protected declare readonly __类型保持符号?: [插件类型, 逻辑附加参数类型, 错误类型, 返回类型]
 
   abstract 获得插件们(): [...插件类型]
   abstract 实现(
     参数: 合并插件结果<插件类型>,
-    逻辑附加参数: 需求逻辑附加参数类型,
+    逻辑附加参数: 逻辑附加参数类型,
     请求附加参数: 请求附加参数类型,
   ): Promise<Either<错误类型, 返回类型>>
 
   async 运行(
     req: Request,
     res: Response,
-    传入的逻辑附加参数: 需求逻辑附加参数类型,
-    传入的请求附加参数: 请求附加参数类型,
+    传入的逻辑附加参数: 逻辑附加参数类型,
+    传入的插件附加参数: 请求附加参数类型,
   ): Promise<Either<错误类型, 返回类型>> {
-    let log = 传入的请求附加参数.log.extend('接口逻辑')
+    let log = 传入的插件附加参数.log.extend('接口逻辑')
 
     let 插件们 = this.获得插件们()
 
@@ -114,14 +98,14 @@ export abstract class 接口逻辑<
     let 所有插件结果: Record<string, any>[] = []
     for (let 插件 of 插件们) {
       let 插件本体 = await 插件.run()
-      let 插件返回 = await 插件本体.运行(req, res, 传入的请求附加参数)
+      let 插件返回 = await 插件本体.运行(req, res, 传入的插件附加参数)
       所有插件结果.push(插件返回)
     }
     let 合并插件结果 = 所有插件结果.reduce((s, a) => Object.assign(s, a), {})
     await log.debug('插件 执行完毕')
 
     await log.debug('准备执行接口实现...')
-    let 实现结果 = await this.实现(合并插件结果 as any, 传入的逻辑附加参数, 传入的请求附加参数)
+    let 实现结果 = await this.实现(合并插件结果 as any, 传入的逻辑附加参数, 传入的插件附加参数)
     await log.debug('接口实现执行完毕')
 
     return { ...传入的逻辑附加参数, ...实现结果 }
@@ -133,12 +117,17 @@ export abstract class 接口逻辑<
     输入的返回类型 extends 接口逻辑正确类型,
   >(
     输入: 接口逻辑<输入的插件类型, 返回类型, 输入的错误类型, 输入的返回类型>,
-  ): 接口逻辑<[...插件类型, ...输入的插件类型], 需求逻辑附加参数类型, 错误类型 | 输入的错误类型, 输入的返回类型> {
+  ): 接口逻辑<
+    [...插件类型, ...输入的插件类型],
+    逻辑附加参数类型,
+    错误类型 | 输入的错误类型,
+    返回类型 & 输入的返回类型
+  > {
     let self = this
-    return 接口逻辑.完整构造([...this.获得插件们(), ...输入.获得插件们()], async (参数, 逻辑附加参数, 请求附加参数) => {
+    return 接口逻辑.构造([...this.获得插件们(), ...输入.获得插件们()], async (参数, 逻辑附加参数, 请求附加参数) => {
       let c = await self.实现(参数 as any, 逻辑附加参数, 请求附加参数)
       if (c.isLeft()) return c as any
-      return await 输入.实现(参数 as any, { ...逻辑附加参数, ...c.assertRight().getRight() } as any, 请求附加参数)
+      return await 输入.实现(参数 as any, { ...逻辑附加参数, ...c.assertRight().getRight() }, 请求附加参数)
     })
   }
 }
