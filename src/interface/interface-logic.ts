@@ -108,7 +108,7 @@ export abstract class 接口逻辑<
     let 实现结果 = await this.实现(合并插件结果 as any, 传入的逻辑附加参数, 传入的插件附加参数)
     await log.debug('接口实现执行完毕')
 
-    return { ...传入的逻辑附加参数, ...实现结果 }
+    return 实现结果.map((a) => ({ ...传入的逻辑附加参数, ...a }))
   }
 
   混合<
