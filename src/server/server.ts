@@ -6,6 +6,7 @@ import type * as http from 'node:http'
 import { networkInterfaces } from 'node:os'
 import short from 'short-uuid'
 import { WebSocket, WebSocketServer } from 'ws'
+import { z } from 'zod'
 import { Global } from '../global/global'
 import { 递归截断字符串 } from '../help/help'
 import { 任意接口 } from '../interface/interface-base'
@@ -120,6 +121,16 @@ export class 服务器 {
     await log.debug('调用接口逻辑...')
     let 接口结果 = await 接口逻辑.运行(req, res, {}, 请求附加参数)
     await log.debug('接口逻辑执行完毕')
+
+    switch (接口结果.getTag()) {
+      case 'Left':
+        接口结果 = 接口结果.map((a) => (目标接口.获得接口错误形式Zod() as z.ZodTypeAny).parse(a))
+        break
+      case 'Right':
+        接口结果 = 接口结果.map((a) => (目标接口.获得接口正确形式Zod() as z.ZodTypeAny).parse(a))
+        break
+    }
+    await log.debug('接口逻辑返回数据校验完毕: %o', 接口结果)
 
     let 最终结果 = 结果转换器.实现(接口结果) as unknown
     await log.debug('返回数据: %o', JSON.stringify(递归截断字符串(最终结果)))
