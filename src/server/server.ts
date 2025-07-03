@@ -132,6 +132,9 @@ export class 服务器 {
     } else if (正确结果.success === true) {
       最终结果 = 正确结果.data
     } else {
+      await log.error('转换结果无法通过校验')
+      await log.error('对于错误结果: %o', 错误结果.error)
+      await log.error('对于正确结果: %o', 正确结果.error)
       throw new Error(`转换结果无法通过校验: ${JSON.stringify(递归截断字符串(转换结果))}`)
     }
     await log.debug('最终结果: %o', 最终结果)
