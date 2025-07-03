@@ -1,12 +1,12 @@
 import { z } from 'zod'
 import { 接口, 接口方法类型, 接口路径类型 } from '../interface/interface-base'
-import { 接口逻辑, 空对象, 获得接口逻辑正确类型, 获得接口逻辑错误类型 } from '../interface/interface-logic'
+import { 接口逻辑Base, 空对象, 获得接口逻辑正确类型, 获得接口逻辑错误类型 } from '../interface/interface-logic'
 import { 常用形式转换器 } from '../interface/interface-result'
 
 export class 常用形式接口封装<
   路径类型 extends 接口路径类型,
   方法类型 extends 接口方法类型,
-  逻辑类型 extends 接口逻辑<any, 空对象, z.infer<接口错误形式Zod>, z.infer<接口正确形式Zod>, any>,
+  逻辑类型 extends 接口逻辑Base<any, 空对象, z.infer<接口错误形式Zod>, z.infer<接口正确形式Zod>, any>,
   接口错误形式Zod extends z.ZodTypeAny,
   接口正确形式Zod extends z.ZodTypeAny,
 > extends 接口<
