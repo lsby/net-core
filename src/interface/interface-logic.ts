@@ -42,7 +42,7 @@ export type 接口逻辑附加参数类型 = Record<string, any>
  */
 export abstract class 接口逻辑Base<
   插件类型 extends 插件项类型[],
-  逻辑附加参数类型 extends 接口逻辑附加参数类型,
+  in 逻辑附加参数类型 extends 接口逻辑附加参数类型,
   错误类型 extends 接口逻辑错误类型,
   返回类型 extends 接口逻辑正确类型,
   最后接口类型 extends 任意接口逻辑 | null = null,
@@ -97,7 +97,8 @@ export abstract class 接口逻辑Base<
     return this.完整构造(插件们, 实现, null)
   }
 
-  protected declare readonly __类型保持符号?: [插件类型, 逻辑附加参数类型, 错误类型, 返回类型]
+  protected declare readonly __类型保持符号_协变?: [插件类型, 错误类型, 返回类型]
+  protected declare readonly __类型保持符号_逆变?: (a: 逻辑附加参数类型) => void
 
   constructor(private 最后接口: 最后接口类型) {}
 
