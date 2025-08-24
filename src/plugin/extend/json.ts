@@ -5,7 +5,12 @@ import { 递归截断字符串 } from '../../help/help'
 import { 获得接口逻辑插件类型 } from '../../interface/interface-logic'
 import { 包装插件项, 取Task插件内部类型, 插件, 插件项类型 } from '../plug'
 
+// eslint-disable-next-line @lsby/prefer-let
+const 烙印: unique symbol = Symbol()
+
 export class JSON解析插件<Result extends AnyZodObject> extends 插件<Result> {
+  private [烙印] = ['JSON解析插件']
+
   constructor(t: Result, opt: Parameters<typeof express.json>[0]) {
     super(t, async (req, res, 附加参数) => {
       let log = 附加参数.log.extend('JSON解析插件')
