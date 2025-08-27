@@ -1,6 +1,6 @@
 import { format } from 'node:util'
 import { AnyZodObject, z } from 'zod'
-import { 递归截断字符串 } from '../../help/help'
+import { 递归截断字符串 } from '../../help/interior'
 import { 获得接口逻辑插件类型 } from '../../interface/interface-logic'
 import { 包装插件项, 取Task插件内部类型, 插件, 插件项类型 } from '../plug'
 
