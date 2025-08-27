@@ -1,6 +1,6 @@
 import { Either, Right } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
-import { 联合转元组 } from '../help/help'
+import { 联合转元组 } from '../help/interior'
 import { 合并插件结果, 插件项类型 } from '../plugin/plug'
 import { 请求附加参数类型 } from '../server/server'
 
