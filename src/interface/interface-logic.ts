@@ -126,7 +126,7 @@ export abstract class 接口逻辑Base<
       let 插件返回 = await 插件本体.运行(req, res, 传入的插件附加参数)
       所有插件结果.push(插件返回)
     }
-    let 合并插件结果 = 所有插件结果.reduce((s, a) => Object.assign(s, a), {})
+    let 合并插件结果 = 所有插件结果.reduce((s, a) => ({ ...s, ...a }), {})
     await log.debug('插件 执行完毕')
 
     await log.debug('准备执行接口实现...')
