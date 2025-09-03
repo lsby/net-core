@@ -24,12 +24,13 @@
     "check:lint": "eslint . --fix",
     "check:type:check": "tsc --noEmit",
     "check:type:check:watch": "tsc --noEmit -w",
+    "prepare": "husky",
     "pub:public": "npm run check:all && npm run test:base && npm run build:all && bumpp && npm publish --access public",
     "test:base": "npm run check:all && vitest run",
     "test:coverage": "npm run check:all && vitest run --coverage && open-cli ./coverage/index.html"
   },
   "dependencies": {
-    "@lsby/ts-global": "^0.0.5",
+    "@lsby/ts-global": "^0.0.8",
     "@lsby/ts-log": "^0.1.2",
     "commander": "^12.1.0",
     "express": "^4.19.2",
@@ -54,6 +55,7 @@
     "eslint-plugin-react": "^7.36.1",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-sort-class-members": "^1.20.0",
+    "husky": "^9.1.7",
     "prettier": "3.3.3",
     "prettier-plugin-organize-imports": "^4.1.0",
     "prettier-plugin-packagejson": "^2.5.2",
