@@ -44,39 +44,44 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
           await log.error('未能获取到有效的 WebSocket Id')
           return { ws操作: null }
         }
-        let 存在的wsId = wsId
         await log.debug('已获得 WebSocket Id: %o', wsId)
 
         await log.debug('尝试获取 WebSocket 句柄')
-        ws句柄 = await WebSocket管理器.获得句柄(存在的wsId)
+        ws句柄 = await WebSocket管理器.获得句柄(wsId)
         if (ws句柄 === null) {
           await log.error('未能获取到有效的 WebSocket 句柄')
           return { ws操作: null }
         }
-        let 存在的ws句柄 = ws句柄
-        await log.debug('WebSocket 句柄已准备好')
 
         return {
           ws操作: {
             async 发送ws信息(信息: 信息): Promise<void> {
-              await log.debug('发送 WebSocket 信息: %O', 信息)
-              return new Promise((res, rej) => {
-                存在的ws句柄.send(JSON.stringify(信息), (err) => {
-                  if ((err ?? null) !== null) {
-                    log.error('发送 WebSocket 信息失败: %O', err).catch(console.error)
-                    return rej(err)
+              if (ws句柄.readyState !== WebSocket.OPEN) {
+                await log.error('WebSocket 未打开，无法发送消息', { wsId })
+                return
+              }
+
+              await log.debug('发送 WebSocket 信息', { 信息 })
+              await new Promise<void>((resolve, reject) => {
+                ws句柄.send(JSON.stringify(信息), (err) => {
+                  if (err !== void 0) {
+                    log.errorSync('发送 WebSocket 信息失败', { 错误: err })
+                    return reject(err)
                   }
-                  log.debug('WebSocket 信息发送成功').catch(console.error)
-                  return res()
+                  log.debugSync('WebSocket 信息发送成功')
+                  resolve()
                 })
               })
             },
+
             async 关闭ws连接(): Promise<void> {
-              await log.debug('关闭 WebSocket 连接')
-              await WebSocket管理器.删除连接(存在的wsId)
+              await log.debug('关闭 WebSocket 连接', { wsId })
+              await WebSocket管理器.删除连接(wsId)
             },
+
             async 设置清理函数(清理函数): Promise<void> {
-              await WebSocket管理器.设置清理函数(存在的wsId, 清理函数)
+              await log.debug('设置 WebSocket 清理函数', { wsId })
+              await WebSocket管理器.设置清理函数(wsId, 清理函数)
             },
           },
         }
