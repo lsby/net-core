@@ -22,7 +22,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
 > {
   private log = Global.getItem('log')
 
-  constructor(信息描述: 信息) {
+  public constructor(信息描述: 信息) {
     super(
       z.object({
         ws操作: z
@@ -57,7 +57,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
           ws操作: {
             async 发送ws信息(信息: 信息): Promise<void> {
               if (ws句柄.readyState !== WebSocket.OPEN) {
-                await log.error('WebSocket 未打开，无法发送消息', { wsId })
+                await log.warn('WebSocket 未打开，无法发送消息', { wsId })
                 return
               }
 
@@ -65,7 +65,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
               await new Promise<void>((resolve, reject) => {
                 ws句柄.send(JSON.stringify(信息), (err) => {
                   if (err !== void 0) {
-                    log.errorSync('发送 WebSocket 信息失败', { 错误: err })
+                    log.warnSync('发送 WebSocket 信息失败', { 错误: err })
                     return reject(err)
                   }
                   log.debugSync('WebSocket 信息发送成功')

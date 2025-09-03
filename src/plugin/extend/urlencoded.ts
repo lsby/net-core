@@ -7,7 +7,7 @@ import { 插件 } from '../plug'
 export class 表单解析插件<Result extends z.AnyZodObject> extends 插件<Result> {
   private log = Global.getItem('log')
 
-  constructor(t: Result, opt: Parameters<typeof express.urlencoded>[0]) {
+  public constructor(t: Result, opt: Parameters<typeof express.urlencoded>[0]) {
     super(t, async (req, res, 附加参数) => {
       let log = 附加参数.log.extend('JSON解析插件')
 

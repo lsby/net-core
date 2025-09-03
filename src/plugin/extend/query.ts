@@ -10,7 +10,7 @@ const 烙印: unique symbol = Symbol()
 export class GET参数解析插件<Result extends AnyZodObject> extends 插件<Result> {
   private [烙印] = ['GET参数解析插件']
 
-  constructor(t: Result) {
+  public constructor(t: Result) {
     super(t, async (req, _res, 附加参数) => {
       let log = 附加参数.log.extend('GET参数解析插件')
 

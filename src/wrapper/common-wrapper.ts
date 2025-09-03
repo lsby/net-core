@@ -17,7 +17,7 @@ export class 常用形式接口封装<
   z.ZodObject<{ status: z.ZodLiteral<'success'>; data: 接口正确形式Zod }>,
   常用形式转换器<获得接口逻辑错误类型<逻辑类型>, 获得接口逻辑正确类型<逻辑类型>>
 > {
-  constructor(
+  public constructor(
     请求路径: 路径类型,
     请求方法: 方法类型,
     接口逻辑: 逻辑类型,

@@ -11,16 +11,16 @@ import { 请求附加参数类型 } from '../server/server'
 export class 插件<Obj extends z.AnyZodObject> {
   protected declare readonly __类型保持符号?: Obj
 
-  constructor(
+  public constructor(
     private 类型: Obj,
     private 实现: (req: Request, res: Response, 附加参数: 请求附加参数类型) => Promise<z.infer<Obj>>,
   ) {}
 
-  获得类型(): Obj {
+  public 获得类型(): Obj {
     return this.类型
   }
 
-  运行(req: Request, res: Response, 附加参数: 请求附加参数类型): Promise<z.infer<Obj>> {
+  public 运行(req: Request, res: Response, 附加参数: 请求附加参数类型): Promise<z.infer<Obj>> {
     return this.实现(req, res, 附加参数)
   }
 }

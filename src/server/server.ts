@@ -20,14 +20,14 @@ export type 请求附加参数类型 = {
 export class 服务器 {
   private log = Global.getItem('log')
 
-  constructor(
+  public constructor(
     private 接口们: 任意接口[],
     private 端口: number,
     private 静态资源路径?: string,
     private 默认get文件路径?: string,
   ) {}
 
-  async run(): Promise<{
+  public async run(): Promise<{
     ip: string[]
     api: string[]
     server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>
