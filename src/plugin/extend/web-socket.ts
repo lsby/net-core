@@ -1,3 +1,4 @@
+import { WebSocket } from 'ws'
 import { z } from 'zod'
 import { Global } from '../../global/global'
 import { 包装插件项, 取Task插件类型, 插件, 插件项类型 } from '../plug'
@@ -35,6 +36,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
       async (req, _res, 附加参数) => {
         let log = 附加参数.log.extend('webSocket插件')
         let WebSocket管理器 = await Global.getItem('WebSocket管理器')
+        let ws句柄: WebSocket | null = null
 
         let wsId = req.headers['ws-client-id']
         await log.debug('检查 ws-client-id 头信息', { wsId })
@@ -45,15 +47,33 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
         let 存在的wsId = wsId
         await log.debug('已获得 WebSocket Id: %o', wsId)
 
+        await log.debug('尝试获取 WebSocket 句柄')
+        ws句柄 = await WebSocket管理器.获得句柄(存在的wsId)
+        if (ws句柄 === null) {
+          await log.error('未能获取到有效的 WebSocket 句柄')
+          return { ws操作: null }
+        }
+        let 存在的ws句柄 = ws句柄
+        await log.debug('WebSocket 句柄已准备好')
+
         return {
           ws操作: {
             async 发送ws信息(信息: 信息): Promise<void> {
               await log.debug('发送 WebSocket 信息: %O', 信息)
-              await WebSocket管理器.发送信息(存在的wsId, 信息)
+              return new Promise((res, rej) => {
+                存在的ws句柄.send(JSON.stringify(信息), (err) => {
+                  if ((err ?? null) !== null) {
+                    log.error('发送 WebSocket 信息失败: %O', err).catch(console.error)
+                    return rej(err)
+                  }
+                  log.debug('WebSocket 信息发送成功').catch(console.error)
+                  return res()
+                })
+              })
             },
             async 关闭ws连接(): Promise<void> {
               await log.debug('关闭 WebSocket 连接')
-              await WebSocket管理器.标记连接已完成(存在的wsId)
+              await WebSocket管理器.删除连接(存在的wsId)
             },
             async 设置清理函数(清理函数): Promise<void> {
               await WebSocket管理器.设置清理函数(存在的wsId, 清理函数)

@@ -152,38 +152,44 @@ export class 服务器 {
       await log.debug('收到 WebSocket 连接请求: %o', req.url)
 
       let 客户端id = req.url?.split('?id=')[1] ?? null
+
       if (客户端id === null) {
-        await log.error('缺少客户端id')
-        return this.关闭WebSocket连接(ws, log, 1011, '缺少客户端id')
+        await log.error('连接请求缺少客户端 ID')
+        return this.关闭WebSocket连接(ws, log, 4001, '缺少客户端 ID')
       }
 
+      await log.debug('解析客户端 ID: %s', 客户端id)
+
       let WebSocket管理器 = await Global.getItem('WebSocket管理器')
-      log = log.extend(客户端id)
-      await log.debug('成功解析客户端id')
+      let 连接已存在 = await WebSocket管理器.查询连接存在(客户端id)
 
-      await WebSocket管理器.增加或替换连接(客户端id, ws)
-      await log.info('WebSocket 连接已建立')
+      if (连接已存在) {
+        await log.error('客户端 ID 已存在: %s', 客户端id)
+        return this.关闭WebSocket连接(ws, log, 4002, '客户端 ID 已存在')
+      }
 
-      await WebSocket管理器.取消标记连接已断开(客户端id)
+      await WebSocket管理器.增加连接(客户端id, ws)
+      await log.info('WebSocket 连接已建立, 客户端 ID: %s', 客户端id)
 
       ws.on('close', async () => {
-        await WebSocket管理器.标记连接已断开(客户端id)
+        await log.info('WebSocket 连接关闭: %s', 客户端id)
+        await WebSocket管理器.删除连接(客户端id)
       })
 
       ws.on('error', async (err) => {
-        await log.error('WebSocket 出现错误: %o', String(err))
-        await WebSocket管理器.标记连接已错误(客户端id)
+        await log.error('WebSocket 出现错误, 客户端 ID: %s, 错误: %o', 客户端id, err)
+        await WebSocket管理器.删除连接(客户端id)
       })
-    })
 
-    wss.on('listening', async () => {
-      let log = logBase
-      await log.info('WebSocket 服务器已启动并监听')
-    })
+      wss.on('listening', async () => {
+        let log = logBase
+        await log.info('WebSocket 服务器已启动并监听')
+      })
 
-    wss.on('error', async (err) => {
-      let log = logBase
-      await log.error('WebSocket 服务器发生错误: %o', err)
+      wss.on('error', async (err) => {
+        let log = logBase
+        await log.error('WebSocket 服务器发生错误: %o', err)
+      })
     })
   }
 

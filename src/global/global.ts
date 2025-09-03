@@ -7,6 +7,6 @@ export let Global = new GlobalService([
     return new Log('@lsby:net-core')
   }),
   new GlobalAsyncItem('WebSocket管理器', async () => {
-    return new WebSocket管理器()
+    return new WebSocket管理器({})
   }),
 ])
