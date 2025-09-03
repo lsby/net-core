@@ -11,7 +11,7 @@ const 烙印: unique symbol = Symbol()
 export class JSON解析插件<Result extends AnyZodObject> extends 插件<Result> {
   private [烙印] = ['JSON解析插件']
 
-  constructor(t: Result, opt: Parameters<typeof express.json>[0]) {
+  public constructor(t: Result, opt: Parameters<typeof express.json>[0]) {
     super(t, async (req, res, 附加参数) => {
       let log = 附加参数.log.extend('JSON解析插件')
 

@@ -30,7 +30,7 @@ export class 接口<
     接口结果转换器类型,
   ]
 
-  constructor(
+  public constructor(
     private 请求路径: 路径类型,
     private 请求方法: 方法类型,
     private 接口逻辑: 逻辑类型,
@@ -39,22 +39,22 @@ export class 接口<
     private 结果转换器: 接口结果转换器类型,
   ) {}
 
-  获得路径(): 路径类型 {
+  public 获得路径(): 路径类型 {
     return this.请求路径
   }
-  获得方法(): 方法类型 {
+  public 获得方法(): 方法类型 {
     return this.请求方法
   }
-  获得逻辑(): 逻辑类型 {
+  public 获得逻辑(): 逻辑类型 {
     return this.接口逻辑
   }
-  获得接口错误形式Zod(): 接口错误形式Zod {
+  public 获得接口错误形式Zod(): 接口错误形式Zod {
     return this.接口错误形式Zod
   }
-  获得接口正确形式Zod(): 接口正确形式Zod {
+  public 获得接口正确形式Zod(): 接口正确形式Zod {
     return this.接口正确形式Zod
   }
-  获得结果转换器(): 接口结果转换器类型 {
+  public 获得结果转换器(): 接口结果转换器类型 {
     return this.结果转换器
   }
 }

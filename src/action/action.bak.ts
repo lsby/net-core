@@ -71,7 +71,7 @@ export abstract class 业务行为<
   返回类型 extends 业务行为返回类型,
 > {
   // ================================= 静态 =================================
-  static 通过实现构造<
+  public static 通过实现构造<
     参数类型 extends 业务行为参数类型,
     错误类型 extends 业务行为错误类型,
     返回类型 extends 业务行为返回类型,
@@ -82,14 +82,14 @@ export abstract class 业务行为<
       }
     })()
   }
-  static 通过正确值构造<
+  public static 通过正确值构造<
     参数类型 extends 业务行为参数类型,
     错误类型 extends 业务行为错误类型,
     返回类型 extends 业务行为返回类型,
   >(a: 返回类型): 业务行为<参数类型, 错误类型, 返回类型> {
     return 业务行为.通过实现构造(async () => new Right(a))
   }
-  static 通过错误值构造<
+  public static 通过错误值构造<
     参数类型 extends 业务行为参数类型,
     错误类型 extends 业务行为错误类型,
     返回类型 extends 业务行为返回类型,
@@ -97,7 +97,7 @@ export abstract class 业务行为<
     return 业务行为.通过实现构造(async () => new Left(a))
   }
 
-  static 流式组合<
+  public static 流式组合<
     A参数类型 extends 业务行为参数类型,
     A错误类型 extends 业务行为错误类型,
     A返回类型 extends 业务行为返回类型,
@@ -110,7 +110,7 @@ export abstract class 业务行为<
     return a.流式组合(b)
   }
 
-  static 混合组合<
+  public static 混合组合<
     A参数类型 extends 业务行为参数类型,
     A错误类型 extends 业务行为错误类型,
     A返回类型 extends 业务行为返回类型,
@@ -127,7 +127,7 @@ export abstract class 业务行为<
   /**
    * 对多个项混合组合
    */
-  static 混合组合多项<A extends 任意业务行为[]>(arr: [...A]): 计算混合组合数组<A> {
+  public static 混合组合多项<A extends 任意业务行为[]>(arr: [...A]): 计算混合组合数组<A> {
     return arr.reduce((s, a) => s.混合组合(a)) as any
   }
 
@@ -140,7 +140,7 @@ export abstract class 业务行为<
    * - 错误: 所有行为的错误合并
    * - 返回值: 泛型A
    */
-  static 并行组合<X extends 任意业务行为[], A extends 业务行为返回类型>(
+  public static 并行组合<X extends 任意业务行为[], A extends 业务行为返回类型>(
     arr: [...X],
     f: (a: 计算业务行为返回<计算合并<X>>) => Promise<A>,
   ): 业务行为<计算业务行为参数<计算合并<X>>, 计算业务行为错误<计算合并<X>>, A> {
@@ -159,7 +159,7 @@ export abstract class 业务行为<
   protected abstract 业务行为实现(参数: 参数类型): Promise<Either<错误类型, 返回类型>>
 
   // ================================= 设置 =================================
-  设置参数<A extends Partial<参数类型>>(设置参数: A): 业务行为<Omit<参数类型, keyof A>, 错误类型, 返回类型> {
+  public 设置参数<A extends Partial<参数类型>>(设置参数: A): 业务行为<Omit<参数类型, keyof A>, 错误类型, 返回类型> {
     return 业务行为.通过实现构造(async (参数) => {
       return await this.业务行为实现({ ...设置参数, ...参数 } as any)
     })
@@ -170,14 +170,14 @@ export abstract class 业务行为<
   /**
    * 运行业务行为, 如果抛出错误, 则原封不动向上抛出
    */
-  async 运行业务行为(参数: 参数类型): Promise<Either<错误类型, 返回类型>> {
+  public async 运行业务行为(参数: 参数类型): Promise<Either<错误类型, 返回类型>> {
     return await this.业务行为实现(参数)
   }
 
   /**
    * 运行业务行为, 如果抛出错误, 则将错误值强制转换为字符串, 并包装为Error抛出
    */
-  async 运行业务行为并包装(参数: 参数类型): Promise<Either<错误类型, 返回类型>> {
+  public async 运行业务行为并包装(参数: 参数类型): Promise<Either<错误类型, 返回类型>> {
     try {
       return await this.业务行为实现(参数)
     } catch (e) {
@@ -192,7 +192,7 @@ export abstract class 业务行为<
    * - 错误: a行为的错误+b行为的错误
    * - 返回值: b行为的返回值
    */
-  流式组合<B错误类型 extends 业务行为错误类型, B返回类型 extends 业务行为返回类型>(
+  public 流式组合<B错误类型 extends 业务行为错误类型, B返回类型 extends 业务行为返回类型>(
     b: 业务行为<返回类型, B错误类型, B返回类型>,
   ): 业务行为<参数类型, 错误类型 | B错误类型, B返回类型> {
     return 业务行为.通过实现构造(async (参数): Promise<Either<错误类型 | B错误类型, B返回类型>> => {
@@ -210,7 +210,11 @@ export abstract class 业务行为<
    * - 错误: a行为的错误+b行为的错误
    * - 返回值: a行为的返回值+b行为的返回值
    */
-  混合组合<B参数类型 extends 业务行为参数类型, B错误类型 extends 业务行为错误类型, B返回类型 extends 业务行为返回类型>(
+  public 混合组合<
+    B参数类型 extends 业务行为参数类型,
+    B错误类型 extends 业务行为错误类型,
+    B返回类型 extends 业务行为返回类型,
+  >(
     b: 业务行为<B参数类型, B错误类型, B返回类型>,
   ): 计算混合组合<参数类型, 错误类型, 返回类型, B参数类型, B错误类型, B返回类型> {
     return 业务行为.通过实现构造(async (参数): Promise<Either<错误类型 | B错误类型, 返回类型 & B返回类型>> => {
@@ -222,7 +226,7 @@ export abstract class 业务行为<
   }
 
   // ================================= 映射 =================================
-  映射结果<新返回类型 extends 业务行为返回类型>(
+  public 映射结果<新返回类型 extends 业务行为返回类型>(
     f: (a: 返回类型) => 新返回类型,
   ): 业务行为<参数类型, 错误类型, 新返回类型> {
     return 业务行为.通过实现构造(async (参数) => {
@@ -231,7 +235,7 @@ export abstract class 业务行为<
       return Either.pure(f(我的结果.assertRight().getRight()))
     })
   }
-  映射错误<新错误类型 extends 业务行为错误类型>(
+  public 映射错误<新错误类型 extends 业务行为错误类型>(
     f: (a: 错误类型) => 新错误类型,
   ): 业务行为<参数类型, 新错误类型, 返回类型> {
     return 业务行为.通过实现构造(async (参数) => {
@@ -248,7 +252,7 @@ export abstract class 业务行为<
    * - 错误: 已有行为的错误+自定义错误, 因为调用已有行为时可能出错
    * - 返回值: 自定义数据
    */
-  绑定<
+  public 绑定<
     新参数类型 extends 业务行为参数类型 & 参数类型,
     新错误类型 extends 错误类型 | 业务行为错误类型,
     新返回类型 extends 业务行为返回类型,

@@ -47,11 +47,11 @@ export abstract class 接口逻辑Base<
   返回类型 extends 接口逻辑正确类型,
   最后接口类型 extends 任意接口逻辑 | null = null,
 > {
-  static 空逻辑(): 接口逻辑Base<[], 空对象, never, 兼容空对象, null> {
+  public static 空逻辑(): 接口逻辑Base<[], 空对象, never, 兼容空对象, null> {
     return 接口逻辑Base.构造([], async () => new Right({}))
   }
 
-  static 完整构造<
+  public static 完整构造<
     插件类型 extends 插件项类型[],
     逻辑附加参数类型 extends 接口逻辑附加参数类型,
     错误类型 extends 接口逻辑错误类型,
@@ -67,10 +67,10 @@ export abstract class 接口逻辑Base<
     最后接口逻辑: 最后接口类型,
   ): 接口逻辑Base<插件类型, 逻辑附加参数类型, 错误类型, 返回类型, 最后接口类型> {
     let c = new (class extends 接口逻辑Base<插件类型, 逻辑附加参数类型, 错误类型, 返回类型, 最后接口类型> {
-      override 获得插件们(): [...插件类型] {
+      public override 获得插件们(): [...插件类型] {
         return 插件们
       }
-      override 实现(
+      public override 实现(
         参数: 合并插件结果<插件类型>,
         逻辑附加参数: 逻辑附加参数类型,
         请求附加参数: 请求附加参数类型,
@@ -81,7 +81,7 @@ export abstract class 接口逻辑Base<
     return c
   }
 
-  static 构造<
+  public static 构造<
     插件类型 extends 插件项类型[],
     逻辑附加参数类型 extends 接口逻辑附加参数类型,
     错误类型 extends 接口逻辑错误类型,
@@ -100,16 +100,16 @@ export abstract class 接口逻辑Base<
   protected declare readonly __类型保持符号_协变?: [插件类型, 错误类型, 返回类型]
   protected declare readonly __类型保持符号_逆变?: (a: 逻辑附加参数类型) => void
 
-  constructor(private 最后接口: 最后接口类型) {}
+  public constructor(private 最后接口: 最后接口类型) {}
 
-  abstract 获得插件们(): [...插件类型]
-  abstract 实现(
+  public abstract 获得插件们(): [...插件类型]
+  public abstract 实现(
     参数: 合并插件结果<插件类型>,
     逻辑附加参数: 逻辑附加参数类型,
     请求附加参数: 请求附加参数类型,
   ): Promise<Either<错误类型, 返回类型>>
 
-  async 运行(
+  public async 运行(
     req: Request,
     res: Response,
     传入的逻辑附加参数: 逻辑附加参数类型,
@@ -136,7 +136,7 @@ export abstract class 接口逻辑Base<
     return 实现结果.map((a) => ({ ...传入的逻辑附加参数, ...a }))
   }
 
-  混合<
+  public 混合<
     输入的插件类型 extends 插件项类型[],
     输入的错误类型 extends 接口逻辑错误类型,
     输入的返回类型 extends 接口逻辑正确类型,
@@ -170,7 +170,7 @@ export abstract class 接口逻辑Base<
     )
   }
 
-  获得最后接口(): 最后接口类型 {
+  public 获得最后接口(): 最后接口类型 {
     return this.最后接口
   }
 }
@@ -181,7 +181,7 @@ export abstract class 接口逻辑<
   错误类型 extends 接口逻辑错误类型,
   返回类型 extends 接口逻辑正确类型,
 > extends 接口逻辑Base<插件类型, 逻辑附加参数类型, 错误类型, 返回类型, null> {
-  constructor() {
+  public constructor() {
     super(null)
   }
 }
