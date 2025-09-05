@@ -47,7 +47,7 @@ export abstract class 接口逻辑Base<
   返回类型 extends 接口逻辑正确类型,
   最后接口类型 extends 任意接口逻辑 | null = null,
 > {
-  public static 空逻辑(): 接口逻辑Base<[], 空对象, never, 兼容空对象, null> {
+  public static 空逻辑(): 接口逻辑Base<[], 空对象, never, {}, null> {
     return 接口逻辑Base.构造([], async () => new Right({}))
   }
 
