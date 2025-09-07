@@ -157,11 +157,7 @@ export abstract class 接口逻辑Base<
         if (上层调用结果.isLeft()) return 上层调用结果 as any
 
         let 传给下一层的 = { ...逻辑附加参数, ...上层调用结果.assertRight().getRight() }
-        let 下层调用结果 = await 输入.实现(
-          参数 as any,
-          { ...逻辑附加参数, ...上层调用结果.assertRight().getRight() },
-          请求附加参数,
-        )
+        let 下层调用结果 = await 输入.实现(参数 as any, 传给下一层的, 请求附加参数)
 
         let 最终返回结果 = 下层调用结果.map((a) => ({ ...传给下一层的, ...a }))
         return 最终返回结果
