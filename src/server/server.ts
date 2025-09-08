@@ -32,9 +32,16 @@ export class 服务器 {
     api: string[]
     server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>
   }> {
+    let log = (await this.log).extend('服务器')
+
     let app = express()
 
+    if (this.静态资源路径 !== void 0) {
+      await log.debug(`设置静态资源路径: ${this.静态资源路径}`)
+      app.use(express.static(this.静态资源路径))
+    }
     app.use(this.处理请求.bind(this))
+
     let server = app.listen(this.端口)
     await this.初始化WebSocket(server)
 
@@ -57,12 +64,6 @@ export class 服务器 {
       let 目标接口 = this.接口们.find((接口) => 请求方法 === 接口.获得方法() && 请求路径 === 接口.获得路径()) ?? null
       if (目标接口 !== null) {
         await this.处理接口逻辑(req, res, 目标接口, { log: 主log })
-        return
-      }
-
-      // 静态资源处理
-      let 静态资源路径 = this.静态资源路径 ?? null
-      if (静态资源路径 !== null && 请求方法 === 'get' && (await this.处理静态资源(req, res, log))) {
         return
       }
 
