@@ -87,27 +87,6 @@ export class 服务器 {
     }
   }
 
-  private async 处理静态资源(req: Request, res: Response, log: Log): Promise<boolean> {
-    let 静态资源路径 = this.静态资源路径 ?? null
-    let 命中 = false
-
-    if (静态资源路径 !== null) {
-      await new Promise<void>((resolve) => {
-        express.static(静态资源路径, {
-          setHeaders: async () => {
-            await log.debug('命中静态资源')
-            命中 = true
-            resolve()
-          },
-        })(req, res, () => resolve())
-      })
-    } else {
-      await log.debug('没有命中静态资源')
-    }
-
-    return 命中
-  }
-
   private async 处理接口逻辑(
     req: Request,
     res: Response,
