@@ -45,9 +45,10 @@ export abstract class 接口逻辑Base<
   in 逻辑附加参数类型 extends 接口逻辑附加参数类型,
   错误类型 extends 接口逻辑错误类型,
   返回类型 extends 接口逻辑正确类型,
+  上游接口类型 extends 任意接口逻辑 | null = null,
   最后接口类型 extends 任意接口逻辑 | null = null,
 > {
-  public static 空逻辑(): 接口逻辑Base<[], 空对象, never, {}, null> {
+  public static 空逻辑(): 接口逻辑Base<[], 空对象, never, {}, null, null> {
     return 接口逻辑Base.构造([], async () => new Right({}))
   }
 
@@ -56,6 +57,7 @@ export abstract class 接口逻辑Base<
     逻辑附加参数类型 extends 接口逻辑附加参数类型,
     错误类型 extends 接口逻辑错误类型,
     返回类型 extends 接口逻辑正确类型,
+    上游接口类型 extends 任意接口逻辑 | null,
     最后接口类型 extends 任意接口逻辑 | null,
   >(
     插件们: [...插件类型],
@@ -64,9 +66,17 @@ export abstract class 接口逻辑Base<
       逻辑附加参数: 逻辑附加参数类型,
       请求附加参数: 请求附加参数类型,
     ) => Promise<Either<错误类型, 返回类型>>,
+    上游接口逻辑: 上游接口类型,
     最后接口逻辑: 最后接口类型,
-  ): 接口逻辑Base<插件类型, 逻辑附加参数类型, 错误类型, 返回类型, 最后接口类型> {
-    let c = new (class extends 接口逻辑Base<插件类型, 逻辑附加参数类型, 错误类型, 返回类型, 最后接口类型> {
+  ): 接口逻辑Base<插件类型, 逻辑附加参数类型, 错误类型, 返回类型, 上游接口类型, 最后接口类型> {
+    let c = new (class extends 接口逻辑Base<
+      插件类型,
+      逻辑附加参数类型,
+      错误类型,
+      返回类型,
+      上游接口类型,
+      最后接口类型
+    > {
       public override 获得插件们(): [...插件类型] {
         return 插件们
       }
@@ -77,7 +87,7 @@ export abstract class 接口逻辑Base<
       ): Promise<Either<错误类型, 返回类型>> {
         return 实现(参数, 逻辑附加参数, 请求附加参数)
       }
-    })(最后接口逻辑)
+    })(上游接口逻辑, 最后接口逻辑)
     return c
   }
 
@@ -93,14 +103,17 @@ export abstract class 接口逻辑Base<
       逻辑附加参数: 逻辑附加参数类型,
       请求附加参数: 请求附加参数类型,
     ) => Promise<Either<错误类型, 返回类型>>,
-  ): 接口逻辑Base<插件类型, 逻辑附加参数类型, 错误类型, 返回类型, null> {
-    return this.完整构造(插件们, 实现, null)
+  ): 接口逻辑Base<插件类型, 逻辑附加参数类型, 错误类型, 返回类型, null, null> {
+    return this.完整构造(插件们, 实现, null, null)
   }
 
   protected declare readonly __类型保持符号_协变?: [插件类型, 错误类型, 返回类型]
   protected declare readonly __类型保持符号_逆变?: (a: 逻辑附加参数类型) => void
 
-  public constructor(private 最后接口: 最后接口类型) {}
+  public constructor(
+    private 上游接口: 上游接口类型,
+    private 最后接口: 最后接口类型,
+  ) {}
 
   public abstract 获得插件们(): [...插件类型]
   public abstract 实现(
@@ -140,14 +153,23 @@ export abstract class 接口逻辑Base<
     输入的插件类型 extends 插件项类型[],
     输入的错误类型 extends 接口逻辑错误类型,
     输入的返回类型 extends 接口逻辑正确类型,
+    输入的上游接口逻辑类型 extends 任意接口逻辑 | null,
     输入的最后接口逻辑类型 extends 任意接口逻辑 | null,
   >(
-    输入: 接口逻辑Base<输入的插件类型, 返回类型, 输入的错误类型, 输入的返回类型, 输入的最后接口逻辑类型>,
+    输入: 接口逻辑Base<
+      输入的插件类型,
+      返回类型,
+      输入的错误类型,
+      输入的返回类型,
+      输入的上游接口逻辑类型,
+      输入的最后接口逻辑类型
+    >,
   ): 接口逻辑Base<
     [...插件类型, ...输入的插件类型],
     逻辑附加参数类型,
     错误类型 | 输入的错误类型,
     返回类型 & 输入的返回类型,
+    typeof this,
     typeof 输入
   > {
     return 接口逻辑Base.完整构造(
@@ -162,10 +184,14 @@ export abstract class 接口逻辑Base<
         let 最终返回结果 = 下层调用结果.map((a) => ({ ...传给下一层的, ...a }))
         return 最终返回结果
       },
+      this,
       输入,
     )
   }
 
+  public 获得上游接口(): 上游接口类型 {
+    return this.上游接口
+  }
   public 获得最后接口(): 最后接口类型 {
     return this.最后接口
   }
@@ -176,19 +202,20 @@ export abstract class 接口逻辑<
   逻辑附加参数类型 extends 接口逻辑附加参数类型,
   错误类型 extends 接口逻辑错误类型,
   返回类型 extends 接口逻辑正确类型,
-> extends 接口逻辑Base<插件类型, 逻辑附加参数类型, 错误类型, 返回类型, null> {
+> extends 接口逻辑Base<插件类型, 逻辑附加参数类型, 错误类型, 返回类型, null, null> {
   public constructor() {
-    super(null)
+    super(null, null)
   }
 }
 
-export type 任意接口逻辑 = 接口逻辑Base<any, any, any, any, any>
-export type 可调用接口逻辑 = 接口逻辑Base<any, 空对象, any, any, any>
-export type 获得接口逻辑插件类型<A> = A extends 接口逻辑Base<infer X, any, any, any, any> ? X : never
-export type 获得接口逻辑附加参数类型<A> = A extends 接口逻辑Base<any, infer X, any, any, any> ? X : never
-export type 获得接口逻辑错误类型<A> = A extends 接口逻辑Base<any, any, infer X, any, any> ? X : never
-export type 获得接口逻辑正确类型<A> = A extends 接口逻辑Base<any, any, any, infer X, any> ? X : never
-export type 获得接口逻辑最后接口类型<A> = A extends 接口逻辑Base<any, any, any, any, infer X> ? X : never
+export type 任意接口逻辑 = 接口逻辑Base<any, any, any, any, any, any>
+export type 可调用接口逻辑 = 接口逻辑Base<any, 空对象, any, any, any, any>
+export type 获得接口逻辑插件类型<A> = A extends 接口逻辑Base<infer X, any, any, any, any, any> ? X : never
+export type 获得接口逻辑附加参数类型<A> = A extends 接口逻辑Base<any, infer X, any, any, any, any> ? X : never
+export type 获得接口逻辑错误类型<A> = A extends 接口逻辑Base<any, any, infer X, any, any, any> ? X : never
+export type 获得接口逻辑正确类型<A> = A extends 接口逻辑Base<any, any, any, infer X, any, any> ? X : never
+export type 获得接口逻辑上游接口类型<A> = A extends 接口逻辑Base<any, any, any, any, infer X, any> ? X : never
+export type 获得接口逻辑最后接口类型<A> = A extends 接口逻辑Base<any, any, any, any, any, infer X> ? X : never
 
 export type 计算接口逻辑参数<接口逻辑> = 合并插件结果<获得接口逻辑插件类型<接口逻辑>>
 export type 计算接口逻辑错误结果<接口逻辑> = 联合转元组<获得接口逻辑错误类型<接口逻辑>>
