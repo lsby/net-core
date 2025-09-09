@@ -36,6 +36,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
       async (req, _res, 附加参数) => {
         let log = 附加参数.log.extend('webSocket插件')
         let WebSocket管理器 = await Global.getItem('WebSocket管理器')
+        let ws句柄: WebSocket | null = null
 
         let wsId = req.headers['ws-client-id']
         await log.debug('检查 ws-client-id 头信息', { wsId })
@@ -48,10 +49,11 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
         return {
           ws操作: {
             async 发送ws信息(信息: 信息): Promise<void> {
-              let ws句柄: WebSocket | null = null
+              if (ws句柄 === null) {
+                await log.debug('尝试获取 WebSocket 句柄')
+                ws句柄 = await WebSocket管理器.获得句柄(wsId)
+              }
 
-              await log.debug('尝试获取 WebSocket 句柄')
-              ws句柄 = await WebSocket管理器.获得句柄(wsId)
               if (ws句柄 === null) {
                 await log.error('未能获取到有效的 WebSocket 句柄')
                 return
@@ -64,7 +66,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
 
               await log.debug('发送 WebSocket 信息', { 信息 })
               await new Promise<void>((resolve, reject) => {
-                ws句柄.send(JSON.stringify(信息), (err) => {
+                ws句柄?.send(JSON.stringify(信息), (err) => {
                   if (err !== void 0) {
                     log.warnSync('发送 WebSocket 信息失败', { 错误: err })
                     return reject(err)
