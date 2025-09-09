@@ -127,6 +127,16 @@ export class 服务器 {
     let wss = new WebSocketServer({ server })
     let logBase = await this.log
 
+    wss.on('listening', async () => {
+      let log = logBase
+      await log.info('WebSocket 服务器已启动并监听')
+    })
+
+    wss.on('error', async (err) => {
+      let log = logBase
+      await log.error('WebSocket 服务器发生错误: %o', err)
+    })
+
     wss.on('connection', async (ws: WebSocket, req) => {
       let log = logBase.extend(short().new()).extend('WebSocket')
       await log.debug('收到 WebSocket 连接请求: %o', req.url)
@@ -159,16 +169,6 @@ export class 服务器 {
       ws.on('error', async (err) => {
         await log.error('WebSocket 出现错误, 客户端 ID: %s, 错误: %o', 客户端id, err)
         await WebSocket管理器.删除连接(客户端id)
-      })
-
-      wss.on('listening', async () => {
-        let log = logBase
-        await log.info('WebSocket 服务器已启动并监听')
-      })
-
-      wss.on('error', async (err) => {
-        let log = logBase
-        await log.error('WebSocket 服务器发生错误: %o', err)
       })
     })
   }
