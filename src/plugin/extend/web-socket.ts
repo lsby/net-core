@@ -66,8 +66,8 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
 
               await log.debug('发送 WebSocket 信息', { 信息 })
               await new Promise<void>((resolve, reject) => {
-                ws句柄?.send(JSON.stringify(信息), (err) => {
-                  if (err !== void 0) {
+                ws句柄?.send(JSON.stringify(信息), (err: Error | undefined | null) => {
+                  if (err !== void 0 && err !== null) {
                     log.warnSync('发送 WebSocket 信息失败', { 错误: err })
                     return reject(err)
                   }
@@ -79,7 +79,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
 
             async 关闭ws连接(): Promise<void> {
               await log.debug('关闭 WebSocket 连接', { wsId })
-              await WebSocket管理器.删除连接(wsId)
+              WebSocket管理器.删除连接(wsId)
             },
 
             async 设置清理函数(清理函数): Promise<void> {
