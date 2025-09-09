@@ -2,9 +2,11 @@ import { GlobalItem, GlobalService } from '@lsby/ts-global'
 import { Log } from '@lsby/ts-log'
 import { WebSocket } from 'ws'
 
+let log = new Log('@lsby:net-core')
+
 type id = string
 export class WebSocket管理器 {
-  private log = Global.getItemSync('log').extend('@lsby:net-core').extend('WebSocket管理器')
+  private log = log.extend('@lsby:net-core').extend('WebSocket管理器')
   private 清理函数表: Record<string, () => Promise<void>> = {}
 
   public constructor(private 连接表: Record<id, WebSocket | null>) {}
@@ -39,6 +41,6 @@ export class WebSocket管理器 {
 }
 
 export let Global = new GlobalService([
-  new GlobalItem('log', new Log('@lsby:net-core')),
+  new GlobalItem('log', log),
   new GlobalItem('WebSocket管理器', new WebSocket管理器({})),
 ])
