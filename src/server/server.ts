@@ -52,8 +52,9 @@ export class 服务器 {
   private async 处理请求(req: Request, res: Response): Promise<void> {
     let 请求id = short().new()
     let 主log = (await this.log).extend(请求id)
-
     let log = 主log.extend('控制器')
+
+    let 开始时间 = Date.now()
 
     try {
       let { path: 请求路径, method } = req
@@ -85,6 +86,9 @@ export class 服务器 {
     } catch (error) {
       await log.error(error)
       res.status(500).send('服务器内部错误')
+    } finally {
+      let 耗时ms = Date.now() - 开始时间
+      await 主log.info('请求完成, 耗时: %o ms', 耗时ms)
     }
   }
 
@@ -100,15 +104,22 @@ export class 服务器 {
     let 结果转换器 = 目标接口.获得结果转换器() as 任意接口结果转换器
     let 结果返回器 = 目标接口.获得结果返回器() as 任意接口结果返回器
 
+    let 总开始 = Date.now()
+
+    // ---------- 1. 接口逻辑 ----------
+    let 开始 = Date.now()
     await log.debug('调用接口逻辑...')
     let 接口结果 = await 接口逻辑.运行(req, res, {}, 请求附加参数)
-    await log.debug('接口逻辑执行完毕')
+    let 接口耗时 = Date.now() - 开始
+    await log.info('接口逻辑执行完毕, 耗时: %o ms', 接口耗时)
 
-    let 最终结果: unknown
+    // ---------- 2. 转换 + 校验 ----------
+    开始 = Date.now()
     let 转换结果 = 结果转换器.实现(接口结果) as unknown
     let 错误结果 = (目标接口.获得接口错误形式Zod() as z.ZodTypeAny).safeParse(转换结果)
     let 正确结果 = (目标接口.获得接口正确形式Zod() as z.ZodTypeAny).safeParse(转换结果)
 
+    let 最终结果: unknown
     if (错误结果.success === true) {
       最终结果 = 错误结果.data
     } else if (正确结果.success === true) {
@@ -119,10 +130,18 @@ export class 服务器 {
       await log.error('对于正确结果: %o', 正确结果.error)
       throw new Error(`转换结果无法通过校验: ${JSON.stringify(递归截断字符串(转换结果))}`)
     }
-    await log.debug('最终结果: %o', 最终结果)
+    let 转换耗时 = Date.now() - 开始
+    await log.info('结果转换与校验完成, 耗时: %o ms', 转换耗时)
 
+    // ---------- 3. 返回 ----------
+    开始 = Date.now()
     await 结果返回器.返回(req, res, 最终结果)
-    await log.debug('返回逻辑执行完毕')
+    let 返回耗时 = Date.now() - 开始
+    await log.info('返回逻辑执行完毕, 耗时: %o ms', 返回耗时)
+
+    // ---------- 总耗时 ----------
+    let 总耗时 = Date.now() - 总开始
+    await log.info('接口完整执行耗时: %o ms', 总耗时)
   }
 
   private async 初始化WebSocket(server: http.Server): Promise<void> {
