@@ -12,6 +12,7 @@ import { 递归截断字符串 } from '../help/interior'
 import { 任意接口 } from '../interface/interface-base'
 import { 任意接口逻辑 } from '../interface/interface-logic'
 import { 任意接口结果转换器 } from '../interface/interface-result'
+import { 任意接口结果返回器 } from '../interface/interface-retuen'
 
 export type 请求附加参数类型 = {
   log: Log
@@ -97,6 +98,7 @@ export class 服务器 {
 
     let 接口逻辑 = 目标接口.获得逻辑() as 任意接口逻辑
     let 结果转换器 = 目标接口.获得结果转换器() as 任意接口结果转换器
+    let 结果返回器 = 目标接口.获得结果返回器() as 任意接口结果返回器
 
     await log.debug('调用接口逻辑...')
     let 接口结果 = await 接口逻辑.运行(req, res, {}, 请求附加参数)
@@ -119,7 +121,7 @@ export class 服务器 {
     }
     await log.debug('最终结果: %o', 最终结果)
 
-    res.send(最终结果)
+    await 结果返回器.返回(req, res, 最终结果)
     await log.debug('返回逻辑执行完毕')
   }
 
