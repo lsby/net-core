@@ -21,7 +21,7 @@ export class 接口<
     z.infer<接口错误形式Zod>,
     z.infer<接口正确形式Zod>
   >,
-  接口结果返回器类型 extends 接口结果返回器<z.infer<接口错误形式Zod>, z.infer<接口正确形式Zod>>,
+  接口结果返回器类型 extends 接口结果返回器<z.infer<接口正确形式Zod>>,
 > {
   protected declare readonly __类型保持符号?: [
     路径类型,
