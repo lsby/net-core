@@ -1,10 +1,11 @@
+import type { Request, Response } from 'express'
 import { z } from 'zod'
 import { 接口, 接口方法类型, 接口路径类型 } from '../interface/interface-base'
 import { 接口逻辑Base, 空对象, 获得接口逻辑正确类型, 获得接口逻辑错误类型 } from '../interface/interface-logic'
 import { 常用形式转换器 } from '../interface/interface-result'
-import { 常用返回器 } from '../interface/interface-retuen'
+import { 自定义返回器 } from '../interface/interface-retuen'
 
-export class 常用形式接口封装<
+export class 常用形式并自定义返回接口封装<
   路径类型 extends 接口路径类型,
   方法类型 extends 接口方法类型,
   逻辑类型 extends 接口逻辑Base<any, 空对象, z.infer<接口错误形式Zod>, z.infer<接口正确形式Zod>, any, any>,
@@ -17,7 +18,7 @@ export class 常用形式接口封装<
   z.ZodObject<{ status: z.ZodLiteral<'fail'>; data: 接口错误形式Zod }>,
   z.ZodObject<{ status: z.ZodLiteral<'success'>; data: 接口正确形式Zod }>,
   常用形式转换器<获得接口逻辑错误类型<逻辑类型>, 获得接口逻辑正确类型<逻辑类型>>,
-  常用返回器<z.infer<接口正确形式Zod>>
+  自定义返回器<获得接口逻辑正确类型<逻辑类型>>
 > {
   public constructor(
     请求路径: 路径类型,
@@ -25,10 +26,11 @@ export class 常用形式接口封装<
     接口逻辑: 逻辑类型,
     逻辑错误类型Zod: 接口错误形式Zod,
     逻辑正确类型Zod: 接口正确形式Zod,
+    返回器实现: (req: Request, res: Response, 结果: 获得接口逻辑正确类型<逻辑类型>) => void | Promise<void>,
   ) {
     let 接口错误输出形式 = z.object({ status: z.literal('fail'), data: 逻辑错误类型Zod })
     let 接口正确输出形式 = z.object({ status: z.literal('success'), data: 逻辑正确类型Zod })
     let 接口转换器 = new 常用形式转换器<获得接口逻辑错误类型<逻辑类型>, 获得接口逻辑正确类型<逻辑类型>>()
-    super(请求路径, 请求方法, 接口逻辑, 接口错误输出形式, 接口正确输出形式, 接口转换器, new 常用返回器())
+    super(请求路径, 请求方法, 接口逻辑, 接口错误输出形式, 接口正确输出形式, 接口转换器, new 自定义返回器(返回器实现))
   }
 }
