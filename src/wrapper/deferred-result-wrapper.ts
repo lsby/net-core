@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { 接口, 接口方法类型, 接口路径类型 } from '../interface/interface-base'
 import { 接口逻辑Base, 空对象, 获得接口逻辑正确类型, 获得接口逻辑错误类型 } from '../interface/interface-logic'
 import { 常用延时直接形式转换器 } from '../interface/interface-result'
+import { 任意接口结果返回器, 常用返回器 } from '../interface/interface-retuen'
 
 export class 常用延时直接形式接口封装<
   路径类型 extends 接口路径类型,
@@ -22,7 +23,8 @@ export class 常用延时直接形式接口封装<
   逻辑类型,
   z.ZodObject<{ status: z.ZodLiteral<'fail'>; data: 接口错误形式Zod }>,
   接口正确形式Zod,
-  常用延时直接形式转换器<接口正确形式Zod, 获得接口逻辑错误类型<逻辑类型>, 获得接口逻辑正确类型<逻辑类型>>
+  常用延时直接形式转换器<接口正确形式Zod, 获得接口逻辑错误类型<逻辑类型>, 获得接口逻辑正确类型<逻辑类型>>,
+  常用返回器<获得接口逻辑错误类型<逻辑类型>, 获得接口逻辑正确类型<逻辑类型>>
 > {
   public constructor(
     请求路径: 路径类型,
@@ -30,6 +32,7 @@ export class 常用延时直接形式接口封装<
     接口逻辑: 逻辑类型,
     逻辑错误类型Zod: 接口错误形式Zod,
     逻辑正确类型Zod: 接口正确形式Zod,
+    返回器: 任意接口结果返回器 = new 常用返回器(),
   ) {
     let 接口错误输出形式 = z.object({ status: z.literal('fail'), data: 逻辑错误类型Zod })
     let 接口正确输出形式 = 逻辑正确类型Zod
@@ -38,6 +41,6 @@ export class 常用延时直接形式接口封装<
       获得接口逻辑错误类型<逻辑类型>,
       获得接口逻辑正确类型<逻辑类型>
     >()
-    super(请求路径, 请求方法, 接口逻辑, 接口错误输出形式, 接口正确输出形式, 接口转换器)
+    super(请求路径, 请求方法, 接口逻辑, 接口错误输出形式, 接口正确输出形式, 接口转换器, 返回器)
   }
 }
