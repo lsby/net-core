@@ -49,6 +49,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
       import {
         取第一个WS插件结果,
         合并JSON插件结果,
+        合并GET插件结果,
         获得接口方法类型,
         获得接口正确形式,
         获得接口路径类型,
@@ -62,6 +63,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
 
       type jsonPath = 获得接口路径类型<typeof 导入>
       type jsonMethod = 获得接口方法类型<typeof 导入>
+      type getInput = 合并GET插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
       type jsonInput = 合并JSON插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
       type jsonErrorOutput = 获得接口错误形式<typeof 导入>
       type jsonSuccessOutput = 获得接口正确形式<typeof 导入>
@@ -70,18 +72,20 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
         ? never
         : jsonPath extends infer _
           ? jsonMethod extends infer _
-            ? jsonInput extends infer _
-              ? jsonErrorOutput extends infer _
-                ? jsonSuccessOutput extends infer _
-                  ? wsData extends infer _
-                    ? {
-                        path: jsonPath
-                        method: jsonMethod
-                        input: jsonInput
-                        errorOutput: jsonErrorOutput
-                        successOutput: jsonSuccessOutput
-                        webSocketData: wsData
-                      }
+            ? getInput extends infer _
+              ? jsonInput extends infer _
+                ? jsonErrorOutput extends infer _
+                  ? jsonSuccessOutput extends infer _
+                    ? wsData extends infer _
+                      ? {
+                          path: jsonPath
+                          method: jsonMethod
+                          input: jsonMethod extends 'post' ? jsonInput : jsonMethod extends 'get' ? getInput : {}
+                          errorOutput: jsonErrorOutput
+                          successOutput: jsonSuccessOutput
+                          webSocketData: wsData
+                        }
+                      : never
                     : never
                   : never
                 : never
