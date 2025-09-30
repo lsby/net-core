@@ -3,6 +3,7 @@ export * from './help/help'
 export * from './interface/interface-base'
 export * from './interface/interface-logic'
 export * from './interface/interface-result'
+export * from './interface/interface-retuen'
 export * from './interface/interface-test'
 
 export * from './plugin/extend/chinese-path'
