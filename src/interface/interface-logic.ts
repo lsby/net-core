@@ -66,6 +66,7 @@ export abstract class 接口逻辑Base<
       逻辑附加参数: 逻辑附加参数类型,
       请求附加参数: 请求附加参数类型,
     ) => Promise<Either<错误类型, 返回类型>>,
+    清理函数: (() => Promise<void>) | undefined,
     上游接口逻辑: 上游接口类型,
     最后接口逻辑: 最后接口类型,
   ): 接口逻辑Base<插件类型, 逻辑附加参数类型, 错误类型, 返回类型, 上游接口类型, 最后接口类型> {
@@ -77,6 +78,9 @@ export abstract class 接口逻辑Base<
       上游接口类型,
       最后接口类型
     > {
+      public override 获得清理函数(): (() => Promise<void>) | undefined {
+        return 清理函数
+      }
       public override 获得插件们(): [...插件类型] {
         return 插件们
       }
@@ -103,8 +107,9 @@ export abstract class 接口逻辑Base<
       逻辑附加参数: 逻辑附加参数类型,
       请求附加参数: 请求附加参数类型,
     ) => Promise<Either<错误类型, 返回类型>>,
+    清理函数?: (() => Promise<void>) | undefined,
   ): 接口逻辑Base<插件类型, 逻辑附加参数类型, 错误类型, 返回类型, null, null> {
-    return this.完整构造(插件们, 实现, null, null)
+    return this.完整构造(插件们, 实现, 清理函数, null, null)
   }
 
   protected declare readonly __类型保持符号_协变?: [插件类型, 错误类型, 返回类型]
@@ -121,6 +126,7 @@ export abstract class 接口逻辑Base<
     逻辑附加参数: 逻辑附加参数类型,
     请求附加参数: 请求附加参数类型,
   ): Promise<Either<错误类型, 返回类型>>
+  public abstract 获得清理函数(): (() => Promise<void>) | undefined
 
   public async 运行(
     req: Request,
@@ -172,6 +178,19 @@ export abstract class 接口逻辑Base<
     typeof this,
     typeof 输入
   > {
+    let 上清理 = this.获得清理函数()
+    let 下清理 = 输入.获得清理函数()
+    let 合并清理: (() => Promise<void>) | undefined = void 0
+
+    if (上清理 !== void 0 && 下清理 !== void 0) {
+      合并清理 = async (): Promise<void> => {
+        await 上清理()
+        await 下清理()
+      }
+    } else if (上清理 !== void 0) 合并清理 = 上清理
+    else if (下清理 !== void 0) 合并清理 = 下清理
+    else 合并清理 = void 0
+
     return 接口逻辑Base.完整构造(
       [...this.获得插件们(), ...输入.获得插件们()],
       async (参数, 逻辑附加参数, 请求附加参数) => {
@@ -184,6 +203,7 @@ export abstract class 接口逻辑Base<
         let 最终返回结果 = 下层调用结果.map((a) => ({ ...传给下一层的, ...a }))
         return 最终返回结果
       },
+      合并清理,
       this,
       输入,
     )
