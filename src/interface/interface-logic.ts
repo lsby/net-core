@@ -126,7 +126,7 @@ export abstract class 接口逻辑Base<
     逻辑附加参数: 逻辑附加参数类型,
     请求附加参数: 请求附加参数类型,
   ): Promise<Either<错误类型, 返回类型>>
-  public abstract 获得清理函数(): (() => Promise<void>) | undefined
+  public 获得清理函数?(): (() => Promise<void>) | undefined
 
   public async 运行(
     req: Request,
@@ -178,8 +178,8 @@ export abstract class 接口逻辑Base<
     typeof this,
     typeof 输入
   > {
-    let 上清理 = this.获得清理函数()
-    let 下清理 = 输入.获得清理函数()
+    let 上清理 = this.获得清理函数?.()
+    let 下清理 = 输入.获得清理函数?.()
     let 合并清理: (() => Promise<void>) | undefined = void 0
 
     if (上清理 !== void 0 && 下清理 !== void 0) {
