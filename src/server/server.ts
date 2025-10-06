@@ -112,12 +112,14 @@ export class 服务器 {
     await log.debug('调用接口逻辑...')
 
     let 接口结果: Either<any, any>
+    let 插件结果 = {}
     try {
-      接口结果 = await 接口逻辑.运行(req, res, {}, 请求附加参数)
+      插件结果 = await 接口逻辑.计算插件结果(req, res, 请求附加参数)
+      接口结果 = await 接口逻辑.通过插件结果运行(插件结果, {}, 请求附加参数)
       let 接口耗时 = Date.now() - 开始
       await log.info('接口逻辑执行完毕, 耗时: %o ms', 接口耗时)
     } finally {
-      await 接口逻辑.获得清理函数?.()?.()
+      await 接口逻辑.获得清理函数?.()?.(插件结果, {}, 请求附加参数)
     }
 
     // ---------- 2. 转换 + 校验 ----------
