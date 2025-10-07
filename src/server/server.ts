@@ -141,6 +141,7 @@ export class 服务器 {
     }
     let 转换耗时 = Date.now() - 开始
     await log.info('结果转换与校验完成, 耗时: %o ms', 转换耗时)
+    await log.debug('最终结果: %o', 最终结果)
 
     // ---------- 3. 返回 ----------
     开始 = Date.now()
