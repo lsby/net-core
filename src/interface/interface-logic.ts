@@ -4,13 +4,9 @@ import { 联合转元组 } from '../help/interior'
 import { 合并插件结果, 插件项类型 } from '../plugin/plug'
 import { 请求附加参数类型 } from '../server/server'
 
-export type 清理函数类型<
-  插件类型 extends 插件项类型[],
-  错误类型 extends 接口逻辑错误类型,
-  返回类型 extends 接口逻辑正确类型,
-> = (
+export type 清理函数类型<插件类型 extends 插件项类型[], 逻辑附加参数类型 extends 接口逻辑附加参数类型> = (
   参数: 合并插件结果<插件类型>,
-  接口结果: Either<错误类型, 返回类型> | undefined,
+  逻辑附加参数: 逻辑附加参数类型,
   请求附加参数: 请求附加参数类型,
 ) => Promise<void>
 
@@ -76,7 +72,7 @@ export abstract class 接口逻辑Base<
       逻辑附加参数: 逻辑附加参数类型,
       请求附加参数: 请求附加参数类型,
     ) => Promise<Either<错误类型, 返回类型>>,
-    清理函数: 清理函数类型<插件类型, 错误类型, 返回类型> | undefined,
+    清理函数: 清理函数类型<插件类型, 逻辑附加参数类型> | undefined,
     上游接口逻辑: 上游接口类型,
     最后接口逻辑: 最后接口类型,
   ): 接口逻辑Base<插件类型, 逻辑附加参数类型, 错误类型, 返回类型, 上游接口类型, 最后接口类型> {
@@ -88,7 +84,7 @@ export abstract class 接口逻辑Base<
       上游接口类型,
       最后接口类型
     > {
-      public override 获得清理函数(): 清理函数类型<插件类型, 错误类型, 返回类型> | undefined {
+      public override 获得清理函数(): 清理函数类型<插件类型, 逻辑附加参数类型> | undefined {
         return 清理函数
       }
       public override 获得插件们(): [...插件类型] {
@@ -117,7 +113,7 @@ export abstract class 接口逻辑Base<
       逻辑附加参数: 逻辑附加参数类型,
       请求附加参数: 请求附加参数类型,
     ) => Promise<Either<错误类型, 返回类型>>,
-    清理函数?: 清理函数类型<插件类型, 错误类型, 返回类型> | undefined,
+    清理函数?: 清理函数类型<插件类型, 逻辑附加参数类型> | undefined,
   ): 接口逻辑Base<插件类型, 逻辑附加参数类型, 错误类型, 返回类型, null, null> {
     return this.完整构造(插件们, 实现, 清理函数, null, null)
   }
@@ -157,7 +153,7 @@ export abstract class 接口逻辑Base<
     逻辑附加参数: 逻辑附加参数类型,
     请求附加参数: 请求附加参数类型,
   ): Promise<Either<错误类型, 返回类型>>
-  public 获得清理函数?(): 清理函数类型<插件类型, 错误类型, 返回类型> | undefined
+  public 获得清理函数?(): 清理函数类型<插件类型, 逻辑附加参数类型> | undefined
 
   public async 通过插件结果运行(
     合并插件结果: 合并插件结果<插件类型>,
@@ -208,33 +204,31 @@ export abstract class 接口逻辑Base<
     let 上清理 = this.获得清理函数?.()
     let 下清理 = 输入.获得清理函数?.()
 
-    let 合并清理:
-      | 清理函数类型<[...插件类型, ...输入的插件类型], 错误类型 | 输入的错误类型, 返回类型 & 输入的返回类型>
-      | undefined = void 0
+    let 合并清理: 清理函数类型<[...插件类型, ...输入的插件类型], 逻辑附加参数类型> | undefined = void 0
     if (上清理 !== void 0 && 下清理 !== void 0) {
       合并清理 = async (
         参数: 合并插件结果<[...插件类型, ...输入的插件类型]>,
-        接口结果: Either<错误类型 | 输入的错误类型, 返回类型 & 输入的返回类型> | undefined,
+        逻辑附加参数: 逻辑附加参数类型,
         请求附加参数: 请求附加参数类型,
       ): Promise<void> => {
-        await 上清理(参数 as any, 接口结果 as any, 请求附加参数)
-        await 下清理(参数 as any, 接口结果 as any, 请求附加参数)
+        await 上清理(参数 as any, 逻辑附加参数, 请求附加参数)
+        await 下清理(参数 as any, 逻辑附加参数 as any, 请求附加参数)
       }
     } else if (上清理 !== void 0) {
       合并清理 = async (
         参数: 合并插件结果<[...插件类型, ...输入的插件类型]>,
-        接口结果: Either<错误类型 | 输入的错误类型, 返回类型 & 输入的返回类型> | undefined,
+        逻辑附加参数: 逻辑附加参数类型,
         请求附加参数: 请求附加参数类型,
       ): Promise<void> => {
-        await 上清理(参数 as any, 接口结果 as any, 请求附加参数)
+        await 上清理(参数 as any, 逻辑附加参数, 请求附加参数)
       }
     } else if (下清理 !== void 0) {
       合并清理 = async (
         参数: 合并插件结果<[...插件类型, ...输入的插件类型]>,
-        接口结果: Either<错误类型 | 输入的错误类型, 返回类型 & 输入的返回类型> | undefined,
+        逻辑附加参数: 逻辑附加参数类型,
         请求附加参数: 请求附加参数类型,
       ): Promise<void> => {
-        await 下清理(参数 as any, 接口结果 as any, 请求附加参数)
+        await 下清理(参数 as any, 逻辑附加参数 as any, 请求附加参数)
       }
     }
 
