@@ -64,14 +64,12 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
                 return
               }
 
-              await log.debug('发送 WebSocket 信息', { 信息 })
               await new Promise<void>((resolve, reject) => {
                 ws句柄?.send(JSON.stringify(信息), (err: Error | undefined | null) => {
                   if (err !== void 0 && err !== null) {
                     log.warnSync('发送 WebSocket 信息失败', { 错误: err })
                     return reject(err)
                   }
-                  log.debugSync('WebSocket 信息发送成功')
                   resolve()
                 })
               })
