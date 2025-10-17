@@ -8,8 +8,15 @@ type id = string
 export class WebSocket管理器 {
   private log = log.extend('@lsby:net-core').extend('WebSocket管理器')
   private 清理函数表: Record<string, () => Promise<void>> = {}
+  private 定时器ID: NodeJS.Timeout | null = null
 
-  public constructor(private 连接表: Record<id, WebSocket | null>) {}
+  public constructor(private 连接表: Record<id, WebSocket | null>) {
+    this.定时器ID = setInterval((): void => {
+      this.清理无效连接().catch((err): void => {
+        this.log.errorSync(`清理无效连接失败: ${err}`)
+      })
+    }, 30000)
+  }
 
   public 增加连接(id: id, ws句柄: WebSocket): void {
     this.连接表[id] = ws句柄
@@ -37,6 +44,19 @@ export class WebSocket管理器 {
 
     delete this.连接表[id]
     delete this.清理函数表[id]
+  }
+
+  private async 清理无效连接(): Promise<void> {
+    let 清理数量 = 0
+    for (let [id, ws] of Object.entries(this.连接表)) {
+      if (ws === null || ws.readyState === WebSocket.CLOSED) {
+        this.删除连接(id)
+        清理数量++
+      }
+    }
+    if (清理数量 > 0) {
+      this.log.infoSync(`清理了 ${清理数量} 个无效 WebSocket 连接`)
+    }
   }
 }
 
