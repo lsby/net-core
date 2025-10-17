@@ -50,7 +50,6 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
           ws操作: {
             async 发送ws信息(信息: 信息): Promise<void> {
               if (ws句柄 === null) {
-                await log.debug('尝试获取 WebSocket 句柄')
                 ws句柄 = await WebSocket管理器.获得句柄(wsId)
               }
 
