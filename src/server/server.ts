@@ -127,14 +127,15 @@ export class 服务器 {
     } else if (正确结果.success === true) {
       最终结果 = 正确结果.data
     } else {
-      await log.error('转换结果无法通过校验')
+      let 结果字符串 = JSON.stringify(递归截断字符串(转换结果))
+      await log.error(`转换结果无法通过校验: ${结果字符串}`)
       await log.error('对于错误结果: %o', 错误结果.error)
       await log.error('对于正确结果: %o', 正确结果.error)
-      throw new Error(`转换结果无法通过校验: ${JSON.stringify(递归截断字符串(转换结果))}`)
+      throw new Error(`转换结果无法通过校验`)
     }
     let 转换耗时 = Date.now() - 开始
     await log.info('结果转换与校验完成, 耗时: %o ms', 转换耗时)
-    await log.debug('最终结果: %o', 最终结果)
+    await log.debug('最终结果: %o', JSON.stringify(递归截断字符串(最终结果)))
 
     // ---------- 3. 返回 ----------
     开始 = Date.now()
