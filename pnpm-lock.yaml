@@ -15,8 +15,8 @@ importers:
         specifier: ^0.0.8
         version: 0.0.8(@types/node@20.12.10)
       '@lsby/ts-log':
-        specifier: ^0.1.2
-        version: 0.1.2(@types/node@20.12.10)
+        specifier: ^0.2.0
+        version: 0.2.0(@types/node@20.12.10)
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.21
@@ -622,8 +622,8 @@ packages:
   '@lsby/ts-global@0.0.8':
     resolution: {integrity: sha512-CcRzXLLFH80erMvy5TbJaCP4pBwBp7HaoFlUKChkfbpS4jIr5Z6XXSxBcPR+dga9eMKWNJdiovC1qEKdtbVNAA==}
 
-  '@lsby/ts-log@0.1.2':
-    resolution: {integrity: sha512-uaw/L56XqE95gA0MElZHcLlQ9vQ0OpmZ71O4ARb4NljMRbsEHlouv8ZT4qpdZysPNaenV3ivFPog/qXXAsSzDA==}
+  '@lsby/ts-log@0.2.0':
+    resolution: {integrity: sha512-gbFw6ZblyVbIMxBCCctjaeW1+9yNeqCxseVCekauwZixK3UuBKiJTCIIK2kgLtBNTLmkxrwCvcDvTPRvMBP9xw==}
     hasBin: true
 
   '@nodelib/fs.scandir@2.1.5':
@@ -3317,9 +3317,9 @@ snapshots:
       - supports-color
       - terser
 
-  '@lsby/ts-log@0.1.2(@types/node@20.12.10)':
+  '@lsby/ts-log@0.2.0(@types/node@20.12.10)':
     dependencies:
-      debug: 4.3.7
+      debug: 4.4.1
       vitest: 2.0.2(@types/node@20.12.10)
     transitivePeerDependencies:
       - '@edge-runtime/vm'

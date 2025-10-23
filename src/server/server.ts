@@ -164,33 +164,33 @@ export class 服务器 {
 
     wss.on('connection', async (ws: WebSocket, req) => {
       let log = logBase.extend(short().new()).extend('WebSocket')
-      log.debugSync('收到 WebSocket 连接请求: %o', req.url)
+      log.debug('收到 WebSocket 连接请求: %o', req.url)
 
       let 客户端id = req.url?.split('?id=')[1] ?? null
       if (客户端id === null) {
-        log.errorSync('连接请求缺少客户端 ID')
+        log.error('连接请求缺少客户端 ID')
         return this.关闭WebSocket连接(ws, log, 4001, '缺少客户端 ID')
       }
-      log.debugSync('解析客户端 ID: %s', 客户端id)
+      log.debug('解析客户端 ID: %s', 客户端id)
 
       let WebSocket管理器 = Global.getItemSync('WebSocket管理器')
 
       let 连接已存在 = WebSocket管理器.查询连接存在(客户端id)
       if (连接已存在) {
-        log.errorSync('客户端 ID 已存在: %s', 客户端id)
+        log.error('客户端 ID 已存在: %s', 客户端id)
         return this.关闭WebSocket连接(ws, log, 4002, '客户端 ID 已存在')
       }
 
       WebSocket管理器.增加连接(客户端id, ws)
-      log.infoSync('WebSocket 连接已建立, 客户端 ID: %s', 客户端id)
+      log.info('WebSocket 连接已建立, 客户端 ID: %s', 客户端id)
 
       ws.on('close', async () => {
-        log.infoSync('WebSocket 连接关闭: %s', 客户端id)
+        log.info('WebSocket 连接关闭: %s', 客户端id)
         WebSocket管理器.删除连接(客户端id)
       })
 
       ws.on('error', async (err) => {
-        log.errorSync('WebSocket 出现错误, 客户端 ID: %s, 错误: %o', 客户端id, err)
+        log.error('WebSocket 出现错误, 客户端 ID: %s, 错误: %o', 客户端id, err)
         WebSocket管理器.删除连接(客户端id)
       })
     })
