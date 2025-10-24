@@ -58,6 +58,7 @@ export class 服务器 {
 
     try {
       let { path: 请求路径, method } = req
+      请求路径 = decodeURIComponent(请求路径)
       let 请求方法 = method.toLowerCase()
 
       await log.debug('收到请求, 路径: %o, 方法: %o', 请求路径, 请求方法)
