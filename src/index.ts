@@ -6,7 +6,6 @@ export * from './interface/interface-result'
 export * from './interface/interface-retuen'
 export * from './interface/interface-test'
 
-export * from './plugin/extend/chinese-path'
 export * from './plugin/extend/custom-data'
 export * from './plugin/extend/json'
 export * from './plugin/extend/log-headers'
