@@ -8,7 +8,7 @@ export class 自定义数据插件<Data extends z.AnyZodObject> extends 插件<D
   public constructor(t: Data, data: z.infer<Data>) {
     super(t, async (_res, _req, 附加参数) => {
       let log = 附加参数.log.extend('自定义数据插件')
-      await log.debug('自定义数据插件运行, 结果: %o', data)
+      log.debug('自定义数据插件运行, 结果: %o', data)
       return data
     })
   }

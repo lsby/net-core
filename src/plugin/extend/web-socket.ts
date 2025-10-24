@@ -39,12 +39,12 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
         let ws句柄: WebSocket | null = null
 
         let wsId = req.headers['ws-client-id']
-        await log.debug('检查 ws-client-id 头信息', { wsId })
+        log.debug('检查 ws-client-id 头信息', { wsId })
         if (typeof wsId !== 'string') {
-          await log.error('未能获取到有效的 WebSocket Id')
+          log.error('未能获取到有效的 WebSocket Id')
           return { ws操作: null }
         }
-        await log.debug('已获得 WebSocket Id: %o', wsId)
+        log.debug('已获得 WebSocket Id: %o', wsId)
 
         return {
           ws操作: {
@@ -54,12 +54,12 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
               }
 
               if (ws句柄 === null) {
-                await log.error('未能获取到有效的 WebSocket 句柄')
+                log.error('未能获取到有效的 WebSocket 句柄')
                 return
               }
 
               if (ws句柄.readyState !== WebSocket.OPEN) {
-                await log.warn('WebSocket 未打开，无法发送消息', { wsId })
+                log.warn('WebSocket 未打开，无法发送消息', { wsId })
                 return
               }
 
@@ -75,12 +75,12 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
             },
 
             async 关闭ws连接(): Promise<void> {
-              await log.debug('关闭 WebSocket 连接', { wsId })
+              log.debug('关闭 WebSocket 连接', { wsId })
               WebSocket管理器.删除连接(wsId)
             },
 
             async 设置清理函数(清理函数): Promise<void> {
-              await log.debug('设置 WebSocket 清理函数', { wsId })
+              log.debug('设置 WebSocket 清理函数', { wsId })
               await WebSocket管理器.设置清理函数(wsId, 清理函数)
             },
           },

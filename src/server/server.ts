@@ -38,7 +38,7 @@ export class 服务器 {
     let app = express()
 
     if (this.静态资源路径 !== void 0) {
-      await log.debug(`设置静态资源路径: ${this.静态资源路径}`)
+      log.debug(`设置静态资源路径: ${this.静态资源路径}`)
       app.use(express.static(this.静态资源路径))
     }
     app.use(this.处理请求.bind(this))
@@ -61,7 +61,7 @@ export class 服务器 {
       请求路径 = decodeURIComponent(请求路径)
       let 请求方法 = method.toLowerCase()
 
-      await log.debug('收到请求, 路径: %o, 方法: %o', 请求路径, 请求方法)
+      log.debug('收到请求, 路径: %o, 方法: %o', 请求路径, 请求方法)
 
       // 匹配接口
       let 目标接口 = this.接口们.find((接口) => 请求方法 === 接口.获得方法() && 请求路径 === 接口.获得路径()) ?? null
@@ -77,19 +77,19 @@ export class 服务器 {
           res.send(默认文件内容)
           return
         } catch (e) {
-          await log.error('返回默认get文件内容失败: %o', String(e))
+          log.error('返回默认get文件内容失败: %o', String(e))
         }
       }
 
       // 未命中资源
-      await log.debug('没有命中任何资源')
+      log.debug('没有命中任何资源')
       res.status(404).end()
     } catch (error) {
-      await log.error(error)
+      log.error(error)
       res.status(500).send('服务器内部错误')
     } finally {
       let 耗时ms = Date.now() - 开始时间
-      await 主log.info('请求完成, 耗时: %o ms', 耗时ms)
+      主log.info('请求完成, 耗时: %o ms', 耗时ms)
     }
   }
 
@@ -109,12 +109,12 @@ export class 服务器 {
 
     // ---------- 1. 接口逻辑 ----------
     let 开始 = Date.now()
-    await log.debug('调用接口逻辑...')
+    log.debug('调用接口逻辑...')
 
     let 插件结果 = await 接口逻辑.计算插件结果(req, res, 请求附加参数)
     let 接口结果 = await 接口逻辑.通过插件结果运行(插件结果, {}, 请求附加参数)
     let 接口耗时 = Date.now() - 开始
-    await log.info('接口逻辑执行完毕, 耗时: %o ms', 接口耗时)
+    log.info('接口逻辑执行完毕, 耗时: %o ms', 接口耗时)
 
     // ---------- 2. 转换 + 校验 ----------
     开始 = Date.now()
@@ -129,24 +129,24 @@ export class 服务器 {
       最终结果 = 正确结果.data
     } else {
       let 结果字符串 = JSON.stringify(递归截断字符串(转换结果))
-      await log.error(`转换结果无法通过校验: ${结果字符串}`)
-      await log.error('对于错误结果: %o', 错误结果.error)
-      await log.error('对于正确结果: %o', 正确结果.error)
+      log.error(`转换结果无法通过校验: ${结果字符串}`)
+      log.error('对于错误结果: %o', 错误结果.error)
+      log.error('对于正确结果: %o', 正确结果.error)
       throw new Error(`转换结果无法通过校验`)
     }
     let 转换耗时 = Date.now() - 开始
-    await log.info('结果转换与校验完成, 耗时: %o ms', 转换耗时)
-    await log.debug('最终结果: %o', JSON.stringify(递归截断字符串(最终结果)))
+    log.info('结果转换与校验完成, 耗时: %o ms', 转换耗时)
+    log.debug('最终结果: %o', JSON.stringify(递归截断字符串(最终结果)))
 
     // ---------- 3. 返回 ----------
     开始 = Date.now()
     await 结果返回器.返回(req, res, 最终结果)
     let 返回耗时 = Date.now() - 开始
-    await log.info('返回逻辑执行完毕, 耗时: %o ms', 返回耗时)
+    log.info('返回逻辑执行完毕, 耗时: %o ms', 返回耗时)
 
     // ---------- 总耗时 ----------
     let 总耗时 = Date.now() - 总开始
-    await log.info('接口完整执行耗时: %o ms', 总耗时)
+    log.info('接口完整执行耗时: %o ms', 总耗时)
   }
 
   private async 初始化WebSocket(server: http.Server): Promise<void> {
@@ -155,12 +155,12 @@ export class 服务器 {
 
     wss.on('listening', async () => {
       let log = logBase
-      await log.info('WebSocket 服务器已启动并监听')
+      log.info('WebSocket 服务器已启动并监听')
     })
 
     wss.on('error', async (err) => {
       let log = logBase
-      await log.error('WebSocket 服务器发生错误: %o', err)
+      log.error('WebSocket 服务器发生错误: %o', err)
     })
 
     wss.on('connection', async (ws: WebSocket, req) => {
@@ -198,7 +198,7 @@ export class 服务器 {
   }
 
   private async 关闭WebSocket连接(ws: WebSocket, log: Log, code: number, reason: string): Promise<void> {
-    await log.debug(`关闭 WebSocket 连接, 代码: ${code}, 原因: ${reason}`)
+    log.debug(`关闭 WebSocket 连接, 代码: ${code}, 原因: ${reason}`)
     ws.close(code, reason)
   }
 

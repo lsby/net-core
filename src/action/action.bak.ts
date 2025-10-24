@@ -149,7 +149,7 @@ export abstract class 业务行为<
       let 错误 = 所有结果.filter((a) => a.isLeft())[0] ?? null
       if (错误 !== null) return 错误
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      let 正确结果合并 = 所有结果.map((a) => a.assertRight().getRight()).reduce((s, a) => Object.assign(s, a), {})
+      let 正确结果合并 = 所有结果.map((a) => a.assertRight().getRight()).reduce((s, a) => ({ ...s, ...a }), {})
       return new Right(await f(正确结果合并))
     })
   }
@@ -221,7 +221,7 @@ export abstract class 业务行为<
       let 我的结果 = await this.业务行为实现(参数)
       if (我的结果.isLeft()) return new Left(我的结果.assertLeft().getLeft())
       let 对方结果 = await b.业务行为实现({ ...参数, ...我的结果.assertRight().getRight() } as any)
-      return 对方结果.map((a) => Object.assign(a, 我的结果.assertRight().getRight()))
+      return 对方结果.map((a) => ({ ...a, ...我的结果.assertRight().getRight() }))
     })
   }
 
