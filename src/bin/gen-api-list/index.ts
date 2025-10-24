@@ -27,23 +27,23 @@ function 计算引入路径(输出文件路径: string, a: ts.SourceFile): strin
 export async function main(tsconfig路径: string, 目标路径: string, 输出文件路径: string): Promise<void> {
   let log = new Log('@lsby:net-core').extend('gen-api-list')
 
-  await log.debug('开始生成api接口列表...')
-  await log.debug(`tsconfig路径: ${tsconfig路径}`)
-  await log.debug(`目标路径: ${目标路径}`)
-  await log.debug(`输出文件路径: ${输出文件路径}`)
+  log.debug('开始生成api接口列表...')
+  log.debug(`tsconfig路径: ${tsconfig路径}`)
+  log.debug(`目标路径: ${目标路径}`)
+  log.debug(`输出文件路径: ${输出文件路径}`)
 
   let tsconfig内容 = ts.parseConfigFileTextToJson(tsconfig路径, fs.readFileSync(tsconfig路径, 'utf8'))
   let tsconfig内容错误 = tsconfig内容.error ?? null
   if (tsconfig内容错误 !== null) {
-    await log.error('无法解析 tsconfig.json: ' + tsconfig内容错误.messageText)
+    log.error('无法解析 tsconfig.json: ' + tsconfig内容错误.messageText)
     throw new Error('无法解析 tsconfig.json')
   }
   let 解析后的tsconfig = ts.parseJsonConfigFileContent(tsconfig内容.config, ts.sys, path.resolve(tsconfig路径, '..'))
-  await log.debug('成功解析 tsconfig 文件...')
+  log.debug('成功解析 tsconfig 文件...')
 
   let 项目主机 = ts.createCompilerHost(解析后的tsconfig.options)
   let 项目 = ts.createProgram(解析后的tsconfig.fileNames, 解析后的tsconfig.options, 项目主机)
-  await log.debug('成功读取项目...')
+  log.debug('成功读取项目...')
 
   let 所有源文件 = 项目.getSourceFiles()
   let 相关源文件们 = 所有源文件.filter((源文件) => {
@@ -53,7 +53,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
     if (存在默认导出 === false) return false
     return true
   })
-  await log.debug(`筛选出 ${相关源文件们.length} 个相关源文件`)
+  log.debug(`筛选出 ${相关源文件们.length} 个相关源文件`)
 
   let 伴随的虚拟文件们 = 相关源文件们.map((a) => {
     let 代码 = [
@@ -101,7 +101,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
     .filter((a) => a[1] === true)
     .map((a) => a[0] ?? null)
     .filter((a) => a !== null)
-  await log.debug(`最终筛选出 ${最终结果.length} 个api接口实现`)
+  log.debug(`最终筛选出 ${最终结果.length} 个api接口实现`)
 
   let 最终代码 = [
     `// 该文件由脚本自动生成, 请勿修改.`,
@@ -115,11 +115,11 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
     '',
   ]
 
-  await log.debug('最终代码生成完成')
+  log.debug('最终代码生成完成')
 
   let 输出文件夹 = path.dirname(输出文件路径)
   if (fs.existsSync(输出文件夹) === false) fs.mkdirSync(输出文件夹, { recursive: true })
   fs.writeFileSync(输出文件路径, 最终代码.join('\n'))
 
-  await log.debug(`输出文件写入完成: ${输出文件路径}`)
+  log.debug(`输出文件写入完成: ${输出文件路径}`)
 }
