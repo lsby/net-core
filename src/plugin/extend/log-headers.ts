@@ -8,7 +8,7 @@ export class 调试请求头插件 extends 插件<typeof zod类型表示> {
     super(zod类型表示, async (req, res, 附加参数) => {
       let log = 附加参数.log.extend('调试请求头插件')
 
-      log.debug(req.headers)
+      await log.debug(req.headers)
 
       return {}
     })

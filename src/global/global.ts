@@ -13,7 +13,9 @@ export class WebSocket管理器 {
   public constructor(private 连接表: Record<id, WebSocket | null>) {
     this.定时器ID = setInterval((): void => {
       this.清理无效连接().catch((err): void => {
-        this.log.error(`清理无效连接失败: ${err}`)
+        this.log
+          .error(`清理无效连接失败: ${err}`)
+          .catch((a) => `日志输出错误: ${a}: 日志内容: ${`清理无效连接失败: ${err}`}`)
       })
     }, 30000)
   }
@@ -37,7 +39,9 @@ export class WebSocket管理器 {
     try {
       this.连接表[id]?.close(1000, '服务器主动关闭')
     } catch (err) {
-      this.log.error(`关闭 WebSocket 句柄失败, id: ${id}, 错误: ${err}`)
+      this.log
+        .error(`关闭 WebSocket 句柄失败, id: ${id}, 错误: ${err}`)
+        .catch((a) => `日志输出错误: ${a}: 日志内容: ${`关闭 WebSocket 句柄失败, id: ${id}, 错误: ${err}`}`)
     }
 
     清理函数?.().catch((err) => this.log.error(`清理连接失败, id: ${id}, 错误: ${err}`))
@@ -55,7 +59,7 @@ export class WebSocket管理器 {
       }
     }
     if (清理数量 > 0) {
-      this.log.info(`清理了 ${清理数量} 个无效 WebSocket 连接`)
+      await this.log.info(`清理了 ${清理数量} 个无效 WebSocket 连接`)
     }
   }
 }

@@ -14,15 +14,15 @@ export class GET参数解析插件<Result extends AnyZodObject> extends 插件<R
     super(t, async (req, _res, 附加参数) => {
       let log = 附加参数.log.extend('GET参数解析插件')
 
-      log.debug('准备解析 GET 参数：%o', JSON.stringify(递归截断字符串(req.query)))
+      await log.debug('准备解析 GET 参数：%o', JSON.stringify(递归截断字符串(req.query)))
       let parseResult = t.safeParse(req.query)
 
       if (parseResult.success === false) {
-        log.error('解析 GET 参数失败：%o', parseResult.error)
+        await log.error('解析 GET 参数失败：%o', parseResult.error)
         throw new Error(format('解析 GET 参数失败: %o', parseResult.error))
       }
 
-      log.debug('成功解析 GET 参数')
+      await log.debug('成功解析 GET 参数')
       return parseResult.data
     })
   }

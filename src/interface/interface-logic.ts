@@ -134,7 +134,7 @@ export abstract class 接口逻辑Base<
     let 日志对象 = 请求附加参数.log
 
     let 插件们 = this.获得插件们()
-    日志对象.debug('找到 %o 个 插件, 准备执行...', 插件们.length)
+    await 日志对象.debug('找到 %o 个 插件, 准备执行...', 插件们.length)
     let 所有插件结果: Record<string, any>[] = []
     for (let 插件 of 插件们) {
       let 插件本体 = await 插件.run()
@@ -142,7 +142,7 @@ export abstract class 接口逻辑Base<
       所有插件结果.push(插件返回)
     }
     let 合并结果 = 所有插件结果.reduce((s, a) => ({ ...s, ...a }), {})
-    日志对象.debug('插件 执行完毕')
+    await 日志对象.debug('插件 执行完毕')
 
     return 合并结果 as 合并插件结果<插件类型>
   }
@@ -164,9 +164,9 @@ export abstract class 接口逻辑Base<
 
     let 清理函数 = this.获得清理函数?.()
     try {
-      log.debug('准备执行接口实现...')
+      await log.debug('准备执行接口实现...')
       let 实现结果 = await this.实现(合并插件结果 as any, 传入的逻辑附加参数, 传入的插件附加参数)
-      log.debug('接口实现执行完毕')
+      await log.debug('接口实现执行完毕')
 
       let 最终结果 = 实现结果.map((a) => ({ ...传入的逻辑附加参数, ...a }))
 

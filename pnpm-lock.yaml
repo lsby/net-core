@@ -9,14 +9,14 @@ importers:
   .:
     dependencies:
       '@lsby/ts-fp-data':
-        specifier: 0.2.5
+        specifier: ^0.2.5
         version: 0.2.5
       '@lsby/ts-global':
         specifier: ^0.0.8
         version: 0.0.8(@types/node@20.12.10)
       '@lsby/ts-log':
-        specifier: 0.2.4
-        version: 0.2.4(@types/node@20.12.10)
+        specifier: ^0.3.0
+        version: 0.3.0(@types/node@20.12.10)
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.21
@@ -623,8 +623,8 @@ packages:
   '@lsby/ts-global@0.0.8':
     resolution: {integrity: sha512-CcRzXLLFH80erMvy5TbJaCP4pBwBp7HaoFlUKChkfbpS4jIr5Z6XXSxBcPR+dga9eMKWNJdiovC1qEKdtbVNAA==}
 
-  '@lsby/ts-log@0.2.4':
-    resolution: {integrity: sha512-Nnto9Ti3+R/siaJ689qcArqSom6OnZ3GdadNY9L+D1rzFHNbG9liUPYVyQKubPYVD+oHAuqpPAm14Rb618N8lQ==}
+  '@lsby/ts-log@0.3.0':
+    resolution: {integrity: sha512-8OyXq8Y3w2Zan+pPnMifJoxTQjGQ06oYBgzjS1WSkr5yIcKaiWthVbv63UHN/dwt3udrwDJPI28k5Vh65n9I9g==}
     hasBin: true
 
   '@nodelib/fs.scandir@2.1.5':
@@ -3337,7 +3337,7 @@ snapshots:
       - supports-color
       - terser
 
-  '@lsby/ts-log@0.2.4(@types/node@20.12.10)':
+  '@lsby/ts-log@0.3.0(@types/node@20.12.10)':
     dependencies:
       debug: 4.4.1
       vitest: 2.0.2(@types/node@20.12.10)
