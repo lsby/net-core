@@ -16,23 +16,23 @@ function 检查存在默认导出(源文件: ts.SourceFile): boolean {
 export async function main(tsconfig路径: string, 目标路径: string, 输出文件路径: string): Promise<void> {
   let log = new Log('@lsby:net-core').extend('gen-api-type')
 
-  log.debug('开始生成类型...')
-  log.debug(`tsconfig路径: ${tsconfig路径}`)
-  log.debug(`目标路径: ${目标路径}`)
-  log.debug(`输出文件路径: ${输出文件路径}`)
+  await log.debug('开始生成类型...')
+  await log.debug(`tsconfig路径: ${tsconfig路径}`)
+  await log.debug(`目标路径: ${目标路径}`)
+  await log.debug(`输出文件路径: ${输出文件路径}`)
 
   let tsconfig内容 = ts.parseConfigFileTextToJson(tsconfig路径, fs.readFileSync(tsconfig路径, 'utf8'))
   let tsconfig内容错误 = tsconfig内容.error ?? null
   if (tsconfig内容错误 !== null) {
-    log.error('无法解析 tsconfig.json: ' + tsconfig内容错误.messageText)
+    await log.error('无法解析 tsconfig.json: ' + tsconfig内容错误.messageText)
     throw new Error('无法解析 tsconfig.json')
   }
   let 解析后的tsconfig = ts.parseJsonConfigFileContent(tsconfig内容.config, ts.sys, path.resolve(tsconfig路径, '..'))
-  log.debug('成功解析 tsconfig 文件...')
+  await log.debug('成功解析 tsconfig 文件...')
 
   let 项目主机 = ts.createCompilerHost(解析后的tsconfig.options)
   let 项目 = ts.createProgram(解析后的tsconfig.fileNames, 解析后的tsconfig.options, 项目主机)
-  log.debug('成功读取项目...')
+  await log.debug('成功读取项目...')
 
   let 所有源文件 = 项目.getSourceFiles()
   let 相关源文件们 = 所有源文件.filter((源文件) => {
@@ -42,7 +42,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
     if (存在默认导出 === false) return false
     return true
   })
-  log.debug(`筛选出 ${相关源文件们.length} 个相关源文件`)
+  await log.debug(`筛选出 ${相关源文件们.length} 个相关源文件`)
 
   let 伴随的虚拟文件们 = 相关源文件们.map((a) => {
     let 代码 = `
@@ -171,7 +171,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
             类型定义类型 = 'aliasSymbol'
             导出类型定义 = type.aliasSymbol.declarations?.[0]?.getText()
           } else {
-            log.warn(`无法找到类型定义`)
+            log.warn(`无法找到类型定义`).catch((a) => `日志输出错误: ${a}: 日志内容: ${`无法找到类型定义`}`)
           }
         }
       }
@@ -193,10 +193,10 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
   }
 
   let 最终结果_JSON = Array.from(new Set(JSON结果.filter((a) => a !== 'any' && a !== 'never' && a !== 'unknown')))
-  log.debug(`最终筛选出 ${最终结果_JSON.length} 个json接口类型`)
+  await log.debug(`最终筛选出 ${最终结果_JSON.length} 个json接口类型`)
 
   let 最终结果_导出类型 = Array.from(new Set(导出类型.filter((a) => a !== 'any' && a !== 'never' && a !== 'unknown')))
-  log.debug(`最终筛选出 ${最终结果_导出类型.length} 个导出类型`)
+  await log.debug(`最终筛选出 ${最终结果_导出类型.length} 个导出类型`)
 
   let 最终代码 = [
     `// 该文件由脚本自动生成, 请勿修改.`,
@@ -204,11 +204,11 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
     `export type InterfaceType = [${最终结果_JSON.join(',')}]`,
   ]
 
-  log.debug('最终代码生成完成')
+  await log.debug('最终代码生成完成')
 
   let 输出文件夹 = path.dirname(输出文件路径)
   if (fs.existsSync(输出文件夹) === false) fs.mkdirSync(输出文件夹, { recursive: true })
   fs.writeFileSync(输出文件路径, 最终代码.join('\n'))
 
-  log.debug(`输出文件写入完成: ${输出文件路径}`)
+  await log.debug(`输出文件写入完成: ${输出文件路径}`)
 }
