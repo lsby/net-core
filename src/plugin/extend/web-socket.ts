@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws'
 import { z } from 'zod'
 import { Global } from '../../global/global'
-import { 包装插件项, 取Task插件类型, 插件, 插件项类型 } from '../plug'
+import { 插件, 插件项类型 } from '../plug'
 
 export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> extends 插件<
   z.ZodObject<{
@@ -93,7 +93,7 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
 }
 
 export type 任意WS插件 = WebSocket插件<any>
-export type 任意WS插件项 = 包装插件项<任意WS插件>
+export type 任意WS插件项 = 任意WS插件
 export type 取WS插件泛型<A> = A extends WebSocket插件<infer x> ? x : never
 export type 取第一个WS插件结果<Arr extends Array<插件项类型>> = Arr extends []
   ? {}
@@ -101,7 +101,7 @@ export type 取第一个WS插件结果<Arr extends Array<插件项类型>> = Arr
     ? x extends infer 插件项
       ? xs extends Array<插件项类型>
         ? 插件项 extends 任意WS插件项
-          ? z.infer<取WS插件泛型<取Task插件类型<插件项>>>
+          ? z.infer<取WS插件泛型<插件项>>
           : 取第一个WS插件结果<xs>
         : {}
       : {}
