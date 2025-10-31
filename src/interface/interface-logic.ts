@@ -137,8 +137,7 @@ export abstract class 接口逻辑Base<
     await 日志对象.debug('找到 %o 个 插件, 准备执行...', 插件们.length)
     let 所有插件结果: Record<string, any>[] = []
     for (let 插件 of 插件们) {
-      let 插件本体 = await 插件.run()
-      let 插件返回 = await 插件本体.运行(req, res, 请求附加参数)
+      let 插件返回 = await 插件.运行(req, res, 请求附加参数)
       所有插件结果.push(插件返回)
     }
     let 合并结果 = 所有插件结果.reduce((s, a) => ({ ...s, ...a }), {})
