@@ -13,7 +13,7 @@ export type 清理函数类型<插件类型 extends 插件项类型[], 逻辑附
 export type 空对象 = Record<any, never>
 export type 兼容空对象 = Record<any, unknown>
 
-export type 接口逻辑错误类型 = string | never
+export type 接口逻辑错误类型 = Record<string, any> | string | never
 export type 接口逻辑正确类型 = Record<string, any>
 export type 接口逻辑附加参数类型 = Record<string, any>
 
@@ -162,25 +162,24 @@ export abstract class 接口逻辑Base<
     let log = 传入的插件附加参数.log.extend('接口逻辑')
 
     let 清理函数 = this.获得清理函数?.()
+    let 最终结果: Either<错误类型, 返回类型> | undefined = void 0
+
     try {
       await log.debug('准备执行接口实现...')
       let 实现结果 = await this.实现(合并插件结果 as any, 传入的逻辑附加参数, 传入的插件附加参数)
       await log.debug('接口实现执行完毕')
 
-      let 最终结果 = 实现结果.map((a) => ({ ...传入的逻辑附加参数, ...a }))
-
-      if (清理函数 !== void 0) {
-        let 上层混合结果 =
-          最终结果.isRight() === true ? (最终结果.assertRight().getRight() as 逻辑附加参数类型) : 传入的逻辑附加参数
-        await 清理函数(合并插件结果 as any, 上层混合结果, 传入的插件附加参数)
-      }
+      最终结果 = 实现结果.map((a) => ({ ...传入的逻辑附加参数, ...a }))
 
       return 最终结果
-    } catch (error) {
+    } finally {
       if (清理函数 !== void 0) {
-        await 清理函数(合并插件结果 as any, 传入的逻辑附加参数, 传入的插件附加参数)
+        let 上层混合结果 =
+          最终结果 !== void 0 && 最终结果.isRight() === true
+            ? (最终结果.assertRight().getRight() as unknown as 逻辑附加参数类型)
+            : 传入的逻辑附加参数
+        await 清理函数(合并插件结果 as any, 上层混合结果, 传入的插件附加参数)
       }
-      throw error
     }
   }
   public async 运行(
