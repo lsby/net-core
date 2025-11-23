@@ -20,8 +20,6 @@ export class WebSocket插件<信息 extends z.AnyZodObject | z.ZodUnion<any>> ex
     >
   }>
 > {
-  private log = Global.getItem('log')
-
   public constructor(信息描述: 信息) {
     super(
       z.object({
