@@ -131,17 +131,13 @@ export abstract class 接口逻辑Base<
     res: Response,
     请求附加参数: 请求附加参数类型,
   ): Promise<合并插件结果<插件类型>> {
-    let 日志对象 = 请求附加参数.log
-
     let 插件们 = this.获得插件们()
-    await 日志对象.debug('找到 %o 个 插件, 准备执行...', 插件们.length)
     let 所有插件结果: Record<string, any>[] = []
     for (let 插件 of 插件们) {
       let 插件返回 = await 插件.运行(req, res, 请求附加参数)
       所有插件结果.push(插件返回)
     }
     let 合并结果 = 所有插件结果.reduce((s, a) => ({ ...s, ...a }), {})
-    await 日志对象.debug('插件 执行完毕')
 
     return 合并结果 as 合并插件结果<插件类型>
   }
@@ -159,15 +155,11 @@ export abstract class 接口逻辑Base<
     传入的逻辑附加参数: 逻辑附加参数类型,
     传入的请求附加参数: 请求附加参数类型,
   ): Promise<Either<错误类型, 返回类型>> {
-    let log = 传入的请求附加参数.log.extend('接口逻辑')
-
     let 清理函数 = this.获得清理函数?.()
     let 最终结果: Either<错误类型, 返回类型> | undefined = void 0
 
     try {
-      await log.debug('准备执行接口实现...')
       let 实现结果 = await this.实现(合并插件结果 as any, 传入的逻辑附加参数, 传入的请求附加参数)
-      await log.debug('接口实现执行完毕')
 
       最终结果 = 实现结果.map((a) => ({ ...传入的逻辑附加参数, ...a }))
 
