@@ -123,8 +123,16 @@ export class 服务器 {
     let 开始 = Date.now()
     await 系统log.debug('调用接口逻辑...')
 
+    let 插件们 = 接口逻辑.获得插件们()
+
+    await 系统log.debug('找到 %o 个 插件, 准备执行...', 插件们.length)
     let 插件结果 = await 接口逻辑.计算插件结果(req, res, { log: 系统log })
+    await 系统log.debug('插件 执行完毕')
+
+    await 系统log.debug('准备执行接口实现...')
     let 接口结果 = await 接口逻辑.通过插件结果运行(插件结果, {}, { log: 接口log })
+    await 系统log.debug('接口实现执行完毕')
+
     let 接口耗时 = Date.now() - 开始
     await 系统log.info('接口逻辑执行完毕, 耗时: %o ms', 接口耗时)
 
