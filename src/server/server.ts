@@ -19,14 +19,25 @@ export type 请求附加参数类型 = {
 }
 
 export class 服务器 {
-  private log = Global.getItem('log')
+  private log: Promise<Log>
+  private 接口们: 任意接口[]
+  private 端口: number
+  private 静态资源路径: string | undefined
+  private 默认get文件路径: string | undefined
 
-  public constructor(
-    private 接口们: 任意接口[],
-    private 端口: number,
-    private 静态资源路径?: string,
-    private 默认get文件路径?: string,
-  ) {}
+  public constructor(options: {
+    接口们: 任意接口[]
+    端口: number
+    静态资源路径?: string
+    默认get文件路径?: string
+    log?: Log
+  }) {
+    this.接口们 = options.接口们
+    this.端口 = options.端口
+    this.静态资源路径 = options.静态资源路径
+    this.默认get文件路径 = options.默认get文件路径
+    this.log = options.log !== void 0 ? Promise.resolve(options.log) : Global.getItem('log')
+  }
 
   public async run(): Promise<{
     ip: string[]
