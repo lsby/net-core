@@ -19,8 +19,8 @@ export type 请求附加参数类型 = {
 }
 
 export class 服务器 {
-  private 系统log: Promise<Log> = Global.getItem('log')
   private 接口log: Promise<Log>
+  private 系统log: Promise<Log>
   private 接口们: 任意接口[]
   private 端口: number
   private 静态资源路径: string | undefined
@@ -31,13 +31,15 @@ export class 服务器 {
     端口: number
     静态资源路径?: string
     默认get文件路径?: string
-    log?: Log
+    系统log?: Log
+    接口log?: Log
   }) {
     this.接口们 = options.接口们
     this.端口 = options.端口
     this.静态资源路径 = options.静态资源路径
     this.默认get文件路径 = options.默认get文件路径
-    this.接口log = options.log !== void 0 ? Promise.resolve(options.log) : Global.getItem('log')
+    this.系统log = options.系统log !== void 0 ? Promise.resolve(options.系统log) : Global.getItem('log')
+    this.接口log = options.接口log !== void 0 ? Promise.resolve(options.接口log) : Global.getItem('log')
   }
 
   public async run(): Promise<{
