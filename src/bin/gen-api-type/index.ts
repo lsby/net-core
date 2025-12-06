@@ -80,7 +80,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
                       ? {
                           path: jsonPath
                           method: jsonMethod
-                          input: jsonMethod extends 'post' ? jsonInput : jsonMethod extends 'get' ? getInput : {}
+                          input: jsonMethod extends 'post' ? jsonInput['body'] : jsonMethod extends 'get' ? getInput['query'] : {}
                           errorOutput: jsonErrorOutput
                           successOutput: jsonSuccessOutput
                           webSocketData: wsData
