@@ -11,13 +11,16 @@ export class WebSocket管理器 {
   private 定时器ID: NodeJS.Timeout | null = null
 
   public constructor(private 连接表: Record<id, WebSocket | null>) {
-    this.定时器ID = setInterval((): void => {
-      this.清理无效连接().catch((err): void => {
-        this.log
-          .error(`清理无效连接失败: ${err}`)
-          .catch((a) => `日志输出错误: ${a}: 日志内容: ${`清理无效连接失败: ${err}`}`)
-      })
-    }, 30000)
+    this.定时器ID = setInterval(
+      (): void => {
+        this.清理无效连接().catch((err): void => {
+          this.log
+            .error(`清理无效连接失败: ${err}`)
+            .catch((a) => `日志输出错误: ${a}: 日志内容: ${`清理无效连接失败: ${err}`}`)
+        })
+      },
+      5 * 60 * 1000,
+    )
   }
 
   public 增加连接(id: id, ws句柄: WebSocket): void {
