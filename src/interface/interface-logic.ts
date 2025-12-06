@@ -1,5 +1,6 @@
 import { Either, Right } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
+import { 普通对象深合并 } from '../help/help'
 import { 联合转元组 } from '../help/interior'
 import { 合并插件结果, 插件项类型 } from '../plugin/plug'
 import { 请求附加参数类型 } from '../server/server'
@@ -137,7 +138,7 @@ export abstract class 接口逻辑Base<
       let 插件返回 = await 插件.运行(req, res, 请求附加参数)
       所有插件结果.push(插件返回)
     }
-    let 合并结果 = 所有插件结果.reduce((s, a) => ({ ...s, ...a }), {})
+    let 合并结果 = 所有插件结果.reduce((s, a) => 普通对象深合并(s, a), {})
 
     return 合并结果 as 合并插件结果<插件类型>
   }
@@ -161,7 +162,7 @@ export abstract class 接口逻辑Base<
     try {
       let 实现结果 = await this.实现(合并插件结果 as any, 传入的逻辑附加参数, 传入的请求附加参数)
 
-      最终结果 = 实现结果.map((a) => ({ ...传入的逻辑附加参数, ...a }))
+      最终结果 = 实现结果.map((a) => 普通对象深合并(传入的逻辑附加参数, a) as any)
 
       return 最终结果
     } finally {
@@ -244,10 +245,11 @@ export abstract class 接口逻辑Base<
         let 上层调用结果 = await this.实现(参数 as any, 逻辑附加参数, 请求附加参数)
         if (上层调用结果.isLeft()) return 上层调用结果 as any
 
-        let 传给下一层的 = { ...逻辑附加参数, ...上层调用结果.assertRight().getRight() }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        let 传给下一层的 = 普通对象深合并(逻辑附加参数, 上层调用结果.assertRight().getRight()) as any
         let 下层调用结果 = await 输入.实现(参数 as any, 传给下一层的, 请求附加参数)
 
-        let 最终返回结果 = 下层调用结果.map((a) => ({ ...传给下一层的, ...a }))
+        let 最终返回结果 = 下层调用结果.map((a) => 普通对象深合并(传给下一层的, a) as any)
         return 最终返回结果
       },
       合并清理,
