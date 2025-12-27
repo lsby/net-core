@@ -186,7 +186,7 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
         case 'aliasSymbol':
           导出类型.push(`${导出类型定义}`)
           break
-        default:
+        case null:
           break
       }
     }
