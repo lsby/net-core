@@ -45,9 +45,6 @@ export class 常用形式转换器<
       case 'Right': {
         return { status: 'success', data: 数据.assertRight().getRight() }
       }
-      default: {
-        throw new Error('意外的数据标记')
-      }
     }
   }
 }
@@ -85,9 +82,6 @@ export class 直接形式转换器<
       }
       case 'Right': {
         return 数据.assertRight().getRight().data
-      }
-      default: {
-        throw new Error('意外的数据标记')
       }
     }
   }
