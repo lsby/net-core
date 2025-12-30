@@ -8,12 +8,12 @@ import { 取插件内部类型, 插件, 插件项类型 } from '../plug'
 
 const 烙印: unique symbol = Symbol()
 
-export class JSON解析插件<Result extends AnyZodObject> extends 插件<z.ZodObject<{ body: Result }>> {
-  private [烙印] = ['JSON解析插件']
+export class JSON参数解析插件<Result extends AnyZodObject> extends 插件<z.ZodObject<{ body: Result }>> {
+  private [烙印] = ['JSON参数解析插件']
 
   public constructor(t: Result, opt: Parameters<typeof express.json>[0]) {
     super(z.object({ body: t }), async (req, res, 附加参数) => {
-      let log = 附加参数.log.extend('JSON解析插件')
+      let log = 附加参数.log.extend('JSON参数解析插件')
 
       await new Promise((pRes, _rej) =>
         express.json(opt)(req, res, () => {
@@ -35,7 +35,7 @@ export class JSON解析插件<Result extends AnyZodObject> extends 插件<z.ZodO
   }
 }
 
-export type 任意JSON解析插件 = JSON解析插件<any>
+export type 任意JSON解析插件 = JSON参数解析插件<any>
 export type 任意JSON解析插件项 = 任意JSON解析插件
 export type 合并JSON插件结果<Arr extends Array<插件项类型>> = Arr extends []
   ? {}

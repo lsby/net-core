@@ -8,6 +8,7 @@ type id = string
 export class WebSocket管理器 {
   private log = log.extend('@lsby:net-core').extend('WebSocket管理器')
   private 清理函数表: Record<string, () => Promise<void>> = {}
+  private 消息监听表: Record<string, ((数据: unknown) => Promise<void>) | null> = {}
   private 定时器ID: NodeJS.Timeout | null = null
 
   public constructor(private 连接表: Record<id, WebSocket | null>) {
@@ -33,6 +34,20 @@ export class WebSocket管理器 {
     if (this.连接表.hasOwnProperty(id) === false) return
     this.清理函数表[id] = 清理函数
   }
+  public async 设置消息监听(id: string, 回调函数: (数据: any) => Promise<void>): Promise<void> {
+    if (this.连接表.hasOwnProperty(id) === false) return
+    this.消息监听表[id] = 回调函数
+    let ws句柄 = this.连接表[id]
+    if (ws句柄 !== null && ws句柄 !== void 0) {
+      ws句柄.onmessage = async (event): Promise<void> => {
+        try {
+          await 回调函数(JSON.parse(event.data.toString()))
+        } catch (err) {
+          await this.log.warn(`WebSocket 消息处理失败, id: ${id}, 错误: ${err}`)
+        }
+      }
+    }
+  }
   public async 获得句柄(id: id): Promise<WebSocket | null> {
     return this.连接表[id] ?? null
   }
@@ -51,6 +66,7 @@ export class WebSocket管理器 {
 
     delete this.连接表[id]
     delete this.清理函数表[id]
+    delete this.消息监听表[id]
   }
 
   private async 清理无效连接(): Promise<void> {
