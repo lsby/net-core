@@ -8,7 +8,7 @@ import { 请求附加参数类型 } from '../server/server'
  * 可以被注入在"接口逻辑"中, 为其提供前置数据.
  */
 export class 插件<Obj extends z.AnyZodObject> {
-  protected declare readonly __类型保持符号?: Obj
+  declare protected readonly __类型保持符号?: Obj
 
   public constructor(
     private 类型: Obj,

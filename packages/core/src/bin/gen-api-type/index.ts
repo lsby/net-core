@@ -46,60 +46,69 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
 
   let 伴随的虚拟文件们 = 相关源文件们.map((a) => {
     let 代码 = `
-      import {
-        取第一个WS插件输出,
-        取第一个WS插件输入,
-        合并JSON插件结果,
-        合并GET插件结果,
-        获得接口方法类型,
-        获得接口正确形式,
-        获得接口路径类型,
-        获得接口逻辑插件类型,
-        获得接口逻辑类型,
-        获得接口错误形式,
-        GetNetCoreExportTypeName,
-        GetNetCoreExportTypeDefine
-      } from '@lsby/net-core'
-      import 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}"
+import 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}"
+import {
+  GetNetCoreExportTypeDefine,
+  GetNetCoreExportTypeName,
+  取第一个WS插件输入,
+  取第一个WS插件输出,
+  合并GET插件结果,
+  合并JSON插件结果,
+  获得接口方法类型,
+  获得接口结果转换器类型,
+  获得接口路径类型,
+  获得接口逻辑插件类型,
+  获得接口逻辑类型,
+  获得结果转换器实现正确类型,
+  获得结果转换器实现错误类型,
+} from '@lsby/net-core'
 
-      type jsonPath = 获得接口路径类型<typeof 导入>
-      type jsonMethod = 获得接口方法类型<typeof 导入>
-      type getInput = 合并GET插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
-      type jsonInput = 合并JSON插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
-      type jsonErrorOutput = 获得接口错误形式<typeof 导入>
-      type jsonSuccessOutput = 获得接口正确形式<typeof 导入>
-      type wsInput = 取第一个WS插件输入<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
-      type wsOutput = 取第一个WS插件输出<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
-      type JSON接口计算结果 = jsonPath extends never
-        ? never
-        : jsonPath extends infer _
-          ? jsonMethod extends infer _
-            ? getInput extends infer _
-              ? jsonInput extends infer _
-                ? jsonErrorOutput extends infer _
-                  ? jsonSuccessOutput extends infer _
-                    ? wsOutput extends infer _
-                      ? wsInput extends infer _
-                        ? {
-                            path: jsonPath
-                            method: jsonMethod
-                            input: jsonMethod extends 'post' ? jsonInput['body'] : jsonMethod extends 'get' ? getInput['query'] : {}
-                            errorOutput: jsonErrorOutput
-                            successOutput: jsonSuccessOutput
-                            wsOutput: wsOutput
-                            wsInput: wsInput
-                          }
-                        : never
-                      : never
-                    : never
+type jsonPath = 获得接口路径类型<typeof 导入>
+type jsonMethod = 获得接口方法类型<typeof 导入>
+type getInput = 合并GET插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
+type jsonInput = 合并JSON插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
+type jsonErrorOutput = 获得结果转换器实现错误类型<获得接口结果转换器类型<typeof 导入>>
+type jsonSuccessOutput = 获得结果转换器实现正确类型<获得接口结果转换器类型<typeof 导入>>
+type wsInput = 取第一个WS插件输入<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
+type wsOutput = 取第一个WS插件输出<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
+type JSON接口计算结果 = jsonPath extends never
+  ? never
+  : jsonPath extends infer _
+    ? jsonMethod extends infer _
+      ? getInput extends infer _
+        ? jsonInput extends infer _
+          ? jsonErrorOutput extends infer _
+            ? jsonSuccessOutput extends infer _
+              ? wsOutput extends infer _
+                ? wsInput extends infer _
+                  ? {
+                      path: jsonPath
+                      method: jsonMethod
+                      input: jsonMethod extends 'post'
+                        ? 'body' extends keyof jsonInput
+                          ? jsonInput['body']
+                          : {}
+                        : jsonMethod extends 'get'
+                          ? 'query' extends keyof getInput
+                            ? getInput['query']
+                            : {}
+                          : {}
+                      errorOutput: jsonErrorOutput
+                      successOutput: jsonSuccessOutput
+                      wsOutput: wsOutput
+                      wsInput: wsInput
+                    }
                   : never
                 : never
               : never
             : never
           : never
+        : never
+      : never
+    : never
 
-      type 导出类型名称 = GetNetCoreExportTypeName<导入>
-      type 导出类型定义 = GetNetCoreExportTypeDefine<导入>
+type 导出类型名称 = GetNetCoreExportTypeName<导入>
+type 导出类型定义 = GetNetCoreExportTypeDefine<导入>
     `
     return ts.createSourceFile(a.fileName.replaceAll('.ts', '-' + randomUUID() + '.ts'), 代码, ts.ScriptTarget.Latest)
   })

@@ -4,15 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "pnpm -r --filter=@lsby/net-core run build:all",
-    "check:all": "pnpm -r run check:all",
-    "check:type:check": "pnpm -r run check:type:check",
-    "prepare": "husky",
-    "test:base": "pnpm -r run test:base",
-    "test:coverage": "pnpm --filter=@lsby/net-core run test:coverage"
+    "build": "pnpm -r --filter=@lsby/net-core run _build:all",
+    "check:all": "pnpm -r run _check:all",
+    "prepare": "husky"
   },
   "devDependencies": {
     "husky": "^9.1.7"
   },
-  "packageManager": "pnpm@9.7.1+sha512.faf344af2d6ca65c4c5c8c2224ea77a81a5e8859cbc4e06b1511ddce2f0151512431dd19e6aff31f2c6a8f5f2aced9bd2273e1fed7dd4de1868984059d2c4247"
+  "packageManager": "pnpm@9.7.1"
 }

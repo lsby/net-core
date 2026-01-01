@@ -32,9 +32,7 @@ export type 数组包含<T extends readonly any[], U> = T extends [infer 第一�
     : 数组包含<剩余, U>
   : false
 
-export type 对象去重<T> = {
-  [K in keyof T]: T[K]
-}
+export type 对象去重<T> = { [K in keyof T]: T[K] }
 export type 数组去重<T extends readonly any[], 结果 extends readonly any[] = []> = T extends [
   infer 第一个,
   ...infer 剩余,

@@ -6,13 +6,10 @@ import type * as http from 'node:http'
 import { networkInterfaces } from 'node:os'
 import short from 'short-uuid'
 import { WebSocket, WebSocketServer } from 'ws'
-import { z } from 'zod'
 import { Global } from '../global/global'
 import { 递归截断字符串 } from '../help/interior'
 import { 任意接口 } from '../interface/interface-base'
 import { 任意接口逻辑 } from '../interface/interface-logic'
-import { 任意接口结果转换器 } from '../interface/interface-result'
-import { 任意接口结果返回器 } from '../interface/interface-retuen'
 
 export type 日志回调类型 = (
   level: 'trace' | 'debug' | 'info' | 'warn' | 'error',
@@ -20,10 +17,7 @@ export type 日志回调类型 = (
   content: string,
 ) => Promise<void>
 
-export type 请求附加参数类型 = {
-  log: Log
-  请求id: string
-}
+export type 请求附加参数类型 = { log: Log; 请求id: string }
 
 export class 服务器 {
   private log: Promise<Log>
@@ -109,7 +103,7 @@ export class 服务器 {
       res.status(404).end()
     } catch (error) {
       await log.error(error)
-      res.status(500).send('服务器内部错误')
+      res.status(500).send('Internal Server Error')
     } finally {
       let 耗时ms = Date.now() - 开始时间
       await log.info('请求完成, 耗时: %o ms', 耗时ms)
@@ -126,8 +120,8 @@ export class 服务器 {
     let { req, res, 目标接口, log, 请求id } = opt
 
     let 接口逻辑 = 目标接口.获得逻辑() as 任意接口逻辑
-    let 结果转换器 = 目标接口.获得结果转换器() as 任意接口结果转换器
-    let 结果返回器 = 目标接口.获得结果返回器() as 任意接口结果返回器
+    let 结果转换器 = 目标接口.获得结果转换器()
+    let 结果返回器 = 目标接口.获得结果返回器()
 
     let 总开始 = Date.now()
 
@@ -151,8 +145,8 @@ export class 服务器 {
     // ---------- 2. 转换 + 校验 ----------
     开始 = Date.now()
     let 转换结果 = 结果转换器.实现(接口结果) as unknown
-    let 错误结果 = (目标接口.获得接口错误形式Zod() as z.ZodTypeAny).safeParse(转换结果)
-    let 正确结果 = (目标接口.获得接口正确形式Zod() as z.ZodTypeAny).safeParse(转换结果)
+    let 错误结果 = 结果转换器.获得接口错误形式Zod().safeParse(转换结果)
+    let 正确结果 = 结果转换器.获得接口正确形式Zod().safeParse(转换结果)
 
     let 最终结果: unknown
     if (错误结果.success === true) {
@@ -162,8 +156,8 @@ export class 服务器 {
     } else {
       let 结果字符串 = JSON.stringify(递归截断字符串(转换结果))
       await log.error(`转换结果无法通过校验: ${结果字符串}`)
-      await log.error('对于错误结果: %o', 错误结果.error)
-      await log.error('对于正确结果: %o', 正确结果.error)
+      await log.error('对于错误结果: %o', JSON.stringify(错误结果.error))
+      await log.error('对于正确结果: %o', JSON.stringify(正确结果.error))
       throw new Error(`转换结果无法通过校验`)
     }
     let 转换耗时 = Date.now() - 开始

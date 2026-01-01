@@ -1,5 +1,5 @@
 import { format } from 'node:util'
-import { AnyZodObject, z } from 'zod'
+import { z } from 'zod'
 import { 严格递归合并对象 } from '../../help/help'
 import { 递归截断字符串 } from '../../help/interior'
 import { 获得接口逻辑插件类型 } from '../../interface/interface-logic'
@@ -7,7 +7,7 @@ import { 取插件内部类型, 插件, 插件项类型 } from '../plug'
 
 const 烙印: unique symbol = Symbol()
 
-export class GET参数解析插件<Result extends AnyZodObject> extends 插件<z.ZodObject<{ query: Result }>> {
+export class GET参数解析插件<Result extends z.AnyZodObject> extends 插件<z.ZodObject<{ query: Result }>> {
   private [烙印] = ['GET参数解析插件']
 
   public constructor(t: Result) {
@@ -18,8 +18,8 @@ export class GET参数解析插件<Result extends AnyZodObject> extends 插件<z
       let parseResult = t.safeParse(req.query)
 
       if (parseResult.success === false) {
-        await log.error('解析 GET 参数失败：%o', parseResult.error)
-        throw new Error(format('解析 GET 参数失败: %o', parseResult.error))
+        await log.error('解析 GET 参数失败：%o', JSON.stringify(parseResult.error))
+        throw new Error(format('解析 GET 参数失败: %o', JSON.stringify(parseResult.error)))
       }
 
       await log.debug('成功解析 GET 参数')

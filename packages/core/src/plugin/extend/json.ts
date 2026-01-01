@@ -1,6 +1,6 @@
 import express from 'express'
 import { format } from 'node:util'
-import { AnyZodObject, z } from 'zod'
+import { z } from 'zod'
 import { 严格递归合并对象 } from '../../help/help'
 import { 递归截断字符串 } from '../../help/interior'
 import { 获得接口逻辑插件类型 } from '../../interface/interface-logic'
@@ -8,7 +8,7 @@ import { 取插件内部类型, 插件, 插件项类型 } from '../plug'
 
 const 烙印: unique symbol = Symbol()
 
-export class JSON参数解析插件<Result extends AnyZodObject> extends 插件<z.ZodObject<{ body: Result }>> {
+export class JSON参数解析插件<Result extends z.AnyZodObject> extends 插件<z.ZodObject<{ body: Result }>> {
   private [烙印] = ['JSON参数解析插件']
 
   public constructor(t: Result, opt: Parameters<typeof express.json>[0]) {
@@ -25,8 +25,8 @@ export class JSON参数解析插件<Result extends AnyZodObject> extends 插件<
       let parseResult = t.safeParse(req.body)
 
       if (parseResult.success === false) {
-        await log.error('解析 JSON 失败：%o', parseResult.error)
-        throw new Error(format('解析 JSON 失败: %o', parseResult.error))
+        await log.error('解析 JSON 失败：%o', JSON.stringify(parseResult.error))
+        throw new Error(format('解析 JSON 失败: %o', JSON.stringify(parseResult.error)))
       }
 
       await log.debug('成功解析 JSON')

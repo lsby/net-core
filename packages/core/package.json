@@ -15,15 +15,13 @@
     "dist"
   ],
   "scripts": {
-    "build:all": "npm run build:cjs && npm run build:esm && npm run build:bin",
-    "build:bin": "tsup src/bin/**/*.ts --external typescript --format cjs --clean --dts -d dist/bin",
-    "build:cjs": "tsup src/**/*.ts --external typescript --format cjs --clean --dts -d dist/cjs",
-    "build:esm": "tsup src/**/*.ts --external typescript --format esm --clean --dts -d dist/esm",
-    "check:all": "npm run check:format && npm run check:lint && npm run check:type:check",
-    "check:format": "prettier --write .",
-    "check:lint": "eslint . --fix",
-    "check:type:check": "tsc --noEmit",
-    "check:type:check:watch": "tsc --noEmit -w",
+    "_build:all": "npm run _build:cjs && npm run _build:esm && npm run _build:bin",
+    "_build:bin": "tsup src/bin/**/*.ts --external typescript --format cjs --clean --dts -d dist/bin",
+    "_build:cjs": "tsup src/**/*.ts --external typescript --format cjs --clean --dts -d dist/cjs",
+    "_build:esm": "tsup src/**/*.ts --external typescript --format esm --clean --dts -d dist/esm",
+    "_check:all": "npm run _check:format && npm run _check:lint",
+    "_check:format": "prettier --write .",
+    "_check:lint": "eslint . --fix",
     "test:base": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
@@ -49,9 +47,9 @@
     "eslint-plugin-react": "^7.36.1",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-sort-class-members": "^1.20.0",
-    "prettier": "3.3.3",
-    "prettier-plugin-organize-imports": "^4.1.0",
-    "prettier-plugin-packagejson": "^2.5.2",
+    "prettier": "3.7.4",
+    "prettier-plugin-organize-imports": "^4.3.0",
+    "prettier-plugin-packagejson": "^2.5.20",
     "tsup": "^8.5.0",
     "typescript": "<5.6.0",
     "vitest": "^2.0.2"
@@ -62,5 +60,6 @@
     "@types/express": "^4.17.21",
     "express": "^4.19.2",
     "zod": "3.24.2"
-  }
+  },
+  "packageManager": "pnpm@9.7.1"
 }

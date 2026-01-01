@@ -1,0 +1,30 @@
+// 该文件由脚本自动生成, 请勿修改.
+export type InterfaceType = [
+  {
+    path: '/api/calculate-add'
+    method: 'post'
+    input: { a: number; b: number }
+    errorOutput: never
+    successOutput: { result: number }
+    wsOutput: {}
+    wsInput: {}
+  },
+  {
+    path: '/api/calculate-sub'
+    method: 'post'
+    input: { a: number; b: number }
+    errorOutput: '调用接口失败'
+    successOutput: { result: number }
+    wsOutput: {}
+    wsInput: {}
+  },
+  {
+    path: '/api/pure-string'
+    method: 'get'
+    input: { name: string }
+    errorOutput: never
+    successOutput: { data: string }
+    wsOutput: {}
+    wsInput: {}
+  },
+]

@@ -4,6 +4,7 @@ import { 普通对象深合并 } from '../help/help'
 import { 联合转元组 } from '../help/interior'
 import { 合并插件结果, 插件项类型 } from '../plugin/plug'
 import { 请求附加参数类型 } from '../server/server'
+import { 可序列化类型, 空对象 } from '../types/types'
 
 export type 清理函数类型<插件类型 extends 插件项类型[], 逻辑附加参数类型 extends 接口逻辑附加参数类型> = (
   参数: 合并插件结果<插件类型>,
@@ -11,12 +12,9 @@ export type 清理函数类型<插件类型 extends 插件项类型[], 逻辑附
   请求附加参数: 请求附加参数类型,
 ) => Promise<void>
 
-export type 空对象 = Record<any, never>
-export type 兼容空对象 = Record<any, unknown>
-
-export type 接口逻辑错误类型 = Record<string, any> | string | never
-export type 接口逻辑正确类型 = Record<string, any>
-export type 接口逻辑附加参数类型 = Record<string, any>
+export type 接口逻辑错误类型 = Record<string, 可序列化类型> | string | never
+export type 接口逻辑正确类型 = Record<string, 可序列化类型>
+export type 接口逻辑附加参数类型 = Record<string, 可序列化类型>
 
 /**
  * # 接口逻辑的基础抽象类
@@ -36,9 +34,9 @@ export type 接口逻辑附加参数类型 = Record<string, any>
  *
  * 通过组合, 可以将简单的逻辑模块化, 并按需构建复杂的接口处理流程.
  *
- * ### 混合
+ * ### 绑定
  *
- * - 该类提供了`混合`方法, 用于将多个接口逻辑实例合成一个复合接口逻辑.
+ * - 该类提供了`绑定`方法, 用于将多个接口逻辑实例合成一个复合接口逻辑.
  *   - 组合的接口逻辑会按顺序依次被调用.
  *   - 如果某接口逻辑返回左值, 则整个结构将立即返回该左值.
  *   - 否则, 将右值内容注入上下文, 允许之后的接口逻辑通过`逻辑附加参数`访问它.
@@ -77,14 +75,7 @@ export abstract class 接口逻辑Base<
     上游接口逻辑: 上游接口类型,
     最后接口逻辑: 最后接口类型,
   ): 接口逻辑Base<插件类型, 逻辑附加参数类型, 错误类型, 返回类型, 上游接口类型, 最后接口类型> {
-    let c = new (class extends 接口逻辑Base<
-      插件类型,
-      逻辑附加参数类型,
-      错误类型,
-      返回类型,
-      上游接口类型,
-      最后接口类型
-    > {
+    return new (class extends 接口逻辑Base<插件类型, 逻辑附加参数类型, 错误类型, 返回类型, 上游接口类型, 最后接口类型> {
       public override 获得清理函数(): 清理函数类型<插件类型, 逻辑附加参数类型> | undefined {
         return 清理函数
       }
@@ -99,7 +90,6 @@ export abstract class 接口逻辑Base<
         return 实现(参数, 逻辑附加参数, 请求附加参数)
       }
     })(上游接口逻辑, 最后接口逻辑)
-    return c
   }
 
   public static 构造<
@@ -119,8 +109,8 @@ export abstract class 接口逻辑Base<
     return this.完整构造(插件们, 实现, 清理函数, null, null)
   }
 
-  protected declare readonly __类型保持符号_协变?: [插件类型, 错误类型, 返回类型]
-  protected declare readonly __类型保持符号_逆变?: (a: 逻辑附加参数类型) => void
+  declare protected readonly __类型保持符号_协变?: [插件类型, 错误类型, 返回类型]
+  declare protected readonly __类型保持符号_逆变?: (a: 逻辑附加参数类型) => void
 
   public constructor(
     private 上游接口: 上游接口类型,
@@ -167,11 +157,11 @@ export abstract class 接口逻辑Base<
       return 最终结果
     } finally {
       if (清理函数 !== void 0) {
-        let 上层混合结果 =
+        let 上层绑定结果 =
           最终结果 !== void 0 && 最终结果.isRight() === true
             ? (最终结果.assertRight().getRight() as unknown as 逻辑附加参数类型)
             : 传入的逻辑附加参数
-        await 清理函数(合并插件结果 as any, 上层混合结果, 传入的请求附加参数)
+        await 清理函数(合并插件结果 as any, 上层绑定结果, 传入的请求附加参数)
       }
     }
   }
@@ -185,7 +175,7 @@ export abstract class 接口逻辑Base<
     return this.通过插件结果运行(合并插件结果, 传入的逻辑附加参数, 传入的插件附加参数)
   }
 
-  public 混合<
+  public 绑定<
     输入的插件类型 extends 插件项类型[],
     输入的错误类型 extends 接口逻辑错误类型,
     输入的返回类型 extends 接口逻辑正确类型,
@@ -278,7 +268,6 @@ export abstract class 接口逻辑<
 }
 
 export type 任意接口逻辑 = 接口逻辑Base<any, any, any, any, any, any>
-export type 可调用接口逻辑 = 接口逻辑Base<any, 空对象, any, any, any, any>
 export type 获得接口逻辑插件类型<A> = A extends 接口逻辑Base<infer X, any, any, any, any, any> ? X : never
 export type 获得接口逻辑附加参数类型<A> = A extends 接口逻辑Base<any, infer X, any, any, any, any> ? X : never
 export type 获得接口逻辑错误类型<A> = A extends 接口逻辑Base<any, any, infer X, any, any, any> ? X : never
