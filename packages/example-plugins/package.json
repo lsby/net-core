@@ -1,0 +1,39 @@
+{
+  "name": "@lsby/net-core-example-plugins",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "_check:all": "npm run _check:format && npm run _check:lint && npm run _check:type",
+    "_check:format": "prettier --write .",
+    "_check:lint": "eslint . --fix",
+    "_check:type": "tsc --noEmit",
+    "_gen:all": "npm run _gen:api:list && npm run _gen:api:type",
+    "_gen:api:list": "cross-env DEBUG=@lsby:* lsby-net-core-gen-api-list ./tsconfig.json ./src/interface ./src/interface/interface-list.ts",
+    "_gen:api:type": "cross-env DEBUG=@lsby:* lsby-net-core-gen-api-type ./tsconfig.json ./src/interface ./src/types/interface-type.ts",
+    "dev": "cross-env DEBUG=@lsby:* tsx watch src/index.ts"
+  },
+  "dependencies": {
+    "@lsby/net-core": "workspace:*",
+    "@lsby/ts-fp-data": "^0.2.5",
+    "zod": "3.24.2"
+  },
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+    "@lsby/eslint-config": "^0.3.15",
+    "@lsby/eslint-plugin": "^0.0.30",
+    "@types/node": "^25.0.3",
+    "cross-env": "^10.1.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-es": "^4.1.0",
+    "eslint-plugin-jsdoc": "^50.2.4",
+    "eslint-plugin-sort-class-members": "^1.21.0",
+    "prettier": "3.7.4",
+    "prettier-plugin-organize-imports": "^4.3.0",
+    "prettier-plugin-packagejson": "^2.5.20",
+    "tsx": "^4.21.0",
+    "typescript": "<5.6.0"
+  },
+  "packageManager": "pnpm@9.7.1"
+}
