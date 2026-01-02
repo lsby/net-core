@@ -10,7 +10,7 @@ import {
 } from '@lsby/net-core'
 import { Left, Right } from '@lsby/ts-fp-data'
 import { z } from 'zod'
-import { 加法接口 } from '../calculate-add'
+import { 加法接口 } from '../1-calculate-add'
 
 // 这个示例相比add进行了大幅简化, 展示了实际写接口的样子
 
