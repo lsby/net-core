@@ -11,7 +11,7 @@ let 服务信息 = await 服务.run()
 console.log('服务器启动成功!')
 console.log('API列表:', 服务信息.api) // 已注册的 API 路径列表
 console.log('服务器地址:', 服务信息.ip) // 本机可访问的 IP 地址列表
-console.log('')
+console.log('===========================')
 console.log('测试方法:')
 console.log(
   '1. curl -X POST http://localhost:3000/api/calculate-add -H "Content-Type: application/json" -d \'{"a": 1, "b": 2}\'',

@@ -12,7 +12,12 @@ import { Left, Right } from '@lsby/ts-fp-data'
 import { z } from 'zod'
 import { 加法接口 } from '../1-calculate-add'
 
-// 这个示例相比add进行了大幅简化, 展示了实际写接口的样子
+// =======================
+// 减法接口
+// =======================
+// 这个示例展示了:
+// - 简化的接口逻辑写法
+// - 如何复用其他接口逻辑
 
 // 接口路径和方法定义
 let 接口路径 = '/api/calculate-sub' as const

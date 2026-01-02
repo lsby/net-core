@@ -6,8 +6,8 @@ import {
   获得结果转换器实现错误类型,
   获得结果转换器接口正确类型,
   获得结果转换器接口错误类型,
-} from './interface-result'
-import { 任意接口结果返回器, 结果返回器 } from './interface-retuen'
+} from './interface-result-converter'
+import { 任意接口结果返回器, 结果返回器 } from './interface-result-returner'
 
 export type 接口路径类型 = string
 export type 接口方法类型 = 'get' | 'post'

@@ -8,11 +8,15 @@ import {
   计算接口逻辑正确结果,
   计算接口逻辑错误结果,
 } from '@lsby/net-core'
-import { Right } from '@lsby/ts-fp-data'
+import { Left, Right } from '@lsby/ts-fp-data'
 import { z } from 'zod'
 
+// =======================
+// 纯字符串接口
+// =======================
 // 这个示例演示了:
 // - 如何编写 GET 接口
+// - 如何表示接口出错
 // - 如何返回纯字符串而不是 JSON 结构
 // - 如何自定义返回头
 
@@ -24,6 +28,10 @@ let 接口逻辑实现 = 接口逻辑.构造(
   async (参数, _逻辑附加参数, _请求附加参数) => {
     // 参数.query 是类型安全的
     let { name } = 参数.query
+
+    // 出错的时候要返回左值
+    if (name === '') return new Left('名称不能为空' as const)
+
     return new Right({ data: `hello ${name}!` })
   },
 )
@@ -42,7 +50,7 @@ type _接口逻辑正确返回 = 计算接口逻辑正确结果<typeof 接口逻
 // 转换器的逻辑是:
 // - 如果是左值, 返回 { status: 'fail', data: ... }
 // - 如果是右值, 返回 data 键对应的值
-let 接口错误类型描述 = z.never()
+let 接口错误类型描述 = z.enum(['名称不能为空'])
 let 接口正确类型描述 = z.object({ data: z.string() })
 let 结果转换器 = new 直接结果转换器(接口错误类型描述, 接口正确类型描述)
 

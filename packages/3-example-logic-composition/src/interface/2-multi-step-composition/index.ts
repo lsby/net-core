@@ -2,10 +2,15 @@ import { JSON参数解析插件, 常用结果转换器, 常用结果返回器, �
 import { Left, Right } from '@lsby/ts-fp-data'
 import { z } from 'zod'
 
+// =======================
+// 接口逻辑组合 - 示例
+// =======================
+// 这个示例展示了:
+// - 简化的接口逻辑组合的写法
+// - 在相对复杂的场景下, 接口逻辑组合的使用
+
 let 接口路径 = '/api/composition/create-order' as const
 let 接口方法 = 'post' as const
-
-// 这个示例演示了一个电商订单创建流程
 
 let 组合逻辑 = 接口逻辑
   .空逻辑()
