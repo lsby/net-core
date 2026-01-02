@@ -1,0 +1,2 @@
+// 该文件由脚本自动生成, 请勿修改.
+export type InterfaceType = [{ path: "/api/composition/simple"; method: "post"; input: { x: number; }; errorOutput: never; successOutput: { result: number; }; wsOutput: {}; wsInput: {}; },{ path: "/api/composition/create-order"; method: "post"; input: { 商品id: string; 用户id: string; 地区: string; }; errorOutput: "商品不存在"; successOutput: { 商品id: string; 价格: number; 订单号: string; }; wsOutput: {}; wsInput: {}; }]

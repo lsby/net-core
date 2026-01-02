@@ -49,3 +49,7 @@ pnpm-lock.yaml
 *.pdf
 *.docx
 *.xlsx
+
+# 忽略生成的文件
+/src/types/interface-type.ts
+/src/interface/interface-list.ts

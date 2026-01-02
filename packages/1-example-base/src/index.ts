@@ -1,8 +1,6 @@
 import { 服务器 } from '@lsby/net-core'
 import { interfaceApiList } from './interface/interface-list'
 
-// ==================== 创建并启动服务器 ====================
-
 // 创建服务器实例
 let 服务 = new 服务器({ 接口们: interfaceApiList, 端口: 3000 })
 
