@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { 插件 } from '../plug'
+import { 插件 } from '../plugin'
 
 let zod类型表示 = z.object({})
 

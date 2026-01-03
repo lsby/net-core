@@ -1,7 +1,7 @@
 import express from 'express'
 import { format } from 'node:util'
 import { z } from 'zod'
-import { 插件 } from '../plug'
+import { 插件 } from '../plugin'
 
 export class 表单参数解析插件<Result extends z.AnyZodObject> extends 插件<z.ZodObject<{ form: Result }>> {
   public constructor(t: Result, opt: Parameters<typeof express.urlencoded>[0]) {

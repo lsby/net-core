@@ -2,9 +2,9 @@ import { Either, Right } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
 import { 普通对象深合并 } from '../help/help'
 import { 联合转元组 } from '../help/interior'
-import { 合并插件结果, 插件项类型 } from '../plugin/plug'
+import { 合并插件结果, 插件项类型 } from '../plugin/plugin'
 import { 请求附加参数类型 } from '../server/server'
-import { 可序列化类型, 空对象 } from '../types/types'
+import { 空对象 } from '../types/types'
 
 export type 清理函数类型<插件类型 extends 插件项类型[], 逻辑附加参数类型 extends 接口逻辑附加参数类型> = (
   参数: 合并插件结果<插件类型>,
@@ -12,9 +12,9 @@ export type 清理函数类型<插件类型 extends 插件项类型[], 逻辑附
   请求附加参数: 请求附加参数类型,
 ) => Promise<void>
 
-export type 接口逻辑错误类型 = Record<string, 可序列化类型> | string | never
-export type 接口逻辑正确类型 = Record<string, 可序列化类型>
-export type 接口逻辑附加参数类型 = Record<string, 可序列化类型>
+export type 接口逻辑错误类型 = Record<string, any> | string | never
+export type 接口逻辑正确类型 = Record<string, any>
+export type 接口逻辑附加参数类型 = Record<string, any>
 
 /**
  * # 接口逻辑的基础抽象类

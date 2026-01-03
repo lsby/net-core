@@ -1,5 +1,5 @@
 import type { z } from 'zod'
-import { 插件 } from '../plug'
+import { 插件 } from '../plugin'
 
 /**
  * 该插件允许使用者给定任意的数据, 该数据将作为该插件的返回值, 最终传入到接口逻辑中

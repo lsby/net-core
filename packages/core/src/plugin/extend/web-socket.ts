@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws'
 import { z } from 'zod'
 import { Global } from '../../global/global'
-import { 插件, 插件项类型 } from '../plug'
+import { 插件, 插件项类型 } from '../plugin'
 
 export class WebSocket插件<
   后推前信息 extends z.AnyZodObject | z.ZodUnion<any>,

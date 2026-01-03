@@ -12,7 +12,7 @@ export * from './plugin/extend/log-headers'
 export * from './plugin/extend/query'
 export * from './plugin/extend/urlencoded'
 export * from './plugin/extend/web-socket'
-export * from './plugin/plug'
+export * from './plugin/plugin'
 
 export * from './server/server'
 
