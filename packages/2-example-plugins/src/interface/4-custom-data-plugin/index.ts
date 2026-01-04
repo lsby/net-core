@@ -1,4 +1,4 @@
-import { 常用结果转换器, 常用结果返回器, 接口, 接口逻辑, 自定义数据插件 } from '@lsby/net-core'
+import { 常用接口返回器, 接口, 接口逻辑, 自定义数据插件 } from '@lsby/net-core'
 import { Right } from '@lsby/ts-fp-data'
 import { z } from 'zod'
 
@@ -30,7 +30,6 @@ let 接口逻辑实现 = 接口逻辑.构造(
   },
 )
 
-let 结果转换器 = new 常用结果转换器(z.never(), z.object({ 系统版本: z.string(), 开发者: z.string() }))
-let 结果返回器 = new 常用结果返回器()
+let 接口返回器 = new 常用接口返回器(z.never(), z.object({ 系统版本: z.string(), 开发者: z.string() }))
 
-export default new 接口(接口路径, 接口方法, 接口逻辑实现, 结果转换器, 结果返回器)
+export default new 接口(接口路径, 接口方法, 接口逻辑实现, 接口返回器)

@@ -20,3 +20,7 @@ console.log(
   '2. curl -X POST http://localhost:3000/api/calculate-sub -H "Content-Type: application/json" -d \'{"a": 2, "b": 1}\'',
 )
 console.log('3. 浏览器访问 http://localhost:3000/api/pure-string?name=world')
+console.log(
+  '4. curl -X POST http://localhost:3000/api/form-submit -H "Content-Type: application/x-www-form-urlencoded" -d "username=testuser&email=test@example.com&age=10"',
+)
+console.log('5. 浏览器访问 http://localhost:3000/api/download-file?filename=test.txt')

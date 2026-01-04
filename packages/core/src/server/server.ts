@@ -7,7 +7,6 @@ import { networkInterfaces } from 'node:os'
 import short from 'short-uuid'
 import { WebSocket, WebSocketServer } from 'ws'
 import { Global } from '../global/global'
-import { 递归截断字符串 } from '../help/interior'
 import { 任意接口 } from '../interface/interface-base'
 import { 任意接口逻辑 } from '../interface/interface-logic'
 
@@ -68,8 +67,8 @@ export class 服务器 {
 
   private async 处理请求(req: Request, res: Response): Promise<void> {
     let 请求id = short().new()
-
     let log = (await this.log).extend(请求id)
+    let 请求附加参数: 请求附加参数类型 = { log: log, 请求id: 请求id }
 
     let 开始时间 = Date.now()
 
@@ -83,7 +82,7 @@ export class 服务器 {
       // 匹配接口
       let 目标接口 = this.接口们.find((接口) => 请求方法 === 接口.获得方法() && 请求路径 === 接口.获得路径()) ?? null
       if (目标接口 !== null) {
-        await this.处理接口逻辑({ req, res, 目标接口, log, 请求id })
+        await this.处理接口逻辑({ req, res, 目标接口, 请求附加参数 })
         return
       }
 
@@ -114,59 +113,36 @@ export class 服务器 {
     req: Request
     res: Response
     目标接口: 任意接口
-    log: Log
-    请求id: string
+    请求附加参数: 请求附加参数类型
   }): Promise<void> {
-    let { req, res, 目标接口, log, 请求id } = opt
+    let { req, res, 目标接口, 请求附加参数 } = opt
+    let log = 请求附加参数.log
 
     let 接口逻辑 = 目标接口.获得逻辑() as 任意接口逻辑
-    let 结果转换器 = 目标接口.获得结果转换器()
-    let 结果返回器 = 目标接口.获得结果返回器()
+    let 接口返回器 = 目标接口.获得接口返回器()
 
     let 总开始 = Date.now()
 
-    // ---------- 1. 接口逻辑 ----------
+    // ---------- 接口逻辑 ----------
     let 开始 = Date.now()
     await log.debug('调用接口逻辑...')
 
     let 插件们 = 接口逻辑.获得插件们()
 
     await log.debug('找到 %o 个 插件, 准备执行...', 插件们.length)
-    let 插件结果 = await 接口逻辑.计算插件结果(req, res, { log: log, 请求id: 请求id })
+    let 插件结果 = await 接口逻辑.计算插件结果(req, res, 请求附加参数)
     await log.debug('插件 执行完毕')
 
     await log.debug('准备执行接口实现...')
-    let 接口结果 = await 接口逻辑.通过插件结果运行(插件结果, {}, { log: log, 请求id: 请求id })
+    let 接口结果 = await 接口逻辑.通过插件结果运行(插件结果, {}, 请求附加参数)
     await log.debug('接口实现执行完毕')
 
     let 接口耗时 = Date.now() - 开始
     await log.info('接口逻辑执行完毕, 耗时: %o ms', 接口耗时)
 
-    // ---------- 2. 转换 + 校验 ----------
+    // ---------- 接口返回器 ----------
     开始 = Date.now()
-    let 转换结果 = 结果转换器.实现(接口结果) as unknown
-    let 错误结果 = 结果转换器.获得接口错误形式Zod().safeParse(转换结果)
-    let 正确结果 = 结果转换器.获得接口正确形式Zod().safeParse(转换结果)
-
-    let 最终结果: unknown
-    if (错误结果.success === true) {
-      最终结果 = 错误结果.data
-    } else if (正确结果.success === true) {
-      最终结果 = 正确结果.data
-    } else {
-      let 结果字符串 = JSON.stringify(递归截断字符串(转换结果))
-      await log.error(`转换结果无法通过校验: ${结果字符串}`)
-      await log.error('对于错误结果: %o', JSON.stringify(错误结果.error))
-      await log.error('对于正确结果: %o', JSON.stringify(正确结果.error))
-      throw new Error(`转换结果无法通过校验`)
-    }
-    let 转换耗时 = Date.now() - 开始
-    await log.info('结果转换与校验完成, 耗时: %o ms', 转换耗时)
-    await log.debug('最终结果: %o', JSON.stringify(递归截断字符串(最终结果)))
-
-    // ---------- 3. 返回 ----------
-    开始 = Date.now()
-    await 结果返回器.返回(req, res, 最终结果)
+    接口返回器.实现(req, res, 接口结果, 请求附加参数)
     let 返回耗时 = Date.now() - 开始
     await log.info('返回逻辑执行完毕, 耗时: %o ms', 返回耗时)
 

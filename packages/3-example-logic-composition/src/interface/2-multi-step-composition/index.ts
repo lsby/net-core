@@ -1,4 +1,4 @@
-import { JSON参数解析插件, 常用结果转换器, 常用结果返回器, 接口, 接口逻辑 } from '@lsby/net-core'
+import { JSON参数解析插件, 常用接口返回器, 接口, 接口逻辑 } from '@lsby/net-core'
 import { Left, Right } from '@lsby/ts-fp-data'
 import { z } from 'zod'
 
@@ -64,10 +64,9 @@ let 组合逻辑 = 接口逻辑
     }),
   )
 
-let 结果转换器 = new 常用结果转换器(
+let 接口返回器 = new 常用接口返回器(
   z.enum(['商品不存在']),
   z.object({ 订单号: z.string(), 商品id: z.string(), 价格: z.number() }),
 )
-let 结果返回器 = new 常用结果返回器()
 
-export default new 接口(接口路径, 接口方法, 组合逻辑, 结果转换器, 结果返回器)
+export default new 接口(接口路径, 接口方法, 组合逻辑, 接口返回器)

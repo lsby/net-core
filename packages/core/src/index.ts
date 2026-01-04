@@ -2,8 +2,7 @@ export * from './help/help'
 
 export * from './interface/interface-base'
 export * from './interface/interface-logic'
-export * from './interface/interface-result-converter'
-export * from './interface/interface-result-returner'
+export * from './interface/interface-returner'
 export * from './interface/interface-test'
 
 export * from './plugin/extend/custom-data'

@@ -1,7 +1,6 @@
 import {
   JSON参数解析插件,
-  常用结果转换器,
-  常用结果返回器,
+  常用接口返回器,
   接口,
   接口逻辑,
   计算接口逻辑JSON参数,
@@ -76,7 +75,6 @@ type _接口逻辑JSON参数 = 计算接口逻辑JSON参数<typeof 接口逻辑�
 type _接口逻辑错误返回 = 计算接口逻辑错误结果<typeof 接口逻辑实现>
 type _接口逻辑正确返回 = 计算接口逻辑正确结果<typeof 接口逻辑实现>
 
-let 结果转换器 = new 常用结果转换器(z.never(), z.object({ 用户数据: 预期返回类型描述.or(z.null()) }))
-let 结果返回器 = new 常用结果返回器()
+let 接口返回器 = new 常用接口返回器(z.never(), z.object({ 用户数据: 预期返回类型描述.or(z.null()) }))
 
-export default new 接口(接口路径, 接口方法, 接口逻辑实现, 结果转换器, 结果返回器)
+export default new 接口(接口路径, 接口方法, 接口逻辑实现, 接口返回器)

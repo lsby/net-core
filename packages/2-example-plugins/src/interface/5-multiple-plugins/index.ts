@@ -1,4 +1,4 @@
-import { GET参数解析插件, JSON参数解析插件, 常用结果转换器, 常用结果返回器, 接口, 接口逻辑 } from '@lsby/net-core'
+import { GET参数解析插件, JSON参数解析插件, 常用接口返回器, 接口, 接口逻辑 } from '@lsby/net-core'
 import { Right } from '@lsby/ts-fp-data'
 import { z } from 'zod'
 
@@ -29,7 +29,6 @@ let 接口逻辑实现 = 接口逻辑.构造(
   },
 )
 
-let 结果转换器 = new 常用结果转换器(z.never(), z.object({ result: z.string() }))
-let 结果返回器 = new 常用结果返回器()
+let 接口返回器 = new 常用接口返回器(z.never(), z.object({ result: z.string() }))
 
-export default new 接口(接口路径, 接口方法, 接口逻辑实现, 结果转换器, 结果返回器)
+export default new 接口(接口路径, 接口方法, 接口逻辑实现, 接口返回器)

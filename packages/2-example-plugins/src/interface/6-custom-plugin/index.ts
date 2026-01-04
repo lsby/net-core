@@ -1,4 +1,4 @@
-import { 常用结果转换器, 常用结果返回器, 接口, 接口逻辑, 插件 } from '@lsby/net-core'
+import { 常用接口返回器, 接口, 接口逻辑, 插件 } from '@lsby/net-core'
 import { Left, Right } from '@lsby/ts-fp-data'
 import { z } from 'zod'
 
@@ -6,6 +6,9 @@ import { z } from 'zod'
 // 自定义插件示例
 // =======================
 // 除了内置的插件, 也可以编写自己的插件
+// 理念上, 插件是"从请求中提炼必要信息", 是处理请求的基本条件, 如果无法提炼出这些信息, 意味着接口逻辑根本无法工作
+// 所以, 如果插件验证没有通过, 会认为这个请求是非法的, 这个请求不会被接口逻辑处理, 而不是处理后返回错误
+// 所以, 插件不提供错误处理机制, 插件的错误不会被算作"接口的错误返回"类型中, 而是会直接返回兜底错误
 // 这个例子展示了如何编写一个检查 请求头中的 Authorization 的插件
 
 let 插件返回形状Zod = z.object({ headers: z.object({ authorization: z.string() }) })
@@ -29,7 +32,6 @@ class 请求头检查插件 extends 插件<typeof 插件返回形状Zod> {
 }
 
 // 定义接口使用这个插件
-
 let 接口路径 = '/api/plugins/custom' as const
 let 接口方法 = 'get' as const
 
@@ -47,7 +49,6 @@ let 接口逻辑实现 = 接口逻辑.构造([new 请求头检查插件()], asyn
   return new Right({})
 })
 
-let 结果转换器 = new 常用结果转换器(z.enum(['鉴权失败']), z.object({}))
-let 结果返回器 = new 常用结果返回器()
+let 接口返回器 = new 常用接口返回器(z.enum(['鉴权失败']), z.object({}))
 
-export default new 接口(接口路径, 接口方法, 接口逻辑实现, 结果转换器, 结果返回器)
+export default new 接口(接口路径, 接口方法, 接口逻辑实现, 接口返回器)
