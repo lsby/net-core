@@ -4,10 +4,15 @@ import { Readable } from 'node:stream'
 import { z } from 'zod'
 import { 递归截断字符串 } from '../help/interior'
 import { 请求附加参数类型 } from '../server/server'
-import { 接口逻辑正确类型, 接口逻辑错误类型 } from './interface-logic'
+import type { 接口 } from './interface-base'
+import { 接口逻辑, 接口逻辑正确类型, 接口逻辑错误类型 } from './interface-logic'
 
 /**
- * 描述接口逻辑返回的数据将如何返回给调用者.
+ * ### 接口返回器
+ *
+ * 接口返回器是 {@link 接口} 的组成部分
+ *
+ * 描述如何将 {@link 接口逻辑} 返回的Either值返回给客户端
  */
 export abstract class 接口返回器<
   实现错误类型 extends 接口逻辑错误类型,
@@ -24,16 +29,12 @@ export abstract class 接口返回器<
     请求附加参数: 请求附加参数类型,
   ): void
 }
-
 export type 任意接口返回器 = 接口返回器<any, any, any, any>
 export type 获得接口返回器实现错误类型<A> = A extends 接口返回器<infer X, any, any, any> ? X : never
 export type 获得接口返回器实现正确类型<A> = A extends 接口返回器<any, infer X, any, any> ? X : never
 export type 获得接口返回器接口错误类型<A> = A extends 接口返回器<any, any, infer X, any> ? X : never
 export type 获得接口返回器接口正确类型<A> = A extends 接口返回器<any, any, any, infer X> ? X : never
 
-/**
- * 自定义接口返回器
- */
 export class 自定义接口返回器<
   实现错误类型Zod extends z.ZodTypeAny,
   实现正确类型Zod extends z.ZodTypeAny,
@@ -70,16 +71,6 @@ export class 自定义接口返回器<
   }
 }
 
-/**
- * 常用接口返回器
- *
- * 将业务逻辑返回的 Either<错误, 成功> 转换为前端友好的统一格式:
- * - 成功时: { status: 'success', data: ... }
- * - 失败时: { status: 'fail', data: ... }
- * 然后使用 res.send 返回
- *
- * 这种格式让前端可以通过 status 字段统一判断请求是否成功
- */
 export class 常用接口返回器<
   实现错误类型Zod extends z.ZodTypeAny,
   实现正确类型Zod extends z.ZodTypeAny,
@@ -142,9 +133,6 @@ export class 常用接口返回器<
   }
 }
 
-/**
- * 文件下载返回器
- */
 export class 文件下载返回器<
   实现错误类型Zod extends z.ZodTypeAny,
   实现正确类型Zod extends z.ZodObject<{

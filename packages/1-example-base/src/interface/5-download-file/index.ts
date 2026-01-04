@@ -24,9 +24,9 @@ let 接口逻辑实现 = 接口逻辑.构造(
   },
 )
 
-// 本例中 使用内置的 文件下载返回器 来返回数据
-// 它要求 接口逻辑 正确情况下必须返回 { data: Readable, filename: string, mimeType: string }
-// 所以 只需要传入 接口逻辑 错误类型描述 即可
+// 本例中, 使用内置的"文件下载返回器"来返回数据
+// 它要求"接口逻辑"正确情况下必须返回 { data: Readable, filename: string, mimeType: string }
+// 所以, 只需要传入"接口逻辑"的"错误类型描述"即可, 本例中, "接口逻辑"不会产生错误, 所以使用 z.never()
 let 接口返回器 = new 文件下载返回器(z.never())
 
 export default new 接口(接口路径, 接口方法, 接口逻辑实现, 接口返回器)

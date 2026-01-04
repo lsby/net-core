@@ -1,11 +1,16 @@
 import type { Request, Response } from 'express'
 import type { z } from 'zod'
+import type { 接口逻辑 } from '../interface/interface-logic'
 import { 请求附加参数类型 } from '../server/server'
 
 /**
- * 类似express中的中间件, 做一些前置过程, 例如解析参数, 解析文件等.
+ * ### 插件
  *
- * 可以被注入在"接口逻辑"中, 为其提供前置数据.
+ * 插件是 {@link 接口逻辑} 的一部分, 是"业务逻辑"的前置逻辑
+ * - 可以获得原始的req, res对象, 但res对象仅仅是为了兼容express的某些插件添加的, 不要使用res返回数据
+ * - 插件的定位是, 从HTTP上下文中获得信息, 使后续逻辑能正确运行
+ *   - 插件提供的信息是必要的, 如果插件无法获取到信息, 意味着这个请求是不合法的, 不会进入后续逻辑中
+ *   - 所以插件不提供错误处理能力, 推荐直接抛出错误, 此时, 客户端会收到兜底错误500, 服务器日志会显示错误信息
  */
 export class 插件<Obj extends z.AnyZodObject> {
   declare protected readonly __类型保持符号?: Obj

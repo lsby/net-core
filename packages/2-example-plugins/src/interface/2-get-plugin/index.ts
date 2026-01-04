@@ -5,8 +5,8 @@ import { z } from 'zod'
 // =======================
 // GET 参数解析插件示例
 // =======================
-// GET参数解析插件用于解析 GET 请求的 URL 查询参数
-// 例如：/api/plugins/get?keyword=hello&limit=10
+// 该插件用于解析 GET 请求的 URL 查询参数
+// 例如: /api/plugins/get?keyword=hello&limit=10
 // 验证失败时自动返回兜底错误, 在日志中打印具体信息
 
 let 接口路径 = '/api/plugins/get' as const
