@@ -1,9 +1,9 @@
 import { Log } from '@lsby/ts-log'
-import L from 'lodash'
 import { randomUUID } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import ts from 'typescript'
+import { 数组合并 } from '../../help/interior'
 
 function 检查存在默认导出(源文件: ts.SourceFile): boolean {
   for (let statement of 源文件.statements) {
@@ -105,10 +105,9 @@ export async function main(
     检查结果.push(结果)
   }
 
-  let 最终结果 = L.zip(相关源文件们, 检查结果)
+  let 最终结果 = 数组合并(相关源文件们, 检查结果)
     .filter((a) => a[1] === true)
-    .map((a) => a[0] ?? null)
-    .filter((a) => a !== null)
+    .map((a) => a[0])
   await log.debug(`最终筛选出 ${最终结果.length} 个测试用例`)
 
   let 最终代码 = [

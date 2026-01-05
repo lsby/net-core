@@ -41,3 +41,15 @@ export type 数组去重<T extends readonly any[], 结果 extends readonly any[]
     ? 数组去重<剩余, 结果>
     : 数组去重<剩余, [...结果, 第一个]>
   : 结果
+
+export function 数组合并<T extends readonly any[][]>(
+  ...数组们: T
+): Array<{ [K in keyof T]: T[K] extends (infer U)[] ? U : never }> {
+  if (数组们.length === 0) return []
+  let 最大长度 = Math.max(...数组们.map((a) => a.length))
+  let 结果: any[] = []
+  for (let i = 0; i < 最大长度; i++) {
+    结果.push(数组们.map((a) => a[i]))
+  }
+  return 结果
+}
