@@ -2,11 +2,11 @@ import { Either, Right } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
 import { 普通对象深合并 } from '../help/help'
 import { 联合转元组 } from '../help/interior'
-import type { 插件 } from '../plugin/plugin'
-import { 合并插件结果, 插件项类型 } from '../plugin/plugin'
 import { 请求附加参数类型 } from '../server/server'
 import { 空对象 } from '../types/types'
 import type { 接口 } from './interface-base'
+import type { 插件 } from './interface-plugin'
+import { 合并插件结果, 插件项类型 } from './interface-plugin'
 
 export type 清理函数类型<插件类型 extends 插件项类型[], 逻辑附加参数类型 extends 接口逻辑附加参数类型> = (
   参数: 合并插件结果<插件类型>,

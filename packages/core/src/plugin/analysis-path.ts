@@ -1,9 +1,9 @@
 import type { Request, Response } from 'express'
 import path from 'node:path'
 import { z } from 'zod'
-import { 递归截断字符串 } from '../../help/interior'
-import { 请求附加参数类型 } from '../../server/server'
-import { 插件 } from '../plugin'
+import { 递归截断字符串 } from '../help/interior'
+import { 插件 } from '../interface/interface-plugin'
+import { 请求附加参数类型 } from '../server/server'
 
 /**
  * ### 路径提取插件

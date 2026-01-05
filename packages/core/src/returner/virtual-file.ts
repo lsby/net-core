@@ -1,7 +1,7 @@
 import { Either } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
-import { 接口返回器 } from '../../interface/interface-returner'
-import { 请求附加参数类型 } from '../../server/server'
+import { 接口返回器 } from '../interface/interface-returner'
+import { 请求附加参数类型 } from '../server/server'
 
 /**
  * ### 虚拟文件返回器

@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
 import type { z } from 'zod'
-import type { 接口逻辑 } from '../interface/interface-logic'
 import { 请求附加参数类型 } from '../server/server'
+import type { 接口逻辑 } from './interface-logic'
 
 /**
  * ### 插件

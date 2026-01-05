@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws'
 import { z } from 'zod'
-import { 集线器监听器持有者 } from '../../global/model/hub'
-import { 插件, 插件项类型 } from '../plugin'
+import { 集线器监听器持有者 } from '../global/model/hub'
+import { 插件, 插件项类型 } from '../interface/interface-plugin'
 
 export class WebSocket插件<
   后推前信息 extends z.AnyZodObject | z.ZodNever | z.ZodUnion<any>,
