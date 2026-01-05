@@ -6,7 +6,9 @@ import type * as http from 'node:http'
 import { networkInterfaces } from 'node:os'
 import short from 'short-uuid'
 import { WebSocket, WebSocketServer } from 'ws'
-import { Global } from '../global/global'
+import { 全局日志单例 } from '../global/log'
+import { WebSocket管理器 } from '../global/model/web-socket'
+import { 全局WebSocket管理器单例 } from '../global/web-socket'
 import { 任意接口 } from '../interface/interface-base'
 import { 任意接口逻辑 } from '../interface/interface-logic'
 
@@ -16,10 +18,10 @@ export type 日志回调类型 = (
   content: string,
 ) => Promise<void>
 
-export type 请求附加参数类型 = { log: Log; 请求id: string }
+export type 请求附加参数类型 = { log: Log; 请求id: string; webSocket管理器: WebSocket管理器 }
 
 export class 服务器 {
-  private log: Promise<Log>
+  private log: Log
   private 日志回调?: 日志回调类型 | undefined
   private 接口们: 任意接口[]
   private 端口: number
@@ -38,10 +40,8 @@ export class 服务器 {
     this.静态资源路径 = options.静态资源路径
     this.默认get文件路径 = options.默认get文件路径
     this.日志回调 = options.日志回调
-    this.log = Global.getItem('log').then((a) => {
-      if (this.日志回调 !== void 0) a.pipe(this.日志回调)
-      return a
-    })
+    this.log = 全局日志单例
+    if (this.日志回调 !== void 0) this.log = this.log.pipe(this.日志回调)
   }
 
   public async run(): Promise<{
@@ -49,7 +49,7 @@ export class 服务器 {
     api: string[]
     server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>
   }> {
-    let log = await this.log
+    let log = this.log
 
     let app = express()
 
@@ -67,8 +67,8 @@ export class 服务器 {
 
   private async 处理请求(req: Request, res: Response): Promise<void> {
     let 请求id = short().new()
-    let log = (await this.log).extend(请求id)
-    let 请求附加参数: 请求附加参数类型 = { log: log, 请求id: 请求id }
+    let log = this.log.extend(请求id)
+    let 请求附加参数: 请求附加参数类型 = { log: log, 请求id: 请求id, webSocket管理器: 全局WebSocket管理器单例 }
 
     let 开始时间 = Date.now()
 
@@ -152,7 +152,7 @@ export class 服务器 {
   }
 
   private async 初始化WebSocket(server: http.Server): Promise<void> {
-    let log = await this.log
+    let log = this.log
 
     let wss = new WebSocketServer({ server })
     wss.on('listening', async () => {
@@ -174,7 +174,7 @@ export class 服务器 {
       }
       await 连接log.debug('解析客户端 ID: %s', 客户端id)
 
-      let WebSocket管理器 = Global.getItemSync('WebSocket管理器')
+      let WebSocket管理器 = 全局WebSocket管理器单例
 
       let 连接已存在 = WebSocket管理器.查询连接存在(客户端id)
       if (连接已存在) {
