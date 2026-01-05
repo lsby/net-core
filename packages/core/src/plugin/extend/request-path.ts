@@ -1,0 +1,48 @@
+import type { Request, Response } from 'express'
+import path from 'node:path'
+import { z } from 'zod'
+import { 递归截断字符串 } from '../../help/interior'
+import { 请求附加参数类型 } from '../../server/server'
+import { 插件 } from '../plugin'
+
+/**
+ * ### 路径提取插件
+ *
+ * 从请求中提取访问路径，提供原始字符串和解析后的路径对象两种形式
+ *
+ * 返回格式：
+ * ```
+ * {
+ *   rawPath: '/static/css/style.css',
+ *   dir: '/static/css',
+ *   file: 'style.css',
+ *   ext: '.css'
+ * }
+ * ```
+ */
+export class 路径解析插件 extends 插件<
+  z.ZodObject<{ path: z.ZodObject<{ rawPath: z.ZodString; dir: z.ZodString; file: z.ZodString; ext: z.ZodString }> }>
+> {
+  public constructor() {
+    super(
+      z.object({ path: z.object({ rawPath: z.string(), dir: z.string(), file: z.string(), ext: z.string() }) }),
+      async (req: Request, res: Response, 附加参数: 请求附加参数类型) => {
+        let log = 附加参数.log.extend('路径提取插件')
+
+        let rawPath = decodeURIComponent(req.path)
+        await log.debug('原始路径: %s', rawPath)
+
+        // 解析路径
+        let dir = path.dirname(rawPath)
+        let file = path.basename(rawPath)
+        let ext = path.extname(rawPath)
+
+        let parsedPath = { rawPath, dir, file, ext }
+
+        await log.debug('解析后的路径: %o', JSON.stringify(递归截断字符串(parsedPath)))
+
+        return { path: parsedPath }
+      },
+    )
+  }
+}

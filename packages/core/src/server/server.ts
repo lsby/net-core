@@ -1,7 +1,6 @@
 import { Log } from '@lsby/ts-log'
 import type { Request, Response } from 'express'
 import express from 'express'
-import { readFile } from 'node:fs/promises'
 import type * as http from 'node:http'
 import { networkInterfaces } from 'node:os'
 import short from 'short-uuid'
@@ -25,20 +24,10 @@ export class 服务器 {
   private 日志回调?: 日志回调类型 | undefined
   private 接口们: 任意接口[]
   private 端口: number
-  private 静态资源路径: string | undefined
-  private 默认get文件路径: string | undefined
 
-  public constructor(options: {
-    接口们: 任意接口[]
-    端口: number
-    静态资源路径?: string
-    默认get文件路径?: string
-    日志回调?: 日志回调类型
-  }) {
+  public constructor(options: { 接口们: 任意接口[]; 端口: number; 日志回调?: 日志回调类型 }) {
     this.接口们 = options.接口们
     this.端口 = options.端口
-    this.静态资源路径 = options.静态资源路径
-    this.默认get文件路径 = options.默认get文件路径
     this.日志回调 = options.日志回调
     this.log = 全局日志单例
     if (this.日志回调 !== void 0) this.log = this.log.pipe(this.日志回调)
@@ -52,11 +41,6 @@ export class 服务器 {
     let log = this.log
 
     let app = express()
-
-    if (this.静态资源路径 !== void 0) {
-      await log.debug(`设置静态资源路径: ${this.静态资源路径}`)
-      app.use(express.static(this.静态资源路径))
-    }
     app.use(this.处理请求.bind(this))
 
     let server = app.listen(this.端口)
@@ -80,21 +64,10 @@ export class 服务器 {
       await log.debug('收到请求, 路径: %o, 方法: %o', 请求路径, 请求方法)
 
       // 匹配接口
-      let 目标接口 = this.接口们.find((接口) => 请求方法 === 接口.获得方法() && 请求路径 === 接口.获得路径()) ?? null
+      let 目标接口 = this.接口们.find((接口) => 请求方法 === 接口.获得方法() && 接口.匹配路径(请求路径)) ?? null
       if (目标接口 !== null) {
         await this.处理接口逻辑({ req, res, 目标接口, 请求附加参数 })
         return
-      }
-
-      // 处理默认get文件
-      if (this.默认get文件路径 !== void 0 && 请求方法 === 'get') {
-        try {
-          let 默认文件内容 = await readFile(this.默认get文件路径, { encoding: 'utf-8' })
-          res.send(默认文件内容)
-          return
-        } catch (e) {
-          await log.error('返回默认get文件内容失败: %o', String(e))
-        }
       }
 
       // 未命中资源

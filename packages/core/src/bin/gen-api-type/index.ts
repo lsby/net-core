@@ -65,39 +65,42 @@ import 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}"
 
 type jsonPath = 获得接口路径类型<typeof 导入>
 type jsonMethod = 获得接口方法类型<typeof 导入>
+type 是否为正则 = jsonPath extends RegExp ? true : false
 type getInput = 合并GET插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
 type jsonInput = 合并JSON插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
 type jsonErrorOutput = 获得接口返回器接口错误类型<获得接口返回器类型<typeof 导入>>
 type jsonSuccessOutput = 获得接口返回器接口正确类型<获得接口返回器类型<typeof 导入>>
 type wsInput = 取第一个WS插件输入<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
 type wsOutput = 取第一个WS插件输出<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
-type JSON接口计算结果 = jsonPath extends never
+type JSON接口计算结果 = 是否为正则 extends true
   ? never
-  : jsonPath extends infer _
-    ? jsonMethod extends infer _
-      ? getInput extends infer _
-        ? jsonInput extends infer _
-          ? jsonErrorOutput extends infer _
-            ? jsonSuccessOutput extends infer _
-              ? wsOutput extends infer _
-                ? wsInput extends infer _
-                  ? {
-                      path: jsonPath
-                      method: jsonMethod
-                      input: jsonMethod extends 'post'
-                        ? 'body' extends keyof jsonInput
-                          ? jsonInput['body']
-                          : {}
-                        : jsonMethod extends 'get'
-                          ? 'query' extends keyof getInput
-                            ? getInput['query']
+  : jsonPath extends never
+    ? never
+    : jsonPath extends infer _
+      ? jsonMethod extends infer _
+        ? getInput extends infer _
+          ? jsonInput extends infer _
+            ? jsonErrorOutput extends infer _
+              ? jsonSuccessOutput extends infer _
+                ? wsOutput extends infer _
+                  ? wsInput extends infer _
+                    ? {
+                        path: jsonPath
+                        method: jsonMethod
+                        input: jsonMethod extends 'post'
+                          ? 'body' extends keyof jsonInput
+                            ? jsonInput['body']
                             : {}
-                          : {}
-                      errorOutput: jsonErrorOutput
-                      successOutput: jsonSuccessOutput
-                      wsOutput: wsOutput
-                      wsInput: wsInput
-                    }
+                          : jsonMethod extends 'get'
+                            ? 'query' extends keyof getInput
+                              ? getInput['query']
+                              : {}
+                            : {}
+                        errorOutput: jsonErrorOutput
+                        successOutput: jsonSuccessOutput
+                        wsOutput: wsOutput
+                        wsInput: wsInput
+                      }
                   : never
                 : never
               : never

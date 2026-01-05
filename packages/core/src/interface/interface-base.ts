@@ -7,14 +7,14 @@ import {
   获得接口返回器实现错误类型,
 } from './interface-returner'
 
-export type 接口路径类型 = string
+export type 接口路径类型 = string | RegExp
 export type 接口方法类型 = 'get' | 'post'
 
 /**
  * ### 接口
  *
  * 一个HTTP接口, 它由以下部分组成:
- * - 请求路径: 例如 /api/xxx
+ * - 请求路径: 例如 /api/xxx 或正则表达式 /^\/api\/.+/
  * - 请求方法: get 或 post
  * - 接口逻辑: 接口的实际逻辑行为, 见 {@link 接口逻辑}
  * - 接口返回器: 决定如何将接口逻辑的返回值返回给客户端的逻辑, 见 {@link 接口返回器}
@@ -46,6 +46,18 @@ export class 接口<
   public 获得路径(): 路径类型 {
     return this.请求路径
   }
+
+  public 匹配路径(路径: string): boolean {
+    let 规则 = this.请求路径
+    if (typeof 规则 === 'string') {
+      return 规则 === 路径
+    }
+    if (规则 instanceof RegExp) {
+      return 规则.test(路径)
+    }
+    return false
+  }
+
   public 获得方法(): 方法类型 {
     return this.请求方法
   }

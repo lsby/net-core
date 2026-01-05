@@ -24,3 +24,5 @@ console.log(
   '4. curl -X POST http://localhost:3000/api/form-submit -H "Content-Type: application/x-www-form-urlencoded" -d "username=testuser&email=test@example.com&age=10"',
 )
 console.log('5. 浏览器访问 http://localhost:3000/api/download-file?filename=test.txt')
+console.log('6. 浏览器访问 http://localhost:3000/static/index.ts')
+console.log('7. 浏览器访问 http://localhost:3000/virtual/demo.html')
