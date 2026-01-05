@@ -1,6 +1,6 @@
-export type 去除只读<T> = T extends readonly [...infer U] ? U : never
-export type 类型相等<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false
-
+// =========
+// 值计算
+// =========
 export function 截断字符串(内容: string): string {
   let 最大日志长度 = 1000
 
@@ -22,6 +22,24 @@ export function 递归截断字符串(数据: any): any {
   return 数据
 }
 
+export function 数组合并<T extends readonly any[][]>(
+  ...数组们: T
+): Array<{ [K in keyof T]: T[K] extends (infer U)[] ? U : never }> {
+  if (数组们.length === 0) return []
+  let 最大长度 = Math.max(...数组们.map((a) => a.length))
+  let 结果: any[] = []
+  for (let i = 0; i < 最大长度; i++) {
+    结果.push(数组们.map((a) => a[i]))
+  }
+  return 结果
+}
+
+// =========
+// 类型计算
+// =========
+export type 去除只读<T> = T extends readonly [...infer U] ? U : never
+export type 类型相等<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false
+
 type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer U) => any ? U : never
 type LastUnion<T> = UnionToIntersection<T extends any ? (x: T) => any : never> extends (x: infer L) => any ? L : never
 export type 联合转元组<T, Last = LastUnion<T>> = [T] extends [never] ? [] : [...联合转元组<Exclude<T, Last>>, Last]
@@ -41,15 +59,3 @@ export type 数组去重<T extends readonly any[], 结果 extends readonly any[]
     ? 数组去重<剩余, 结果>
     : 数组去重<剩余, [...结果, 第一个]>
   : 结果
-
-export function 数组合并<T extends readonly any[][]>(
-  ...数组们: T
-): Array<{ [K in keyof T]: T[K] extends (infer U)[] ? U : never }> {
-  if (数组们.length === 0) return []
-  let 最大长度 = Math.max(...数组们.map((a) => a.length))
-  let 结果: any[] = []
-  for (let i = 0; i < 最大长度; i++) {
-    结果.push(数组们.map((a) => a[i]))
-  }
-  return 结果
-}

@@ -24,7 +24,7 @@
 **开发效率工具链**
 
 - 自动化代码生成: API 索引、TypeScript 定义、单元测试框架自动生成, 文档与代码永不失同步
-- 代码即文档哲学: 通过严密的类型定义和示例代码呈现所有用法, 无需文档维护
+- 代码即文档哲学: 通过严密的类型定义和示例代码呈现所有用法, 无需文档
 
 ## 代码结构
 
@@ -35,13 +35,21 @@
 
 ## 快速开始
 
-参考以下示例包, 每个包都可以运行和调试, 按顺序尝试和阅读代码注释即可:
+先编译核心包:
+
+```base
+cd packages/core
+pnpm i
+pnpm _build:all
+```
+
+然后依次尝试和阅读以下示例包, 每个包都可以独立调试和运行:
 
 - 核心概念与基本用法: [1-example-base](./packages/1-example-base)
-- 内置插件和自定义插件: [2-example-plugins](./packages/2-example-plugins)
+- 内置插件和自定义插件: [2-example-plugins](./packages/2-example-plugins), 所有内置插件见[源码](./packages/core/src/plugin)
 - 业务逻辑的组合与复用: [3-example-logic-composition](./packages/3-example-logic-composition)
 - ws机制: [4-example-web-socket](./packages/4-example-web-socket) (未完成)
-- 边界情况: [5-example-edge](./packages/5-example-edge) (未完成)
+- 边界: [5-example-edge](./packages/5-example-edge) (未完成)
 
 ## 自动化工具链
 

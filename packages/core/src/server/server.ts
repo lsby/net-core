@@ -38,8 +38,6 @@ export class 服务器 {
     api: string[]
     server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>
   }> {
-    let log = this.log
-
     let app = express()
     app.use(this.处理请求.bind(this))
 

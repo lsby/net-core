@@ -1,28 +1,12 @@
+// =========
+// 值计算
+// =========
 export function 构造元组<T extends any[]>(args: [...T]): T {
   return args
 }
 export function 构造对象<K extends string, V>(key: K, value: V): Record<K, V> {
   return { [key]: value } as any
 }
-
-type 普通对象 = Record<any, any>
-export type 严格递归合并对象<A, B> = A extends 普通对象
-  ? B extends 普通对象
-    ? {
-        [K in keyof A | keyof B]: K extends keyof A
-          ? K extends keyof B
-            ? A[K] extends 普通对象
-              ? B[K] extends 普通对象
-                ? 严格递归合并对象<A[K], B[K]> // 两边都是对象
-                : never // B[K] 不是对象 坍缩
-              : never // A[K] 不是对象 坍缩
-            : A[K] // 只有 A 有
-          : K extends keyof B
-            ? B[K] // 只有 B 有
-            : never // A 和 B 都没有 K, 理论上不可能
-      }
-    : never
-  : never
 
 /**
  * 深合并两个对象，如果两个值都是普通对象，则递归合并，否则用后者覆盖
@@ -57,3 +41,25 @@ export function 普通对象深合并(target: Record<any, any>, source: Record<a
   }
   return result
 }
+
+// =========
+// 类型计算
+// =========
+type 普通对象 = Record<any, any>
+export type 严格递归合并对象<A, B> = A extends 普通对象
+  ? B extends 普通对象
+    ? {
+        [K in keyof A | keyof B]: K extends keyof A
+          ? K extends keyof B
+            ? A[K] extends 普通对象
+              ? B[K] extends 普通对象
+                ? 严格递归合并对象<A[K], B[K]> // 两边都是对象
+                : never // B[K] 不是对象 坍缩
+              : never // A[K] 不是对象 坍缩
+            : A[K] // 只有 A 有
+          : K extends keyof B
+            ? B[K] // 只有 B 有
+            : never // A 和 B 都没有 K, 理论上不可能
+      }
+    : never
+  : never
