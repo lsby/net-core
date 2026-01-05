@@ -41,6 +41,7 @@ let 参数解析逻辑 = 接口逻辑.构造(
     let { x } = 参数.body
     await log.info('获取参数: x=%d', x)
 
+    // 正确结果必须用对象返回, 这是为了能在组合时合并结果
     return new Right({ x })
   },
 )
