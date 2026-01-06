@@ -24,6 +24,7 @@
     "@lsby/eslint-plugin": "^0.0.30",
     "@types/node": "^25.0.3",
     "cross-env": "^10.1.0",
+    "esbuild": "^0.27.2",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-es": "^4.1.0",

@@ -73,6 +73,7 @@ export class 服务器 {
       res.status(404).end()
     } catch (error) {
       await log.error(error)
+      res.setHeader('Content-Type', 'text/html')
       res.status(500).send('Internal Server Error')
     } finally {
       let 耗时ms = Date.now() - 开始时间
