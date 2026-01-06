@@ -11,14 +11,21 @@ export class 常用接口返回器<
 > extends 接口返回器<
   z.infer<实现错误类型Zod>,
   z.infer<实现正确类型Zod>,
-  { status: 'fail'; data: z.infer<实现错误类型Zod> },
-  { status: 'success'; data: z.infer<实现正确类型Zod> }
+  z.ZodObject<{ status: z.ZodLiteral<'fail'>; data: 实现错误类型Zod }>,
+  z.ZodObject<{ status: z.ZodLiteral<'success'>; data: 实现正确类型Zod }>
 > {
   public constructor(
     private 实现错误类型Zod: 实现错误类型Zod,
     private 实现正确类型Zod: 实现正确类型Zod,
   ) {
     super()
+  }
+
+  public override 获得接口错误形式Zod(): z.ZodObject<{ status: z.ZodLiteral<'fail'>; data: 实现错误类型Zod }> {
+    return z.object({ status: z.literal('fail'), data: this.实现错误类型Zod })
+  }
+  public override 获得接口正确形式Zod(): z.ZodObject<{ status: z.ZodLiteral<'success'>; data: 实现正确类型Zod }> {
+    return z.object({ status: z.literal('success'), data: this.实现正确类型Zod })
   }
 
   public override 实现(
@@ -57,7 +64,7 @@ export class 常用接口返回器<
           throw new Error(`结果无法通过校验`)
         }
 
-        let 返回数据 = { status: 'success' as const, data: 数据.assertRight().getRight() }
+        let 返回数据 = { status: 'success' as const, data: 实际数据 }
         void log.debug('最终结果: %o', JSON.stringify(递归截断字符串(返回数据)))
         res.send(返回数据)
 

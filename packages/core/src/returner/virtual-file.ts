@@ -1,5 +1,6 @@
 import { Either } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
+import { z } from 'zod'
 import { 接口返回器 } from '../interface/interface-returner'
 import { 请求附加参数类型 } from '../server/server'
 
@@ -12,12 +13,24 @@ import { 请求附加参数类型 } from '../server/server'
  * - 缓存配置
  * - 错误处理
  */
-export class 虚拟文件返回器 extends 接口返回器<string, { fileContent: string | Buffer; MIMEType: string }, any, any> {
+export class 虚拟文件返回器 extends 接口返回器<
+  string,
+  { fileContent: string | Buffer; MIMEType: string },
+  z.ZodAny,
+  z.ZodAny
+> {
   private 缓存控制: string | undefined
 
   public constructor(options: { 缓存控制?: string }) {
     super()
     this.缓存控制 = options.缓存控制
+  }
+
+  public override 获得接口错误形式Zod(): z.ZodAny {
+    return z.any()
+  }
+  public override 获得接口正确形式Zod(): z.ZodAny {
+    return z.any()
   }
 
   public override 实现(

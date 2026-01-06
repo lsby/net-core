@@ -8,7 +8,7 @@ class ws测试组件 extends HTMLElement {
   private 参数A输入: HTMLInputElement | null = null
   private 参数B输入: HTMLInputElement | null = null
   private 日志元素: HTMLElement | null = null
-  private ws句柄: WebSocket | null = null
+  private 发送数据函数: ((参数: { data: string }) => void) | null = null
 
   public constructor() {
     super()
@@ -145,20 +145,20 @@ class ws测试组件 extends HTMLElement {
         '/api/web-socket-demo',
         { a: 参数A数值, b: 参数B数值 },
         {
-          连接回调: async (ws句柄): Promise<void> => {
+          连接回调: async (发送数据): Promise<void> => {
             this.记录('WebSocket已连接')
-            this.ws句柄 = ws句柄
+            this.发送数据函数 = 发送数据
           },
           信息回调: async (数据): Promise<void> => {
             this.记录(`WebSocket收到: ${JSON.stringify(数据)}`)
           },
           关闭回调: async (): Promise<void> => {
             this.记录('WebSocket已关闭')
-            this.ws句柄 = null
+            this.发送数据函数 = null
           },
           错误回调: async (): Promise<void> => {
             this.记录('WebSocket错误')
-            this.ws句柄 = null
+            this.发送数据函数 = null
           },
         },
       )
@@ -171,9 +171,9 @@ class ws测试组件 extends HTMLElement {
   }
 
   private 发送数据(): void {
-    if (this.ws句柄 !== null) {
+    if (this.发送数据函数 !== null) {
       let 数据 = { data: '数据' }
-      this.ws句柄.send(JSON.stringify(数据))
+      this.发送数据函数(数据)
       this.记录(`发送数据: ${JSON.stringify(数据)}`)
     } else {
       this.记录('WebSocket未连接，无法发送数据')

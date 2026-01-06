@@ -64,7 +64,7 @@ export class 接口<
   public 获得逻辑(): 逻辑类型 {
     return this.接口逻辑
   }
-  public 获得接口返回器(): 任意接口返回器 {
+  public 获得接口返回器(): 接口返回器类型 {
     return this.接口返回器
   }
 }

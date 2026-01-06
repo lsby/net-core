@@ -16,17 +16,18 @@ export class 文件下载返回器<
 > extends 接口返回器<
   z.infer<实现错误类型Zod>,
   z.infer<实现正确类型Zod>,
-  { status: 'fail'; data: z.infer<实现错误类型Zod> },
-  any
+  z.ZodObject<{ status: z.ZodLiteral<'fail'>; data: 实现错误类型Zod }>,
+  z.ZodAny
 > {
-  private 实现正确类型Zod = z.object({
-    data: z.instanceof(Readable),
-    filename: z.string().optional(),
-    mimeType: z.string().optional(),
-  })
-
   public constructor(private 实现错误类型Zod: 实现错误类型Zod) {
     super()
+  }
+
+  public override 获得接口错误形式Zod(): z.ZodObject<{ status: z.ZodLiteral<'fail'>; data: 实现错误类型Zod }> {
+    return z.object({ status: z.literal('fail'), data: this.实现错误类型Zod })
+  }
+  public override 获得接口正确形式Zod(): z.ZodAny {
+    return z.any()
   }
 
   public override 实现(
@@ -57,7 +58,12 @@ export class 文件下载返回器<
       case 'Right': {
         let 实际数据 = 数据.assertRight().getRight()
 
-        let 校验结果 = this.实现正确类型Zod.safeParse(实际数据)
+        let 实现正确类型Zod = z.object({
+          data: z.instanceof(Readable),
+          filename: z.string().optional(),
+          mimeType: z.string().optional(),
+        })
+        let 校验结果 = 实现正确类型Zod.safeParse(实际数据)
         if (校验结果.success === false) {
           let 结果字符串 = JSON.stringify(递归截断字符串(实际数据))
           void log.error(`结果无法通过校验: ${结果字符串}`)

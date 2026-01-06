@@ -10,6 +10,7 @@ import { WebSocket管理器 } from '../global/model/web-socket'
 import { 全局WebSocket管理器单例 } from '../global/web-socket'
 import { 任意接口 } from '../interface/interface-base'
 import { 任意接口逻辑 } from '../interface/interface-logic'
+import { 任意接口返回器 } from '../interface/interface-returner'
 
 export type 日志回调类型 = (
   level: 'trace' | 'debug' | 'info' | 'warn' | 'error',
@@ -91,7 +92,7 @@ export class 服务器 {
     let log = 请求附加参数.log
 
     let 接口逻辑 = 目标接口.获得逻辑() as 任意接口逻辑
-    let 接口返回器 = 目标接口.获得接口返回器()
+    let 接口返回器 = 目标接口.获得接口返回器() as 任意接口返回器
 
     let 总开始 = Date.now()
 

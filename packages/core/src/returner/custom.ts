@@ -9,12 +9,7 @@ export class 自定义接口返回器<
   实现正确类型Zod extends z.ZodTypeAny,
   接口错误类型Zod extends z.ZodTypeAny,
   接口正确类型Zod extends z.ZodTypeAny,
-> extends 接口返回器<
-  z.infer<实现错误类型Zod>,
-  z.infer<实现正确类型Zod>,
-  z.infer<接口错误类型Zod>,
-  z.infer<接口正确类型Zod>
-> {
+> extends 接口返回器<z.infer<实现错误类型Zod>, z.infer<实现正确类型Zod>, 接口错误类型Zod, 接口正确类型Zod> {
   public constructor(
     private 实现错误类型Zod: 实现错误类型Zod,
     private 实现正确类型Zod: 实现正确类型Zod,
@@ -28,6 +23,13 @@ export class 自定义接口返回器<
     ) => void,
   ) {
     super()
+  }
+
+  public override 获得接口错误形式Zod(): 接口错误类型Zod {
+    return this.接口错误类型Zod
+  }
+  public override 获得接口正确形式Zod(): 接口正确类型Zod {
+    return this.接口正确类型Zod
   }
 
   public override 实现(

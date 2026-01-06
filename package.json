@@ -6,6 +6,7 @@
   "scripts": {
     "build": "pnpm -r --filter=@lsby/net-core run _build:all",
     "check:all": "pnpm -r run _check:all",
+    "gen:all": "pnpm -r run _gen:all",
     "prepare": "husky"
   },
   "devDependencies": {

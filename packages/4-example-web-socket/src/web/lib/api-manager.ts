@@ -25,7 +25,7 @@ export class API管理器 {
     路径: P,
     数据: 取http输入<找接口<P>>,
     ws选项?: {
-      连接回调?: (ws句柄: WebSocket, 发送消息: (数据: 取ws输入<找接口<P>>) => void) => Promise<void>
+      连接回调?: (发送消息: (数据: 取ws输入<找接口<P>>) => void, ws句柄: WebSocket) => Promise<void>
       信息回调?: (数据: 取ws输出<找接口<P>>) => Promise<void>
       关闭回调?: (事件: CloseEvent) => Promise<void>
       错误回调?: (事件: Event) => Promise<void>
@@ -54,7 +54,7 @@ export class API管理器 {
             let 发送消息 = (数据: 取ws输入<找接口<P>>): void => {
               ws句柄.send(JSON.stringify(数据))
             }
-            await 连接回调函数?.(ws句柄, 发送消息)
+            await 连接回调函数?.(发送消息, ws句柄)
             res()
           }
           ws句柄.onmessage = async (事件): Promise<void> => {

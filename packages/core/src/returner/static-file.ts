@@ -1,6 +1,7 @@
 import { Either } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
 import { readFile } from 'node:fs/promises'
+import { z } from 'zod'
 import { 接口返回器 } from '../interface/interface-returner'
 import { 请求附加参数类型 } from '../server/server'
 
@@ -13,7 +14,7 @@ import { 请求附加参数类型 } from '../server/server'
  * - 缓存配置
  * - 自动文件读取（接收完整文件路径）
  */
-export class 静态文件返回器 extends 接口返回器<string, { filePath: string }, any, any> {
+export class 静态文件返回器 extends 接口返回器<string, { filePath: string }, z.ZodAny, z.ZodAny> {
   private MIME类型映射: Map<string, string>
   private 缓存控制: string | undefined
 
@@ -40,6 +41,13 @@ export class 静态文件返回器 extends 接口返回器<string, { filePath: s
       ['.xml', 'application/xml'],
       ...Object.entries(options.MIME类型映射 ?? {}),
     ])
+  }
+
+  public override 获得接口错误形式Zod(): z.ZodAny {
+    return z.any()
+  }
+  public override 获得接口正确形式Zod(): z.ZodAny {
+    return z.any()
   }
 
   public override async 实现(

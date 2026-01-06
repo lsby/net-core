@@ -40,7 +40,7 @@
 ```base
 cd packages/core
 pnpm i
-pnpm _build:all
+npm run _build:all
 ```
 
 然后依次尝试和阅读以下示例包, 每个包都可以独立调试和运行:
@@ -48,8 +48,8 @@ pnpm _build:all
 - 核心概念与基本用法: [1-example-base](./packages/1-example-base)
 - 内置插件和自定义插件: [2-example-plugins](./packages/2-example-plugins), 所有内置插件见[源码](./packages/core/src/plugin)
 - 业务逻辑的组合与复用: [3-example-logic-composition](./packages/3-example-logic-composition)
-- ws机制: [4-example-web-socket](./packages/4-example-web-socket) (未完成)
-- 边界: [5-example-edge](./packages/5-example-edge) (未完成)
+- ws机制: [4-example-web-socket](./packages/4-example-web-socket)
+- 测试机制: [5-example-test](./packages/5-example-test)
 
 ## 自动化工具链
 
