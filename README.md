@@ -45,13 +45,13 @@ npm run _build:all
 
 然后依次尝试以下示例包, 每个包都可以独立运行:
 
-- 核心概念与基本用法: [1-example-base](./packages/1-example-base)
-- 内置插件和自定义插件: [2-example-plugins](./packages/2-example-plugins), 所有内置插件见[源码](./packages/core/src/plugin)
-- 业务逻辑的组合与复用: [3-example-logic-composition](./packages/3-example-logic-composition)
-- ws机制: [4-example-web-socket](./packages/4-example-web-socket)
-- 测试机制: [5-example-test](./packages/5-example-test)
+- 核心概念与基本用法: [01-example-base](./packages/01-example-base)
+- 内置插件和自定义插件: [02-example-plugins](./packages/02-example-plugins), 所有内置插件见[源码](./packages/core/src/plugin)
+- 业务逻辑的组合与复用: [03-example-logic-composition](./packages/03-example-logic-composition)
+- ws机制: [04-example-web-socket](./packages/04-example-web-socket)
+- 测试机制: [05-example-test](./packages/05-example-test)
 
-更多示例和实际应用, 可以参考我的[个人模板项目](https://github.com/lsby/playground-ts-service)
+更多示例和实际应用, 可以参考我的个人[项目模板](https://github.com/lsby/playground-ts-service)
 
 ## 自动化工具链
 
