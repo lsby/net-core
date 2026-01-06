@@ -11,7 +11,6 @@
     "_gen:all": "npm run _gen:api:list && npm run _gen:api:type",
     "_gen:api:list": "cross-env DEBUG=@lsby:* lsby-net-core-gen-api-list ./tsconfig.json ./src/interface ./src/interface/interface-list.ts",
     "_gen:api:type": "cross-env DEBUG=@lsby:* lsby-net-core-gen-api-type ./tsconfig.json ./src/interface ./src/types/interface-type.ts",
-    "dev": "cross-env DEBUG=@lsby:* tsx watch src/index.ts",
     "test:gen": "cross-env DEBUG=@lsby:* lsby-net-core-gen-test ./tsconfig.json ./src/interface ./test/unit-test.test.ts",
     "test:gen:all": "cross-env DEBUG=@lsby:* lsby-net-core-gen-test ./tsconfig.json ./src/interface ./test/unit-test.test.ts .*",
     "test:run:coverage": "vitest run --coverage && open-cli ./coverage/index.html",

@@ -65,10 +65,10 @@ export async function main(
 
   let 伴随的虚拟文件们 = 相关源文件们.map((a) => {
     let 代码 = [
-      `import { 接口测试 } from '@lsby/net-core'`,
+      `import { 任意的接口测试 } from '@lsby/net-core'`,
       `import 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}"`,
       ``,
-      `type 计算结果 = typeof 导入 extends 接口测试 ? true : false`,
+      `type 计算结果 = typeof 导入 extends 任意的接口测试 ? true : false`,
     ]
     return ts.createSourceFile(
       a.fileName.replaceAll('.ts', '-' + randomUUID() + '.ts'),
