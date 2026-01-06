@@ -188,7 +188,8 @@ type 导出类型定义 = GetNetCoreExportTypeDefine<导入>
             类型定义类型 = 'aliasSymbol'
             导出类型定义 = type.aliasSymbol.declarations?.[0]?.getText()
           } else {
-            log.warn(`无法找到类型定义`).catch((a) => `日志输出错误: ${a}: 日志内容: ${`无法找到类型定义`}`)
+            类型定义类型 = 'symbol'
+            导出类型定义 = 字符串结果
           }
         }
       }

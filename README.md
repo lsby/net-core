@@ -50,6 +50,7 @@ npm run _build:all
 - 业务逻辑的组合与复用: [03-example-logic-composition](./packages/03-example-logic-composition)
 - ws机制: [04-example-web-socket](./packages/04-example-web-socket)
 - 测试机制: [05-example-test](./packages/05-example-test)
+- 复杂类型导出: [06-example-complex-type-export](./packages/06-example-complex-type-export)
 
 更多示例和实际应用, 可以参考我的个人[项目模板](https://github.com/lsby/playground-ts-service)
 
