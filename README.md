@@ -24,7 +24,7 @@
 **开发效率工具链**
 
 - 自动化代码生成: API 索引、TypeScript 定义、单元测试框架自动生成, 文档与代码永不失同步
-- 代码即文档哲学: 通过严密的类型定义和示例代码呈现所有用法, 无需文档
+- 代码即文档哲学: 通过严密的类型定义和示例代码呈现所有用法
 
 ## 代码结构
 
@@ -43,13 +43,15 @@ pnpm i
 npm run _build:all
 ```
 
-然后依次尝试和阅读以下示例包, 每个包都可以独立调试和运行:
+然后依次尝试以下示例包, 每个包都可以独立运行:
 
 - 核心概念与基本用法: [1-example-base](./packages/1-example-base)
 - 内置插件和自定义插件: [2-example-plugins](./packages/2-example-plugins), 所有内置插件见[源码](./packages/core/src/plugin)
 - 业务逻辑的组合与复用: [3-example-logic-composition](./packages/3-example-logic-composition)
 - ws机制: [4-example-web-socket](./packages/4-example-web-socket)
 - 测试机制: [5-example-test](./packages/5-example-test)
+
+更多示例和实际应用, 可以参考我的[个人模板项目](https://github.com/lsby/playground-ts-service)
 
 ## 自动化工具链
 

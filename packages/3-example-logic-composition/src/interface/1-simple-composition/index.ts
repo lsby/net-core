@@ -42,7 +42,7 @@ let 参数解析逻辑 = 接口逻辑.构造(
     await log.info('获取参数: x=%d', x)
 
     // 正确结果必须用对象返回, 这是为了能在组合时合并结果
-    return new Right({ x })
+    return new Right({ value: x })
   },
 )
 
@@ -56,22 +56,22 @@ let 参数解析逻辑 = 接口逻辑.构造(
 // - 附加逻辑参数: 附加逻辑参数的类型, 本例中, 这个接口逻辑要求上游提供一个叫x的数字值
 // - 错误类型: 业务逻辑错误时的类型, 本例中, 这个接口不会出错
 // - 正确类型: 业务逻辑正确时的类型, 本例中, 这个接口会返回一个叫result的数字值
-let 加五逻辑 = 接口逻辑.构造<[], { x: number }, never, { result: number }>(
+let 加五逻辑 = 接口逻辑.构造<[], { value: number }, never, { value: number }>(
   [],
   async (_参数, 逻辑附加参数, _请求附加参数) => {
-    let { x } = 逻辑附加参数
-    return new Right({ result: x + 5 })
+    let { value } = 逻辑附加参数
+    return new Right({ value: value + 5 })
   },
 )
 
 // 第三个接口逻辑
 // 这个逻辑将结果乘以 2
 // 同样, 需要手动标注泛型
-let 乘以二逻辑 = 接口逻辑.构造<[], { result: number }, never, { result: number }>(
+let 乘以二逻辑 = 接口逻辑.构造<[], { value: number }, never, { value: number }>(
   [],
   async (_参数, 逻辑附加参数, _请求附加参数) => {
-    let { result } = 逻辑附加参数
-    return new Right({ result: result * 2 })
+    let { value } = 逻辑附加参数
+    return new Right({ value: value * 2 })
   },
 )
 
@@ -81,6 +81,6 @@ let _组合逻辑 = 参数解析逻辑.绑定(加五逻辑).绑定(乘以二逻�
 // 也可以用更链式的写法
 let 组合逻辑 = 接口逻辑.空逻辑().绑定(参数解析逻辑).绑定(加五逻辑).绑定(乘以二逻辑)
 
-let 接口返回器 = new 常用接口返回器(z.never(), z.object({ result: z.number() }))
+let 接口返回器 = new 常用接口返回器(z.never(), z.object({ value: z.number() }))
 
 export default new 接口(接口路径, 接口方法, 组合逻辑, 接口返回器)

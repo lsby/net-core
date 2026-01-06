@@ -9,7 +9,7 @@ type 返回类型<结果类型Zod extends z.AnyZodObject> = {
 
 // 这是一个通用的缓存接口逻辑
 // 和普通的接口逻辑本质上没有任何不同, 完全可以自己设计
-// 只是为了通用, 将类型等信息也作为参数传入, 所以比较复杂
+// 为了通用, 将类型等信息也作为参数传入, 所以比较复杂
 
 export class 缓存逻辑<输入类型Zod extends z.AnyZodObject, 结果类型Zod extends z.AnyZodObject> extends 接口逻辑<
   [JSON参数解析插件<输入类型Zod>],
