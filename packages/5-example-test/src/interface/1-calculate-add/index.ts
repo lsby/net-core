@@ -27,5 +27,3 @@ type _接口逻辑正确返回 = 计算接口逻辑正确结果<typeof 接口逻
 
 let 接口返回器 = new 常用接口返回器(z.never(), z.object({ result: z.number() }))
 export default new 接口(接口路径, 接口方法, 接口逻辑实现, 接口返回器)
-
-export let 加法逻辑 = 接口逻辑实现

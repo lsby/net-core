@@ -5,9 +5,9 @@ export class 接口测试<接口类型 extends 任意接口, 预期类型 extend
   public constructor(
     private 接口: 接口类型,
     private 预期: 预期类型,
-    private 前置实现: () => Promise<void>,
-    private 中置实现: () => Promise<object>,
-    private 后置实现: (
+    private 前置过程: () => Promise<void>,
+    private 中置过程: () => Promise<object>,
+    private 后置过程: (
       解析结果: 预期类型 extends '失败'
         ? 获得接口返回器接口错误类型<获得接口返回器类型<接口类型>>
         : 获得接口返回器接口正确类型<获得接口返回器类型<接口类型>>,
@@ -16,9 +16,9 @@ export class 接口测试<接口类型 extends 任意接口, 预期类型 extend
   ) {}
 
   public async 运行(): Promise<void> {
-    await this.前置实现()
+    await this.前置过程()
 
-    let 中置结果 = await this.中置实现()
+    let 中置结果 = await this.中置过程()
 
     console.log('接口: %o, 实际结果: %o', this.接口.获得路径(), 中置结果)
 
@@ -39,7 +39,19 @@ export class 接口测试<接口类型 extends 任意接口, 预期类型 extend
       if (this.预期 === '成功') throw new Error('应该调用成功, 实际调用出错')
     }
 
-    await this.后置实现(this.预期 === '失败' ? 失败结果校验.data : 正确结果校验.data, 中置结果)
+    await this.后置过程(this.预期 === '失败' ? 失败结果校验.data : 正确结果校验.data, 中置结果)
   }
 }
 export type 任意的接口测试 = 接口测试<any, any>
+
+export class 接口逻辑测试 {
+  public constructor(
+    private 前置过程: () => Promise<void>,
+    private 后置过程: () => Promise<void>,
+  ) {}
+
+  public async 运行(): Promise<void> {
+    await this.前置过程()
+    await this.后置过程()
+  }
+}

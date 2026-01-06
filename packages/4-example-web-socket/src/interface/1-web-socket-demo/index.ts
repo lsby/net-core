@@ -30,7 +30,7 @@ let 接口逻辑实现 = 接口逻辑.构造(
     // - 前推后信息描述: 前端推给后端的数据的类型表示
     // - ws客户端id的请求头名称, 默认为'ws-client-id'
     new WebSocket插件(z.object({ message: z.string() }), z.object({ data: z.string() }), 'ws-client-id'),
-    // 可以在这里加入鉴权插件等, 如果鉴权插件返回错误, 则ws也无法拿到数据, 这就复用了HTTP的鉴权逻辑
+    // 可以在这里加入鉴权插件等, 如果鉴权插件返回错误, 则ws也无法拿到数据, 这就复用了HTTP的鉴权功能
   ],
   async (参数, 逻辑附加参数, 请求附加参数) => {
     let _log = 请求附加参数.log

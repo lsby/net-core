@@ -1,5 +1,5 @@
 {
-  "include": ["src", "test", "eslint.config.mjs", "vitest.config.ts"],
+  "include": ["src", "test", "eslint.config.mjs"],
   "compilerOptions": {
     /* Language and Environment */
     "target": "ESNext",

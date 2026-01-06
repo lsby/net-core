@@ -14,7 +14,6 @@
     "test:gen": "cross-env DEBUG=@lsby:* lsby-net-core-gen-test ./tsconfig.json ./src/interface ./test/unit-test.test.ts",
     "test:gen:all": "cross-env DEBUG=@lsby:* lsby-net-core-gen-test ./tsconfig.json ./src/interface ./test/unit-test.test.ts .*",
     "test:run:coverage": "vitest run --coverage && open-cli ./coverage/index.html",
-    "test:run:pure": "vitest run ./test/pure.test.ts",
     "test:run:unit": "vitest run"
   },
   "dependencies": {

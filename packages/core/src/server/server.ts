@@ -89,7 +89,7 @@ export class 服务器 {
     let { req, res, 目标接口, 请求附加参数 } = opt
     let log = 请求附加参数.log
 
-    let 接口逻辑 = 目标接口.获得逻辑() as 任意接口逻辑
+    let 接口逻辑 = 目标接口.获得接口逻辑() as 任意接口逻辑
     let 接口返回器 = 目标接口.获得接口返回器() as 任意接口返回器
 
     let 总开始 = Date.now()
