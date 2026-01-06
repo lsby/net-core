@@ -1,7 +1,7 @@
 import { Either } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
 import { z } from 'zod'
-import { 请求附加参数类型 } from '../server/server'
+import { 请求附加参数类型 } from '../types/types'
 import type { 接口 } from './interface-base'
 import type { 接口逻辑 } from './interface-logic'
 import { 接口逻辑正确类型, 接口逻辑错误类型 } from './interface-logic'

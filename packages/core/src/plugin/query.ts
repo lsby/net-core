@@ -12,7 +12,7 @@ export class GET参数解析插件<Result extends z.AnyZodObject> extends 插件
 
   public constructor(t: Result) {
     super(z.object({ query: t }), async (req, _res, 附加参数) => {
-      let log = 附加参数.log.extend('GET参数解析插件')
+      let log = 附加参数.log.extend(GET参数解析插件.name)
 
       await log.debug('准备解析 GET 参数：%o', JSON.stringify(递归截断字符串(req.query)))
       let parseResult = t.safeParse(req.query)

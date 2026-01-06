@@ -43,7 +43,8 @@ export class WebSocket插件<
           .or(z.null()),
       }),
       async (req, _res, 附加参数) => {
-        let log = 附加参数.log.extend('webSocket插件')
+        let log = 附加参数.log.extend(WebSocket插件.name)
+
         let WebSocket管理器 = 附加参数.webSocket管理器
         let ws句柄: WebSocket | null = null
 

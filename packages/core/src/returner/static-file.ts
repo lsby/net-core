@@ -3,17 +3,8 @@ import type { Request, Response } from 'express'
 import { readFile } from 'node:fs/promises'
 import { z } from 'zod'
 import { 接口返回器 } from '../interface/interface-returner'
-import { 请求附加参数类型 } from '../server/server'
+import { 请求附加参数类型 } from '../types/types'
 
-/**
- * ### 静态文件返回器
- *
- * 用于返回静态文件的返回器
- * 支持自定义:
- * - MIME类型映射
- * - 缓存配置
- * - 自动文件读取（接收完整文件路径）
- */
 export class 静态文件返回器 extends 接口返回器<string, { filePath: string }, z.ZodAny, z.ZodAny> {
   private MIME类型映射: Map<string, string>
   private 缓存控制: string | undefined
@@ -56,7 +47,7 @@ export class 静态文件返回器 extends 接口返回器<string, { filePath: s
     数据: Either<string, { filePath: string }>,
     请求附加参数: 请求附加参数类型,
   ): Promise<void> {
-    let log = 请求附加参数.log
+    let log = 请求附加参数.log.extend(静态文件返回器.name)
 
     if (数据.getTag() === 'Left') {
       // 处理错误情况

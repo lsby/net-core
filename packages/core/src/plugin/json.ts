@@ -13,7 +13,7 @@ export class JSON参数解析插件<Result extends z.AnyZodObject> extends 插�
 
   public constructor(t: Result, opt: Parameters<typeof express.json>[0]) {
     super(z.object({ body: t }), async (req, res, 附加参数) => {
-      let log = 附加参数.log.extend('JSON参数解析插件')
+      let log = 附加参数.log.extend(JSON参数解析插件.name)
 
       await new Promise((pRes, _rej) =>
         express.json(opt)(req, res, () => {

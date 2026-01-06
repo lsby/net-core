@@ -1,5 +1,10 @@
 // =========
 // 值计算
+
+import { 全局日志单例 } from '../global/log'
+import { 全局WebSocket管理器单例 } from '../global/web-socket'
+import { 请求附加参数类型 } from '../types/types'
+
 // =========
 export function 构造元组<T extends any[]>(args: [...T]): T {
   return args
@@ -40,6 +45,12 @@ export function 普通对象深合并(target: Record<any, any>, source: Record<a
     }
   }
   return result
+}
+
+export let 默认请求附加参数: 请求附加参数类型 = {
+  log: 全局日志单例,
+  请求id: '',
+  webSocket管理器: 全局WebSocket管理器单例,
 }
 
 // =========

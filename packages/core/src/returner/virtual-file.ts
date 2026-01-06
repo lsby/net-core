@@ -2,17 +2,8 @@ import { Either } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
 import { z } from 'zod'
 import { 接口返回器 } from '../interface/interface-returner'
-import { 请求附加参数类型 } from '../server/server'
+import { 请求附加参数类型 } from '../types/types'
 
-/**
- * ### 虚拟文件返回器
- *
- * 用于返回虚拟文件（内存中生成的文件）
- * 接口逻辑直接提供文件内容和MIME类型
- * 支持自定义:
- * - 缓存配置
- * - 错误处理
- */
 export class 虚拟文件返回器 extends 接口返回器<
   string,
   { fileContent: string | Buffer; MIMEType: string },
@@ -39,7 +30,7 @@ export class 虚拟文件返回器 extends 接口返回器<
     数据: Either<string, { fileContent: string | Buffer; MIMEType: string }>,
     请求附加参数: 请求附加参数类型,
   ): void {
-    let log = 请求附加参数.log
+    let log = 请求附加参数.log.extend(虚拟文件返回器.name)
 
     if (数据.getTag() === 'Left') {
       // 处理错误情况

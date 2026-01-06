@@ -4,7 +4,7 @@ import { Readable } from 'node:stream'
 import { z } from 'zod'
 import { 递归截断字符串 } from '../help/interior'
 import { 接口返回器 } from '../interface/interface-returner'
-import { 请求附加参数类型 } from '../server/server'
+import { 请求附加参数类型 } from '../types/types'
 
 export class 文件下载返回器<
   实现错误类型Zod extends z.ZodTypeAny,
@@ -36,7 +36,8 @@ export class 文件下载返回器<
     数据: Either<z.infer<实现错误类型Zod>, z.infer<实现正确类型Zod>>,
     请求附加参数: 请求附加参数类型,
   ): void {
-    let log = 请求附加参数.log
+    let log = 请求附加参数.log.extend(文件下载返回器.name)
+
     switch (数据.getTag()) {
       case 'Left': {
         let 实际数据 = 数据.assertLeft().getLeft()
