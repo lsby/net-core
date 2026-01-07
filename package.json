@@ -2,6 +2,10 @@
   "name": "@lsby/net-core-monorepo",
   "version": "0.12.3",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lsby/net-core.git"
+  },
   "type": "module",
   "scripts": {
     "build": "pnpm -r --filter=@lsby/net-core run _build:all",
