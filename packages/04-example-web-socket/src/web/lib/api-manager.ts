@@ -11,10 +11,15 @@ type 找接口<
     : 找接口<P, method, Rest>
   : never
 type 取http输入<I> = I extends { input: infer 输入 } ? 输入 : never
-type 取http输出<I> = I extends { successOutput: infer 输出 } ? 输出 : never
+type 取http错误输出<I> = I extends { errorOutput: infer 输出 } ? 输出 : never
+type 取http正确输出<I> = I extends { successOutput: infer 输出 } ? 输出 : never
 type 取ws输出<I> = I extends { wsOutput: infer 输出 } ? 输出 : never
 type 取ws输入<I> = I extends { wsInput: infer 输入 } ? 输入 : never
-type 所有路径 = InterfaceType[number]['path']
+type 所有POST路径 = InterfaceType extends readonly (infer Item)[]
+  ? Item extends { method: 'post'; path: infer P }
+    ? P
+    : never
+  : never
 
 export class API管理器 {
   private 生成id(): string {
@@ -25,7 +30,7 @@ export class API管理器 {
     })
   }
 
-  public async post请求<P extends 所有路径>(
+  public async post请求<P extends 所有POST路径>(
     路径: P,
     数据: 取http输入<找接口<P, 'post'>>,
     ws选项?: {
@@ -34,7 +39,7 @@ export class API管理器 {
       关闭回调?: (事件: CloseEvent) => Promise<void>
       错误回调?: (事件: Event) => Promise<void>
     },
-  ): Promise<取http输出<找接口<P, 'post'>>> {
+  ): Promise<取http错误输出<找接口<P, 'post'>> | 取http正确输出<找接口<P, 'post'>>> {
     try {
       let wsid = this.生成id()
       let 请求头: Record<string, string> = { 'Content-Type': 'application/json' }
@@ -82,7 +87,7 @@ export class API管理器 {
       // 3. WebSocket连接建立后，再发送HTTP请求
       let 响应 = await fetch(路径, { method: 'POST', headers: 请求头, body: JSON.stringify(数据) })
 
-      return (await 响应.json()) as 取http输出<找接口<P, 'post'>>
+      return await 响应.json()
     } catch (错误) {
       throw new Error(`请求失败: ${错误 instanceof Error ? 错误.message : String(错误)}`)
     }
