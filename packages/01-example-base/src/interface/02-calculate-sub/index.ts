@@ -31,7 +31,7 @@ let 接口逻辑实现 = 接口逻辑.构造(
     // 复用其他接口逻辑
     // 调用时, 需要传入原来由插件提供的参数, 这是有类型检查的
     // 调用结果是 Either, 需要按左右值讨论
-    let 调用结果 = await 加法接口.实现({ body: { a: a, b: b * -1 } }, 逻辑附加参数, 请求附加参数)
+    let 调用结果 = await 加法接口.调用({ body: { a: a, b: b * -1 } }, 逻辑附加参数, 请求附加参数)
     if (调用结果.isLeft()) return new Left('调用接口失败' as const)
     let 调用右值 = 调用结果.assertRight().getRight().result
 

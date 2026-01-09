@@ -10,9 +10,9 @@ let 乘以二 = 组合逻辑.获得最后接口()
 let 参数解析逻辑和加五逻辑 = 组合逻辑.获得上游接口()
 let 加五 = 参数解析逻辑和加五逻辑.获得最后接口()
 
-let data1 = await 乘以二.实现({}, { value: 3 }, 默认请求附加参数)
-let data2 = await 加五.实现({}, { value: 10 }, 默认请求附加参数)
-let data3 = await 加五.绑定(乘以二).实现({}, { value: 1 }, 默认请求附加参数)
+let data1 = await 乘以二.调用({}, { value: 3 }, 默认请求附加参数)
+let data2 = await 加五.调用({}, { value: 10 }, 默认请求附加参数)
+let data3 = await 加五.绑定(乘以二).调用({}, { value: 1 }, 默认请求附加参数)
 
 console.log(data1) // Right 6
 console.log(data2) // Right 15

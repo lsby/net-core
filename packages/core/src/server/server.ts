@@ -105,7 +105,7 @@ export class 服务器 {
     await log.debug('插件 执行完毕')
 
     await log.debug('准备执行接口实现...')
-    let 接口结果 = await 接口逻辑.通过插件结果运行(插件结果, {}, 请求附加参数)
+    let 接口结果 = await 接口逻辑.调用(插件结果, {}, 请求附加参数)
     await log.debug('接口实现执行完毕')
 
     let 接口耗时 = Date.now() - 开始

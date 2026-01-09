@@ -186,7 +186,7 @@ export abstract class 接口逻辑Base<
   ): Promise<Either<错误类型, 正确类型>>
   public 获得清理函数?(): 清理函数类型<插件类型, 逻辑附加参数类型> | undefined
 
-  public async 通过插件结果运行(
+  public async 调用(
     合并插件结果: 合并插件结果<插件类型>,
     传入的逻辑附加参数: 逻辑附加参数类型,
     传入的请求附加参数: 请求附加参数类型,
@@ -217,7 +217,7 @@ export abstract class 接口逻辑Base<
     传入的插件附加参数: 请求附加参数类型,
   ): Promise<Either<错误类型, 正确类型>> {
     let 合并插件结果 = await this.计算插件结果(req, res, 传入的插件附加参数)
-    return this.通过插件结果运行(合并插件结果, 传入的逻辑附加参数, 传入的插件附加参数)
+    return this.调用(合并插件结果, 传入的逻辑附加参数, 传入的插件附加参数)
   }
 
   public 绑定<
