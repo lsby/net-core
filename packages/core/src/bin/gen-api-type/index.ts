@@ -53,6 +53,7 @@ import {
   取第一个WS插件输出,
   合并GET插件结果,
   合并JSON插件结果,
+  合并表单插件结果,
   获得接口方法类型,
   获得接口路径类型,
   获得接口返回器接口正确类型,
@@ -68,6 +69,7 @@ type jsonMethod = 获得接口方法类型<typeof 导入>
 type 是否为正则 = jsonPath extends RegExp ? true : false
 type getInput = 合并GET插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
 type jsonInput = 合并JSON插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
+type formInput = 合并表单插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
 type jsonErrorOutput = 获得接口返回器接口错误类型<获得接口返回器类型<typeof 导入>>
 type jsonSuccessOutput = 获得接口返回器接口正确类型<获得接口返回器类型<typeof 导入>>
 type wsInput = 取第一个WS插件输入<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
@@ -90,17 +92,22 @@ type JSON接口计算结果 = 是否为正则 extends true
                         input: jsonMethod extends 'post'
                           ? 'body' extends keyof jsonInput
                             ? jsonInput['body']
-                            : {}
+                            : 'form' extends keyof formInput
+                              ? formInput['form']
+                              : {}
                           : jsonMethod extends 'get'
                             ? 'query' extends keyof getInput
                               ? getInput['query']
-                              : {}
+                              : 'form' extends keyof formInput
+                                ? formInput['form']
+                                : {}
                             : {}
                         errorOutput: jsonErrorOutput
                         successOutput: jsonSuccessOutput
                         wsOutput: wsOutput
                         wsInput: wsInput
                       }
+                    : never
                   : never
                 : never
               : never
@@ -108,7 +115,6 @@ type JSON接口计算结果 = 是否为正则 extends true
           : never
         : never
       : never
-    : never
 
 type 导出类型名称 = GetNetCoreExportTypeName<导入>
 type 导出类型定义 = GetNetCoreExportTypeDefine<导入>
