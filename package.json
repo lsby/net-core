@@ -11,7 +11,7 @@
     "check:all": "pnpm -r run _check:all",
     "gen:all": "pnpm -r run _gen:all",
     "prepare": "husky",
-    "publish:core": "pnpm --filter=@lsby/net-core run publish"
+    "publish:core": "pnpm --filter=@lsby/net-core run public:npm"
   },
   "devDependencies": {
     "husky": "^9.1.7"

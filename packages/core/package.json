@@ -26,7 +26,7 @@
     "_check:all": "npm run _check:format && npm run _check:lint",
     "_check:format": "prettier --write .",
     "_check:lint": "eslint . --fix",
-    "publish": "npm run _build:all && bumpp && npm publish"
+    "public:npm": "npm run _build:all && bumpp && npm publish"
   },
   "dependencies": {
     "commander": "^12.1.0",
