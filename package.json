@@ -1,6 +1,5 @@
 {
   "name": "@lsby/net-core-monorepo",
-  "version": "0.12.3",
   "private": true,
   "repository": {
     "type": "git",
@@ -11,7 +10,8 @@
     "build": "pnpm -r --filter=@lsby/net-core run _build:all",
     "check:all": "pnpm -r run _check:all",
     "gen:all": "pnpm -r run _gen:all",
-    "prepare": "husky"
+    "prepare": "husky",
+    "publish:core": "pnpm --filter=@lsby/net-core run publish"
   },
   "devDependencies": {
     "husky": "^9.1.7"

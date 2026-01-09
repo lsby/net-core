@@ -1,65 +1,76 @@
 # Net-Core
 
-一个基于 TypeScript 的强类型后端框架
+一个基于 TypeScript 的**强类型**、**函数式**后端框架。
 
-> **代码即文档**: 本框架不提供文字文档, 所有用法均通过代码示例与类型定义呈现
+> **代码即文档**: 本框架不提供文字文档，精确的类型定义和自解释的代码才是最好的说明书。
 
-## 核心特性
+## 🎯 核心特性
 
-**极致的类型安全与纯函数设计**
+- **🛡️ 极致的类型安全**: 深度集成 Zod。从请求参数(Params/Body/Query)到响应结果，全程享受 TypeScript 自动推导的类型保护，彻底消除 "Type Lie"。
+- **🧩 模块化架构**: 将后端逻辑严格拆分为 **插件(Plugin)**、**业务逻辑(Logic)** 和 **返回器(Returner)**。结构清晰，职责单一，拒绝大面条代码。
+- **🔍 无隐式上下文**: 告别传统中间件 "偷偷挂载属性" 的黑盒魔法。插件产生的数据必须通过类型明确传递，数据来源一目了然。
+- **λ 函数式编程体验**: 采用 `Either` 模式处理错误，强制显式处理异常分支。支持类 Monad 的逻辑组合(`.绑定()`)，让复杂业务像搭积木一样简单且健壮。
+- **🤖 自动化工程**: 内置 CLI 工具链，自动生成 API 索引、Swagger 风格的类型定义、以及单元测试脚手架，告别繁琐的样板代码。
+- **🧪 测试优先**: 业务逻辑与 HTTP 传输层解耦，支持 Co-location 测试策略。提供标准化的测试工具，只需关注"输入"与"预期"，极大降低测试成本。
+- **📦 逻辑可移植**: 业务逻辑是纯粹的计算单元，不绑定特定 Web 框架对象（如 express req/res），这意味着核心逻辑可以轻松移植或在不同场景复用。
 
-- TypeScript 类型系统全覆盖: 从 HTTP 请求到业务逻辑再到客户端, 完整的类型链路, 编译时发现绝大多数错误
-- 副作用隔离: 插件负责副作用操作, 业务逻辑保持纯函数, 极大提升可测试性和可维护性
+## 📂 代码结构
 
-**灵活的逻辑复用架构**
+本仓库采用 Monorepo 结构：
 
-- 一套代码, 多种使用方式: 同一份业务逻辑既可作为 HTTP 接口, 也可作为纯函数被其他模块调用
-- 代数效应链式组合: 支持将通用能力(如鉴权、缓存、限流)按 Monad 模式堆叠, 实现跨项目零成本复用
+### 核心库
 
-**统一的网络能力**
+- **[core](./packages/core)**: 框架的本体实现，包含了服务器、插件系统、逻辑运行时及自动化工具。
 
-- HTTP 与 WebSocket 无缝融合: WebSocket 作为一类特殊的插件存在, 与 HTTP 接口共用业务逻辑层, 复用已有代码
-- 多协议统一管道: 同一个业务逻辑可同时服务多个网络接口
+### 学习路径
 
-**开发效率工具链**
+请按顺序阅读以下示例，逐步掌握框架使用：
 
-- 自动化代码生成: API 索引、TypeScript 定义、单元测试框架自动生成, 文档与代码永不失同步
-- 代码即文档哲学: 通过严密的类型定义和示例代码呈现所有用法
+1.  **[01-example-base](./packages/01-example-base)**: 核心概念入门。学习如何定义一个最基本的接口，理解“插件”、“逻辑”、“返回器”的协作。
+2.  **[02-example-plugins](./packages/02-example-plugins)**: 插件系统详解。学习如何使用内置插件（如 JSON解析）以及如何编写自定义插件。
+3.  **[03-example-logic-composition](./packages/03-example-logic-composition)**: 进阶业务编排。学习如何复用逻辑单元，使用 `.绑定()` 串联复杂的业务流程。
+4.  **[04-example-web-socket](./packages/04-example-web-socket)**: WebSocket 机制示例。
+5.  **[05-example-test](./packages/05-example-test)**: 单元测试机制。学习如何使用框架提供的工具进行高效测试。
+6.  **[06-example-complex-type-export](./packages/06-example-complex-type-export)**: 复杂类型系统的导出方法。
 
-## 代码结构
+## 🚀 快速开始
 
-本仓库是一个 monorepo 包:
+### 1. 环境准备
 
-- core包: 框架的本体实现
-- example开头的包: 示例, 请按前缀数字阅读
+确保已安装 `pnpm`。
 
-## 快速开始
+### 2. 编译核心
 
-先编译核心包:
+在使用示例前，需要先构建核心库：
 
-```base
+```bash
 cd packages/core
 pnpm i
 npm run _build:all
 ```
 
-然后依次尝试以下示例包, 每个包都可以独立运行:
+### 3. 运行示例
 
-- 核心概念与基本用法: [01-example-base](./packages/01-example-base)
-- 内置插件和自定义插件: [02-example-plugins](./packages/02-example-plugins), 所有内置插件见[源码](./packages/core/src/plugin)
-- 业务逻辑的组合与复用: [03-example-logic-composition](./packages/03-example-logic-composition)
-- ws机制: [04-example-web-socket](./packages/04-example-web-socket)
-- 测试机制: [05-example-test](./packages/05-example-test)
-- 复杂类型导出: [06-example-complex-type-export](./packages/06-example-complex-type-export)
+进入任意示例目录（例如 `packages/01-example-base`），运行开发命令：
 
-更多示例和实际应用, 可以参考我的个人[项目模板](https://github.com/lsby/playground-ts-service)
+```bash
+cd packages/01-example-base
+pnpm dev
+# 你的接口现在运行在 http://localhost:3000
+```
 
-## 自动化工具链
+## 🏗️ 生产级实战
 
-框架内置了一些命令行工具:
+**如果你想看如何在生产环境中使用本框架, 构建大型应用（包含 全局状态, 数据库集成, 文件上传, JWT 鉴权, WebSocket 机制应用, CRUD 组合器 等）, 请参考作者的完全体项目模版:**
 
-- lsby-net-core-gen-api-list: 从代码生成接口索引
-- lsby-net-core-gen-api-type: 从代码生成接口类型
-- lsby-net-core-gen-test: 从代码生成单元测试
+👉 **[lsby/playground-ts-service](https://github.com/lsby/playground-ts-service)**
+
+## 🛠️ 自动化工具链
+
+框架由以下内置 CLI 工具驱动效率：
+
+- `lsby-net-core-gen-api-list`: 自动扫描代码，生成 API 路由索引。
+- `lsby-net-core-gen-api-type`: 自动扫描代码，生成前端可用的 TypeScript 类型定义。
+- `lsby-net-core-gen-test`: 自动扫描代码，生成单元测试脚手架。
 
 在不同的示例中, 会将这些命令编写为 npm 命令, 请查看示例中的 package.json 来了解详情

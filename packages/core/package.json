@@ -25,7 +25,8 @@
     "_build:esm": "tsup src/**/*.ts --external typescript --format esm --clean --dts -d dist/esm",
     "_check:all": "npm run _check:format && npm run _check:lint",
     "_check:format": "prettier --write .",
-    "_check:lint": "eslint . --fix"
+    "_check:lint": "eslint . --fix",
+    "publish": "npm run _build:all && bumpp && pnpm publish"
   },
   "dependencies": {
     "commander": "^12.1.0",
