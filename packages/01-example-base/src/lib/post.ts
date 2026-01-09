@@ -19,9 +19,13 @@ type 所有POST路径 = InterfaceType extends readonly (infer Item)[]
   : never
 
 export async function post<P extends 所有POST路径>(
-  路径: P,
-  数据: 取http输入<找接口<P, 'post'>>,
+  path: P,
+  data: 取http输入<找接口<P, 'post'>>,
 ): Promise<取http错误输出<找接口<P, 'post'>> | 取http正确输出<找接口<P, 'post'>>> {
-  let 响应 = await fetch(路径, { method: 'POST', body: JSON.stringify(数据) })
+  let 响应 = await fetch('http://127.0.0.1:3000' + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
   return await 响应.json()
 }

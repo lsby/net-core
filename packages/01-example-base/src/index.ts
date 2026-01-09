@@ -26,3 +26,4 @@ console.log(
 console.log('5. 浏览器访问 http://localhost:3000/api/download-file?filename=test.txt')
 console.log('6. 浏览器访问 http://localhost:3000/static/index.ts')
 console.log('7. 浏览器访问 http://localhost:3000/virtual/demo.html')
+console.log('8. 查看和执行 src/lib/test.ts, 体验类型安全的接口调用')
