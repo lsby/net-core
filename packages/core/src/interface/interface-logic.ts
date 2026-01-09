@@ -2,10 +2,10 @@ import { Either, Right } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
 import { 普通对象深合并 } from '../help/help'
 import { 联合转元组 } from '../help/interior'
-import { 空对象, 请求附加参数类型 } from '../types/types'
+import { 插件执行失败结果, 空对象, 请求附加参数类型 } from '../types/types'
 import type { 接口 } from './interface-base'
 import type { 插件 } from './interface-plugin'
-import { 合并插件结果, 插件项类型 } from './interface-plugin'
+import { 取插件组错误联合类型, 合并插件结果, 插件项类型 } from './interface-plugin'
 
 export type 清理函数类型<插件类型 extends 插件项类型[], 逻辑附加参数类型 extends 接口逻辑附加参数类型> = (
   参数: 合并插件结果<插件类型>,
@@ -166,16 +166,18 @@ export abstract class 接口逻辑Base<
     req: Request,
     res: Response,
     请求附加参数: 请求附加参数类型,
-  ): Promise<合并插件结果<插件类型>> {
+  ): Promise<Either<插件执行失败结果<取插件组错误联合类型<插件类型>>, 合并插件结果<插件类型>>> {
     let 插件们 = this.获得插件们()
     let 所有插件结果: Record<string, any>[] = []
+
     for (let 插件 of 插件们) {
       let 插件返回 = await 插件.运行(req, res, 请求附加参数)
-      所有插件结果.push(插件返回)
+      if (插件返回.isLeft()) return 插件返回 as any
+      所有插件结果.push(插件返回.assertRight().getRight())
     }
-    let 合并结果 = 所有插件结果.reduce((s, a) => 普通对象深合并(s, a), {})
 
-    return 合并结果 as 合并插件结果<插件类型>
+    let 合并结果 = 所有插件结果.reduce((s, a) => 普通对象深合并(s, a), {})
+    return new Right(合并结果 as any)
   }
 
   public abstract 获得插件们(): [...插件类型]
@@ -209,15 +211,6 @@ export abstract class 接口逻辑Base<
         await 清理函数(合并插件结果 as any, 上层绑定结果, 传入的请求附加参数)
       }
     }
-  }
-  public async 运行(
-    req: Request,
-    res: Response,
-    传入的逻辑附加参数: 逻辑附加参数类型,
-    传入的插件附加参数: 请求附加参数类型,
-  ): Promise<Either<错误类型, 正确类型>> {
-    let 合并插件结果 = await this.计算插件结果(req, res, 传入的插件附加参数)
-    return this.调用(合并插件结果, 传入的逻辑附加参数, 传入的插件附加参数)
   }
 
   public 绑定<

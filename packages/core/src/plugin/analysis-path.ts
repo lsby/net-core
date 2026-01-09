@@ -1,3 +1,4 @@
+import { Right } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
 import path from 'node:path'
 import { z } from 'zod'
@@ -6,6 +7,7 @@ import { 插件 } from '../interface/interface-plugin'
 import { 请求附加参数类型 } from '../types/types'
 
 export class 路径解析插件 extends 插件<
+  never,
   z.ZodObject<{ path: z.ZodObject<{ rawPath: z.ZodString; dir: z.ZodString; file: z.ZodString; ext: z.ZodString }> }>
 > {
   public constructor() {
@@ -25,7 +27,7 @@ export class 路径解析插件 extends 插件<
 
         await log.debug('解析后的路径: %o', JSON.stringify(递归截断字符串(parsedPath)))
 
-        return { path: parsedPath }
+        return new Right({ path: parsedPath })
       },
     )
   }

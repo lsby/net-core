@@ -1,3 +1,4 @@
+import { Right } from '@lsby/ts-fp-data'
 import { WebSocket } from 'ws'
 import { z } from 'zod'
 import { 集线器监听器持有者 } from '../global/model/hub'
@@ -7,6 +8,7 @@ export class WebSocket插件<
   后推前信息 extends z.AnyZodObject | z.ZodNever | z.ZodUnion<any>,
   前推后信息 extends z.AnyZodObject | z.ZodNever | z.ZodUnion<any>,
 > extends 插件<
+  never,
   z.ZodObject<{
     ws操作: z.ZodUnion<
       [
@@ -52,11 +54,11 @@ export class WebSocket插件<
         await log.debug('检查头信息', { wsId })
         if (typeof wsId !== 'string') {
           await log.error('未能获取到有效的 WebSocket Id')
-          return { ws操作: null }
+          return new Right({ ws操作: null })
         }
         await log.debug('已获得 WebSocket Id: %o', wsId)
 
-        return {
+        return new Right({
           ws操作: {
             async 发送ws信息(信息: 后推前信息): Promise<void> {
               if (ws句柄 === null) {
@@ -110,7 +112,7 @@ export class WebSocket插件<
               return WebSocket管理器.设置消息监听(wsId, 回调函数)
             },
           },
-        }
+        })
       },
     )
   }

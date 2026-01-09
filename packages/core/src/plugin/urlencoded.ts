@@ -1,3 +1,4 @@
+import { Left, Right } from '@lsby/ts-fp-data'
 import express from 'express'
 import { format } from 'node:util'
 import { z } from 'zod'
@@ -8,7 +9,10 @@ import { 取插件内部类型, 插件, 插件项类型 } from '../interface/int
 
 const 烙印: unique symbol = Symbol()
 
-export class 表单参数解析插件<Result extends z.AnyZodObject> extends 插件<z.ZodObject<{ form: Result }>> {
+export class 表单参数解析插件<Result extends z.AnyZodObject> extends 插件<
+  { status: 'error'; code: 400; message: string },
+  z.ZodObject<{ form: Result }>
+> {
   private [烙印] = ['表单参数解析插件']
 
   public constructor(t: Result, opt: Parameters<typeof express.urlencoded>[0]) {
@@ -26,11 +30,18 @@ export class 表单参数解析插件<Result extends z.AnyZodObject> extends 插
 
       if (parseResult.success === false) {
         await log.error('解析表单数据失败：%o', JSON.stringify(parseResult.error))
-        throw new Error(format('解析表单数据失败: %o', JSON.stringify(parseResult.error)))
+        return new Left({
+          status: 400,
+          data: {
+            status: 'error',
+            code: 400,
+            message: format('解析表单数据失败: %o', JSON.stringify(parseResult.error)),
+          },
+        })
       }
 
       await log.debug('成功解析表单数据')
-      return { form: parseResult.data }
+      return new Right({ form: parseResult.data })
     })
   }
 }

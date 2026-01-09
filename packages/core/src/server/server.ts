@@ -23,6 +23,8 @@ export class 服务器 {
   private 日志回调?: 日志回调类型 | undefined
   private 接口们: 任意接口[]
   private 端口: number
+  private 动态路由表: 任意接口[] = []
+  private 静态路由表 = new Map<string, 任意接口[]>()
 
   public constructor(options: { 接口们: 任意接口[]; 端口: number; 日志回调?: 日志回调类型 }) {
     this.接口们 = options.接口们
@@ -30,6 +32,17 @@ export class 服务器 {
     this.日志回调 = options.日志回调
     this.log = 全局日志单例
     if (this.日志回调 !== void 0) this.log = this.log.pipe(this.日志回调)
+
+    for (let 接口 of this.接口们) {
+      let 路径 = 接口.获得路径() as string | RegExp
+      if (typeof 路径 === 'string') {
+        let 列表 = this.静态路由表.get(路径) ?? []
+        列表.push(接口)
+        this.静态路由表.set(路径, 列表)
+        continue
+      }
+      this.动态路由表.push(接口)
+    }
   }
 
   public async run(): Promise<{
@@ -61,7 +74,16 @@ export class 服务器 {
       await log.debug('收到请求, 路径: %o, 方法: %o', 请求路径, 请求方法)
 
       // 匹配接口
-      let 目标接口 = this.接口们.find((接口) => 请求方法 === 接口.获得方法() && 接口.匹配路径(请求路径)) ?? null
+      let 目标接口: 任意接口 | null = null
+
+      let 静态候选项 = this.静态路由表.get(请求路径)
+      if (静态候选项 !== void 0) {
+        目标接口 = 静态候选项.find((接口) => 请求方法 === 接口.获得方法()) ?? null
+      }
+      if (目标接口 === null) {
+        目标接口 = this.动态路由表.find((接口) => 请求方法 === 接口.获得方法() && 接口.匹配路径(请求路径)) ?? null
+      }
+
       if (目标接口 !== null) {
         await this.处理接口逻辑({ req, res, 目标接口, 请求附加参数 })
         return
@@ -101,7 +123,14 @@ export class 服务器 {
     let 插件们 = 接口逻辑.获得插件们()
 
     await log.debug('找到 %o 个 插件, 准备执行...', 插件们.length)
-    let 插件结果 = await 接口逻辑.计算插件结果(req, res, 请求附加参数)
+    let 插件结果E = await 接口逻辑.计算插件结果(req, res, 请求附加参数)
+    if (插件结果E.isLeft()) {
+      let error = 插件结果E.assertLeft().getLeft()
+      await log.warn('插件执行拒绝: %d %o', error.status, error.data)
+      res.status(error.status).send(error.data)
+      return
+    }
+    let 插件结果 = 插件结果E.assertRight().getRight()
     await log.debug('插件 执行完毕')
 
     await log.debug('准备执行接口实现...')

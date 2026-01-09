@@ -1,3 +1,4 @@
+import { Left, Right } from '@lsby/ts-fp-data'
 import { format } from 'node:util'
 import { z } from 'zod'
 import { 严格递归合并对象 } from '../help/help'
@@ -7,7 +8,10 @@ import { 取插件内部类型, 插件, 插件项类型 } from '../interface/int
 
 const 烙印: unique symbol = Symbol()
 
-export class GET参数解析插件<Result extends z.AnyZodObject> extends 插件<z.ZodObject<{ query: Result }>> {
+export class GET参数解析插件<Result extends z.AnyZodObject> extends 插件<
+  { status: 'error'; code: 400; message: string },
+  z.ZodObject<{ query: Result }>
+> {
   private [烙印] = ['GET参数解析插件']
 
   public constructor(t: Result) {
@@ -19,11 +23,18 @@ export class GET参数解析插件<Result extends z.AnyZodObject> extends 插件
 
       if (parseResult.success === false) {
         await log.error('解析 GET 参数失败：%o', JSON.stringify(parseResult.error))
-        throw new Error(format('解析 GET 参数失败: %o', JSON.stringify(parseResult.error)))
+        return new Left({
+          status: 400,
+          data: {
+            status: 'error',
+            code: 400,
+            message: format('解析 GET 参数失败: %o', JSON.stringify(parseResult.error)),
+          },
+        })
       }
 
       await log.debug('成功解析 GET 参数')
-      return { query: parseResult.data }
+      return new Right({ query: parseResult.data })
     })
   }
 }
