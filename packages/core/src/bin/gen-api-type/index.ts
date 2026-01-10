@@ -218,6 +218,7 @@ type 导出类型定义 = GetNetCoreExportTypeDefine<导入>
     `// 该文件由脚本自动生成, 请勿修改.`,
     ...最终结果_导出类型,
     `export type InterfaceType = [${最终结果_JSON.join(',')}]`,
+    '',
   ]
 
   await log.debug('最终代码生成完成')

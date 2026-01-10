@@ -1,21 +1,2 @@
 // 该文件由脚本自动生成, 请勿修改.
-export type InterfaceType = [
-  {
-    path: '/api/calculate-add'
-    method: 'post'
-    input: { json: { a: number; b: number }; query: never; urlencoded: never }
-    errorOutput: { status: 'fail'; data: never }
-    successOutput: { status: 'success'; data: { result: number } }
-    wsOutput: {}
-    wsInput: {}
-  },
-  {
-    path: '/api/raw-express'
-    method: 'post'
-    input: { json: never; query: never; urlencoded: never }
-    errorOutput: any
-    successOutput: any
-    wsOutput: {}
-    wsInput: {}
-  },
-]
+export type InterfaceType = [{ path: "/api/calculate-add"; method: "post"; input: { json: { a: number; b: number; }; query: never; urlencoded: never; }; errorOutput: { status: "fail"; data: never; }; successOutput: { status: "success"; data: { result: number; }; }; wsOutput: {}; wsInput: {}; },{ path: "/api/raw-express"; method: "post"; input: { json: never; query: never; urlencoded: never; }; errorOutput: any; successOutput: any; wsOutput: {}; wsInput: {}; }]

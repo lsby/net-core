@@ -60,6 +60,7 @@
 5.  **[05-example-test](./packages/05-example-test)**: 单元测试机制。学习如何使用框架提供的工具进行高效测试。
 6.  **[06-example-complex-type-export](./packages/06-example-complex-type-export)**: 复杂类型系统的导出方法。
 7.  **[07-example-express-compatibility](./packages/07-example-express-compatibility)**: Express 兼容性示例。学习如何包装 Express 中间件，复用现有生态，实现完全的 Express 兼容模式。
+8.  **[08-example-cors](./packages/08-example-cors)**: cors 示例。学习如何通过框架的方式实现 cors。
 
 ## 🚀 快速开始
 
