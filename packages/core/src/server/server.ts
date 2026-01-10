@@ -12,6 +12,8 @@ import { 任意接口逻辑 } from '../interface/interface-logic'
 import { 任意接口返回器 } from '../interface/interface-returner'
 import { 请求附加参数类型 } from '../types/types'
 
+type 路径 = string
+type 方法 = string
 export type 日志回调类型 = (
   level: 'trace' | 'debug' | 'info' | 'warn' | 'error',
   namespace: string,
@@ -24,7 +26,7 @@ export class 服务器 {
   private 接口们: 任意接口[]
   private 端口: number
   private 动态路由表: 任意接口[] = []
-  private 静态路由表 = new Map<string, 任意接口[]>()
+  private 静态路由表 = new Map<路径, Map<方法, 任意接口>>()
 
   public constructor(options: { 接口们: 任意接口[]; 端口: number; 日志回调?: 日志回调类型 }) {
     this.接口们 = options.接口们
@@ -36,9 +38,10 @@ export class 服务器 {
     for (let 接口 of this.接口们) {
       let 路径 = 接口.获得路径() as string | RegExp
       if (typeof 路径 === 'string') {
-        let 列表 = this.静态路由表.get(路径) ?? []
-        列表.push(接口)
-        this.静态路由表.set(路径, 列表)
+        let 方法 = 接口.获得方法() as string
+        let 方法表 = this.静态路由表.get(路径) ?? new Map<string, 任意接口>()
+        方法表.set(方法, 接口)
+        this.静态路由表.set(路径, 方法表)
         continue
       }
       this.动态路由表.push(接口)
@@ -76,10 +79,13 @@ export class 服务器 {
       // 匹配接口
       let 目标接口: 任意接口 | null = null
 
-      let 静态候选项 = this.静态路由表.get(请求路径)
-      if (静态候选项 !== void 0) {
-        目标接口 = 静态候选项.find((接口) => 请求方法 === 接口.获得方法()) ?? null
+      // 先尝试静态路由（路径 + 方法精确匹配）
+      let 方法表 = this.静态路由表.get(请求路径)
+      if (方法表 !== void 0) {
+        目标接口 = 方法表.get(请求方法) ?? null
       }
+
+      // 再尝试动态路由（正则路径 + 方法匹配）
       if (目标接口 === null) {
         目标接口 = this.动态路由表.find((接口) => 请求方法 === 接口.获得方法() && 接口.匹配路径(请求路径)) ?? null
       }

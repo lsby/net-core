@@ -8,7 +8,7 @@ import {
 } from './interface-returner'
 
 export type 接口路径类型 = string | RegExp
-export type 接口方法类型 = 'get' | 'post'
+export type 接口方法类型 = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'head' | 'options'
 
 /**
  * ### 接口
