@@ -10,7 +10,7 @@ type 找接口<
     ? F
     : 找接口<P, method, Rest>
   : never
-type 取http输入<I> = I extends { input: infer 输入 } ? 输入 : never
+type 取JSON输入<I> = I extends { input: { json: infer 输入 } } ? 输入 : never
 type 取http错误输出<I> = I extends { errorOutput: infer 输出 } ? 输出 : never
 type 取http正确输出<I> = I extends { successOutput: infer 输出 } ? 输出 : never
 type 取ws输出<I> = I extends { wsOutput: infer 输出 } ? 输出 : never
@@ -32,7 +32,7 @@ export class API管理器 {
 
   public async post请求<P extends 所有POST路径>(
     路径: P,
-    数据: 取http输入<找接口<P, 'post'>>,
+    数据: 取JSON输入<找接口<P, 'post'>>,
     ws选项?: {
       连接回调?: (发送消息: (数据: 取ws输入<找接口<P, 'post'>>) => void, ws句柄: WebSocket) => Promise<void>
       信息回调?: (数据: 取ws输出<找接口<P, 'post'>>) => Promise<void>

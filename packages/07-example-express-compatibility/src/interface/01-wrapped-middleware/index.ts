@@ -18,14 +18,14 @@ let json解析中间件 = express.json({})
 let 错误类型描述 = z.object({ code: z.literal(400), data: z.string() })
 export class 我的JSON解析插件<Result extends z.AnyZodObject> extends 插件<
   typeof 错误类型描述,
-  z.ZodObject<{ body: Result }>
+  z.ZodObject<{ json: Result }>
 > {
   public constructor(t: Result) {
     // 构造函数的参数是:
     // - 错误类型zod对象
     // - 正确类型zod对象
     // - 逻辑实现函数
-    super(错误类型描述, z.object({ body: t }), async (req, res, 附加参数) => {
+    super(错误类型描述, z.object({ json: t }), async (req, res, 附加参数) => {
       let log = 附加参数.log.extend(我的JSON解析插件.name)
 
       // express中间件通常会将数据挂在req上供下游使用
@@ -44,7 +44,7 @@ export class 我的JSON解析插件<Result extends z.AnyZodObject> extends 插�
       }
 
       await log.debug('成功解析 JSON 参数')
-      return new Right({ body: parseResult.data })
+      return new Right({ json: parseResult.data })
     })
   }
 }
@@ -55,7 +55,7 @@ let 接口方法 = 'post' as const
 let 接口逻辑实现 = 接口逻辑.构造(
   [new 我的JSON解析插件(z.object({ a: z.number(), b: z.number() }))],
   async (参数, _逻辑附加参数, _请求附加参数) => {
-    let { a, b } = 参数.body
+    let { a, b } = 参数.json
     return new Right({ result: a + b })
   },
 )

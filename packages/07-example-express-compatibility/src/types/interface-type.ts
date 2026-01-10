@@ -3,7 +3,7 @@ export type InterfaceType = [
   {
     path: '/api/calculate-add'
     method: 'post'
-    input: { a: number; b: number }
+    input: { json: { a: number; b: number }; query: never; urlencoded: never }
     errorOutput: { status: 'fail'; data: never }
     successOutput: { status: 'success'; data: { result: number } }
     wsOutput: {}
@@ -12,7 +12,7 @@ export type InterfaceType = [
   {
     path: '/api/raw-express'
     method: 'post'
-    input: {}
+    input: { json: never; query: never; urlencoded: never }
     errorOutput: any
     successOutput: any
     wsOutput: {}

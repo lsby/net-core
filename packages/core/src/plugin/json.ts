@@ -11,10 +11,10 @@ let 错误类型描述 = z.object({ code: z.literal(400), data: z.string() })
 
 export class JSON参数解析插件<Result extends z.AnyZodObject> extends 插件<
   typeof 错误类型描述,
-  z.ZodObject<{ body: Result }>
+  z.ZodObject<{ json: Result }>
 > {
   public constructor(t: Result, opt: Parameters<typeof express.json>[0]) {
-    super(错误类型描述, z.object({ body: t }), async (req, res, 附加参数) => {
+    super(错误类型描述, z.object({ json: t }), async (req, res, 附加参数) => {
       let log = 附加参数.log.extend(JSON参数解析插件.name)
 
       await new Promise((pRes, _rej) =>
@@ -32,7 +32,7 @@ export class JSON参数解析插件<Result extends z.AnyZodObject> extends 插�
       }
 
       await log.debug('成功解析 JSON 参数')
-      return new Right({ body: parseResult.data })
+      return new Right({ json: parseResult.data })
     })
   }
 }
@@ -45,7 +45,7 @@ export type 合并JSON插件结果<Arr extends Array<任意插件>> = Arr extend
     ? x extends infer 插件项
       ? xs extends Array<任意插件>
         ? 插件项 extends 任意JSON参数解析插件项
-          ? 严格递归合并对象<{ body: 取插件正确ts类型<插件项>['body'] }, 合并JSON插件结果<xs>>
+          ? 严格递归合并对象<{ json: 取插件正确ts类型<插件项>['json'] }, 合并JSON插件结果<xs>>
           : 合并JSON插件结果<xs>
         : {}
       : {}

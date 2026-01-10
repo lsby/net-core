@@ -17,8 +17,8 @@ let 接口逻辑实现 = 接口逻辑.构造(
   async (参数, _逻辑附加参数, 请求附加参数) => {
     let log = 请求附加参数.log
 
-    // 参数.body 是类型安全的
-    let { x, y } = 参数.body
+    // 参数.json 是类型安全的
+    let { x, y } = 参数.json
     await log.info('收到 JSON 请求: x=%d, y=%d', x, y)
 
     return new Right({ result: x + y })

@@ -1,9 +1,9 @@
 import {
-  GET参数解析插件,
+  Query参数解析插件,
   接口,
   接口逻辑,
   自定义接口返回器,
-  计算接口逻辑GET参数,
+  计算接口逻辑Query参数,
   计算接口逻辑正确结果,
   计算接口逻辑错误结果,
 } from '@lsby/net-core'
@@ -14,7 +14,7 @@ import { z } from 'zod'
 // 纯字符串接口
 // =======================
 // 这个示例演示了:
-// - 如何编写 GET 接口
+// - 如何编写 Query 接口
 // - 如何表示接口出错
 // - 如何使用自定义接口返回器
 // - 如何返回纯字符串而不是 JSON 结构
@@ -24,7 +24,7 @@ let 接口路径 = '/api/pure-string' as const
 let 接口方法 = 'get' as const
 
 let 接口逻辑实现 = 接口逻辑.构造(
-  [new GET参数解析插件(z.object({ name: z.string() }))],
+  [new Query参数解析插件(z.object({ name: z.string() }))],
   async (参数, _逻辑附加参数, _请求附加参数) => {
     // 参数.query 是类型安全的
     let { name } = 参数.query
@@ -37,8 +37,8 @@ let 接口逻辑实现 = 接口逻辑.构造(
   },
 )
 
-// GET 参数也可以被计算
-type _接口逻辑GET参数 = 计算接口逻辑GET参数<typeof 接口逻辑实现>
+// Query 参数也可以被计算
+type _接口逻辑Query参数 = 计算接口逻辑Query参数<typeof 接口逻辑实现>
 type _接口逻辑错误返回 = 计算接口逻辑错误结果<typeof 接口逻辑实现>
 type _接口逻辑正确返回 = 计算接口逻辑正确结果<typeof 接口逻辑实现>
 

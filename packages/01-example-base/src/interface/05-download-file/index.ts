@@ -1,4 +1,4 @@
-import { GET参数解析插件, 接口, 接口逻辑, 文件下载返回器 } from '@lsby/net-core'
+import { Query参数解析插件, 接口, 接口逻辑, 文件下载返回器 } from '@lsby/net-core'
 import { Right } from '@lsby/ts-fp-data'
 import { Readable } from 'stream'
 import { z } from 'zod'
@@ -13,7 +13,7 @@ let 接口路径 = '/api/download-file' as const
 let 接口方法 = 'get' as const
 
 let 接口逻辑实现 = 接口逻辑.构造(
-  [new GET参数解析插件(z.object({ filename: z.string() }))],
+  [new Query参数解析插件(z.object({ filename: z.string() }))],
   async (参数, _逻辑附加参数, _请求附加参数) => {
     let { filename } = 参数.query
 

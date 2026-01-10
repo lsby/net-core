@@ -60,7 +60,7 @@ let 接口逻辑实现 = 接口逻辑.构造(
     // await ws操作.设置清理函数(async () => {})
 
     // 同时可以返回正常的HTTP响应
-    return new Right({ result: 参数.body.a + 参数.body.b })
+    return new Right({ result: 参数.json.a + 参数.json.b })
   },
   // 接口逻辑是有第三个参数的, 是一个清理函数, 参数是当前接口逻辑的上下文
   // 当接口逻辑抛出错误或返回后, 清理函数就会执行

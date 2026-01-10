@@ -1,9 +1,9 @@
-import { 常用接口返回器, 接口, 接口逻辑, 表单参数解析插件 } from '@lsby/net-core'
+import { UrlEncoded参数解析插件, 常用接口返回器, 接口, 接口逻辑 } from '@lsby/net-core'
 import { Right } from '@lsby/ts-fp-data'
 import { z } from 'zod'
 
 // =======================
-// 表单参数解析插件示例
+// UrlEncoded参数解析插件示例
 // =======================
 // 该插件用于解析请求的 application/x-www-form-urlencoded 格式的数据
 // 这是 HTML 表单的默认提交格式
@@ -13,9 +13,14 @@ let 接口路径 = '/api/plugins/form' as const
 let 接口方法 = 'post' as const
 
 let 接口逻辑实现 = 接口逻辑.构造(
-  [new 表单参数解析插件(z.object({ username: z.string(), email: z.string().email(), age: z.coerce.number() }), {})],
+  [
+    new UrlEncoded参数解析插件(
+      z.object({ username: z.string(), email: z.string().email(), age: z.coerce.number() }),
+      {},
+    ),
+  ],
   async (参数, _逻辑附加参数, _请求附加参数) => {
-    let { username, email, age } = 参数.form
+    let { username, email, age } = 参数.urlencoded
     return new Right({ userId: 123, message: `欢迎 ${username}`, userInfo: { username, email, age } })
   },
 )

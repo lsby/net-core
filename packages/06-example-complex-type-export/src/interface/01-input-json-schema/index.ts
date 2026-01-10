@@ -36,7 +36,7 @@ let 接口逻辑实现 = 接口逻辑.空逻辑().绑定(
     [new JSON参数解析插件(z.object({ data: ObjectSchemaZod }), {})],
     async (参数, 附加参数, 请求附加参数) => {
       let log = 请求附加参数.log.extend(接口路径)
-      await log.debug('收到的数据: %o', 参数.body)
+      await log.debug('收到的数据: %o', 参数.json)
       return new Right({})
     },
   ),

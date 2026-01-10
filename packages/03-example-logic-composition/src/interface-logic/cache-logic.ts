@@ -40,7 +40,7 @@ export class 缓存逻辑<输入类型Zod extends z.AnyZodObject, 结果类型Zo
 
     await log.info('开始缓存逻辑处理')
 
-    let 缓存键 = JSON.stringify(参数.body)
+    let 缓存键 = JSON.stringify(参数.json)
 
     await log.debug(`缓存键: ${缓存键}`)
 
@@ -50,8 +50,8 @@ export class 缓存逻辑<输入类型Zod extends z.AnyZodObject, 结果类型Zo
       this.缓存池.set(缓存键, { 数据, 过期时间 })
     }
 
-    let body = 参数.body
-    if (body === void 0) {
+    let json = 参数.json
+    if (json === void 0) {
       await log.info('请求体为空，返回空缓存')
       return new Right({ 设置缓存, 缓存数据: null })
     }

@@ -1,4 +1,4 @@
-import { GET参数解析插件, JSON参数解析插件, 常用接口返回器, 接口, 接口逻辑 } from '@lsby/net-core'
+import { JSON参数解析插件, Query参数解析插件, 常用接口返回器, 接口, 接口逻辑 } from '@lsby/net-core'
 import { Right } from '@lsby/ts-fp-data'
 import { z } from 'zod'
 
@@ -13,7 +13,7 @@ let 接口方法 = 'post' as const
 
 let 接口逻辑实现 = 接口逻辑.构造(
   [
-    new GET参数解析插件(z.object({ name: z.string().default('World') })),
+    new Query参数解析插件(z.object({ name: z.string().default('World') })),
     new JSON参数解析插件(z.object({ message: z.string() }), {}),
   ],
   async (参数, _逻辑附加参数, 请求附加参数) => {
@@ -21,7 +21,7 @@ let 接口逻辑实现 = 接口逻辑.构造(
 
     // 参数同时包含 query 和 body 两个字段
     let { name } = 参数.query
-    let { message } = 参数.body
+    let { message } = 参数.json
 
     await log.info('query.name=%s, body.message=%s', name, message)
 

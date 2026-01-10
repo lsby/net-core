@@ -21,7 +21,7 @@ let 组合逻辑 = 接口逻辑
       [new JSON参数解析插件(z.object({ 商品id: z.string(), 用户id: z.string(), 地区: z.string() }), {})],
       async (参数, _逻辑附加参数, 请求附加参数) => {
         let 日志 = 请求附加参数.log
-        let { 商品id, 用户id, 地区 } = 参数.body
+        let { 商品id, 用户id, 地区 } = 参数.json
 
         await 日志.info('订单初始化: 用户id=%s, 商品id=%s, 地区=%s', 用户id, 商品id, 地区)
 

@@ -100,7 +100,7 @@ let 接口逻辑实现 = 接口逻辑
       if (逻辑附加参数.缓存数据 !== null) return new Right({ 用户数据: 逻辑附加参数.缓存数据 })
 
       // 否则, 读取数据
-      let { userId } = 参数.body
+      let { userId } = 参数.json
 
       // 模拟用户数据库
       let 用户库: Record<string, 用户信息类型> = {

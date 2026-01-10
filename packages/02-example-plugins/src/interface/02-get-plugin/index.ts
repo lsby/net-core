@@ -1,11 +1,11 @@
-import { GET参数解析插件, 常用接口返回器, 接口, 接口逻辑 } from '@lsby/net-core'
+import { Query参数解析插件, 常用接口返回器, 接口, 接口逻辑 } from '@lsby/net-core'
 import { Right } from '@lsby/ts-fp-data'
 import { z } from 'zod'
 
 // =======================
-// GET 参数解析插件示例
+// Query 参数解析插件示例
 // =======================
-// 该插件用于解析 GET 请求的 URL 查询参数
+// 该插件用于解析 Query 请求的 URL 查询参数
 // 例如: /api/plugins/get?keyword=hello&limit=10
 // 验证失败时自动返回兜底错误, 在日志中打印具体信息
 
@@ -14,7 +14,7 @@ let 接口方法 = 'get' as const
 
 let 接口逻辑实现 = 接口逻辑.构造(
   [
-    new GET参数解析插件(
+    new Query参数解析插件(
       z.object({ keyword: z.string(), limit: z.coerce.number().default(10), offset: z.coerce.number().default(0) }),
     ),
   ],

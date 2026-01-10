@@ -32,13 +32,13 @@ let 接口路径 = '/api/composition/simple' as const
 let 接口方法 = 'post' as const
 
 // 第一个接口逻辑
-// 这个接口逻辑的行为是, 获得 body 参数, 打印日志, 并直接返回参数
+// 这个接口逻辑的行为是, 获得 json 参数, 打印日志, 并直接返回参数
 let 参数解析逻辑 = 接口逻辑.构造(
   [new JSON参数解析插件(z.object({ x: z.number() }), {})],
   async (参数, _逻辑附加参数, 请求附加参数) => {
     let log = 请求附加参数.log
 
-    let { x } = 参数.body
+    let { x } = 参数.json
     await log.info('获取参数: x=%d', x)
 
     // 正确结果必须用对象返回, 这是为了能在组合时合并结果

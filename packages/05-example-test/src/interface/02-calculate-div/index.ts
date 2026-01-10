@@ -17,7 +17,7 @@ let 接口逻辑实现 = 接口逻辑.空逻辑().绑定(
   接口逻辑.构造(
     [new JSON参数解析插件(z.object({ a: z.number(), b: z.number() }), {})],
     async (参数, _逻辑附加参数, _请求附加参数) => {
-      let { a, b } = 参数.body
+      let { a, b } = 参数.json
       if (b === 0) return new Left('除数不能为0' as const)
       return new Right({ result: a / b })
     },
