@@ -126,8 +126,8 @@ export class 服务器 {
     let 插件结果E = await 接口逻辑.计算插件结果(req, res, 请求附加参数)
     if (插件结果E.isLeft()) {
       let error = 插件结果E.assertLeft().getLeft()
-      await log.warn('插件执行拒绝: %d %o', error.status, error.data)
-      res.status(error.status).send(error.data)
+      await log.warn('插件执行拒绝: %d %o', error.code, error.data)
+      res.status(error.code).send(error.data)
       return
     }
     let 插件结果 = 插件结果E.assertRight().getRight()

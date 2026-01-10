@@ -2,13 +2,13 @@ import { Either, Right } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
 import { 普通对象深合并 } from '../help/help'
 import { 联合转元组 } from '../help/interior'
-import { 插件执行失败结果, 空对象, 请求附加参数类型 } from '../types/types'
+import { 空对象, 请求附加参数类型 } from '../types/types'
 import type { 接口 } from './interface-base'
 import type { 插件 } from './interface-plugin'
-import { 取插件组错误联合类型, 合并插件结果, 插件项类型 } from './interface-plugin'
+import { 任意插件, 合并插件正确结果 } from './interface-plugin'
 
-export type 清理函数类型<插件类型 extends 插件项类型[], 逻辑附加参数类型 extends 接口逻辑附加参数类型> = (
-  参数: 合并插件结果<插件类型>,
+export type 清理函数类型<插件类型 extends 任意插件[], 逻辑附加参数类型 extends 接口逻辑附加参数类型> = (
+  参数: 合并插件正确结果<插件类型>,
   逻辑附加参数: 逻辑附加参数类型,
   请求附加参数: 请求附加参数类型,
 ) => Promise<void>
@@ -91,7 +91,7 @@ export type 接口逻辑附加参数类型 = Record<string, any>
  * - 业务逻辑可以保持是纯的, 非常方便独立测试
  */
 export abstract class 接口逻辑Base<
-  插件类型 extends 插件项类型[],
+  插件类型 extends 任意插件[],
   in 逻辑附加参数类型 extends 接口逻辑附加参数类型,
   错误类型 extends 接口逻辑错误类型,
   正确类型 extends 接口逻辑正确类型,
@@ -103,7 +103,7 @@ export abstract class 接口逻辑Base<
   }
 
   public static 完整构造<
-    插件类型 extends 插件项类型[],
+    插件类型 extends 任意插件[],
     逻辑附加参数类型 extends 接口逻辑附加参数类型,
     错误类型 extends 接口逻辑错误类型,
     返回类型 extends 接口逻辑正确类型,
@@ -112,7 +112,7 @@ export abstract class 接口逻辑Base<
   >(
     插件们: [...插件类型],
     实现: (
-      参数: 合并插件结果<插件类型>,
+      参数: 合并插件正确结果<插件类型>,
       逻辑附加参数: 逻辑附加参数类型,
       请求附加参数: 请求附加参数类型,
     ) => Promise<Either<错误类型, 返回类型>>,
@@ -128,7 +128,7 @@ export abstract class 接口逻辑Base<
         return 插件们
       }
       public override 实现(
-        参数: 合并插件结果<插件类型>,
+        参数: 合并插件正确结果<插件类型>,
         逻辑附加参数: 逻辑附加参数类型,
         请求附加参数: 请求附加参数类型,
       ): Promise<Either<错误类型, 返回类型>> {
@@ -138,14 +138,14 @@ export abstract class 接口逻辑Base<
   }
 
   public static 构造<
-    插件类型 extends 插件项类型[],
+    插件类型 extends 任意插件[],
     逻辑附加参数类型 extends 接口逻辑附加参数类型,
     错误类型 extends 接口逻辑错误类型,
     返回类型 extends 接口逻辑正确类型,
   >(
     插件们: [...插件类型],
     实现: (
-      参数: 合并插件结果<插件类型>,
+      参数: 合并插件正确结果<插件类型>,
       逻辑附加参数: 逻辑附加参数类型,
       请求附加参数: 请求附加参数类型,
     ) => Promise<Either<错误类型, 返回类型>>,
@@ -166,7 +166,7 @@ export abstract class 接口逻辑Base<
     req: Request,
     res: Response,
     请求附加参数: 请求附加参数类型,
-  ): Promise<Either<插件执行失败结果<取插件组错误联合类型<插件类型>>, 合并插件结果<插件类型>>> {
+  ): Promise<Either<{ code: number; data: any }, 合并插件正确结果<插件类型>>> {
     let 插件们 = this.获得插件们()
     let 所有插件结果: Record<string, any>[] = []
 
@@ -182,14 +182,14 @@ export abstract class 接口逻辑Base<
 
   public abstract 获得插件们(): [...插件类型]
   public abstract 实现(
-    参数: 合并插件结果<插件类型>,
+    参数: 合并插件正确结果<插件类型>,
     逻辑附加参数: 逻辑附加参数类型,
     请求附加参数: 请求附加参数类型,
   ): Promise<Either<错误类型, 正确类型>>
   public 获得清理函数?(): 清理函数类型<插件类型, 逻辑附加参数类型> | undefined
 
   public async 调用(
-    合并插件结果: 合并插件结果<插件类型>,
+    合并插件结果: 合并插件正确结果<插件类型>,
     传入的逻辑附加参数: 逻辑附加参数类型,
     传入的请求附加参数: 请求附加参数类型,
   ): Promise<Either<错误类型, 正确类型>> {
@@ -214,7 +214,7 @@ export abstract class 接口逻辑Base<
   }
 
   public 绑定<
-    输入的插件类型 extends 插件项类型[],
+    输入的插件类型 extends 任意插件[],
     输入的错误类型 extends 接口逻辑错误类型,
     输入的返回类型 extends 接口逻辑正确类型,
     输入的上游接口逻辑类型 extends 任意接口逻辑 | null,
@@ -242,7 +242,7 @@ export abstract class 接口逻辑Base<
     let 合并清理: 清理函数类型<[...插件类型, ...输入的插件类型], 逻辑附加参数类型> | undefined = void 0
     if (上清理 !== void 0 && 下清理 !== void 0) {
       合并清理 = async (
-        参数: 合并插件结果<[...插件类型, ...输入的插件类型]>,
+        参数: 合并插件正确结果<[...插件类型, ...输入的插件类型]>,
         逻辑附加参数: 逻辑附加参数类型,
         请求附加参数: 请求附加参数类型,
       ): Promise<void> => {
@@ -251,7 +251,7 @@ export abstract class 接口逻辑Base<
       }
     } else if (上清理 !== void 0) {
       合并清理 = async (
-        参数: 合并插件结果<[...插件类型, ...输入的插件类型]>,
+        参数: 合并插件正确结果<[...插件类型, ...输入的插件类型]>,
         逻辑附加参数: 逻辑附加参数类型,
         请求附加参数: 请求附加参数类型,
       ): Promise<void> => {
@@ -259,7 +259,7 @@ export abstract class 接口逻辑Base<
       }
     } else if (下清理 !== void 0) {
       合并清理 = async (
-        参数: 合并插件结果<[...插件类型, ...输入的插件类型]>,
+        参数: 合并插件正确结果<[...插件类型, ...输入的插件类型]>,
         逻辑附加参数: 逻辑附加参数类型,
         请求附加参数: 请求附加参数类型,
       ): Promise<void> => {
@@ -298,7 +298,7 @@ export abstract class 接口逻辑Base<
  * 详情见 {@link 接口逻辑Base}
  */
 export abstract class 接口逻辑<
-  插件类型 extends 插件项类型[],
+  插件类型 extends 任意插件[],
   逻辑附加参数类型 extends 接口逻辑附加参数类型,
   错误类型 extends 接口逻辑错误类型,
   正确类型 extends 接口逻辑正确类型,
@@ -316,7 +316,7 @@ export type 获得接口逻辑正确类型<A> = A extends 接口逻辑Base<any, 
 export type 获得接口逻辑上游接口类型<A> = A extends 接口逻辑Base<any, any, any, any, infer X, any> ? X : never
 export type 获得接口逻辑最后接口类型<A> = A extends 接口逻辑Base<any, any, any, any, any, infer X> ? X : never
 
-export type 计算接口逻辑参数<接口逻辑> = 合并插件结果<获得接口逻辑插件类型<接口逻辑>>
+export type 计算接口逻辑参数<接口逻辑> = 合并插件正确结果<获得接口逻辑插件类型<接口逻辑>>
 export type 计算接口逻辑错误结果<接口逻辑> = 联合转元组<获得接口逻辑错误类型<接口逻辑>>
 export type 计算接口逻辑正确结果<接口逻辑> = {
   [k in keyof 获得接口逻辑正确类型<接口逻辑>]: 获得接口逻辑正确类型<接口逻辑>[k]

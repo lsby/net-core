@@ -2,13 +2,15 @@ import { Right } from '@lsby/ts-fp-data'
 import { WebSocket } from 'ws'
 import { z } from 'zod'
 import { 集线器监听器持有者 } from '../global/model/hub'
-import { 插件, 插件项类型 } from '../interface/interface-plugin'
+import { 任意插件, 插件 } from '../interface/interface-plugin'
+
+let 错误类型描述 = z.never()
 
 export class WebSocket插件<
   后推前信息 extends z.AnyZodObject | z.ZodNever | z.ZodUnion<any>,
   前推后信息 extends z.AnyZodObject | z.ZodNever | z.ZodUnion<any>,
 > extends 插件<
-  never,
+  typeof 错误类型描述,
   z.ZodObject<{
     ws操作: z.ZodUnion<
       [
@@ -31,6 +33,7 @@ export class WebSocket插件<
 > {
   public constructor(后推前信息描述: 后推前信息, 前推后信息描述: 前推后信息, wsKey: string = 'ws-client-id') {
     super(
+      错误类型描述,
       z.object({
         ws操作: z
           .object({
@@ -121,22 +124,22 @@ export class WebSocket插件<
 export type 任意WS插件 = WebSocket插件<any, any>
 export type 任意WS插件项 = 任意WS插件
 export type 取WS插件泛型<A> = A extends WebSocket插件<infer x, infer y> ? [x, y] : never
-export type 取第一个WS插件输出<Arr extends Array<插件项类型>> = Arr extends []
+export type 取第一个WS插件输出<Arr extends Array<任意插件>> = Arr extends []
   ? {}
   : Arr extends [infer x, ...infer xs]
     ? x extends infer 插件项
-      ? xs extends Array<插件项类型>
+      ? xs extends Array<任意插件>
         ? 插件项 extends 任意WS插件项
           ? z.infer<取WS插件泛型<插件项>[0]>
           : 取第一个WS插件输出<xs>
         : {}
       : {}
     : {}
-export type 取第一个WS插件输入<Arr extends Array<插件项类型>> = Arr extends []
+export type 取第一个WS插件输入<Arr extends Array<任意插件>> = Arr extends []
   ? {}
   : Arr extends [infer x, ...infer xs]
     ? x extends infer 插件项
-      ? xs extends Array<插件项类型>
+      ? xs extends Array<任意插件>
         ? 插件项 extends 任意WS插件项
           ? z.infer<取WS插件泛型<插件项>[1]>
           : 取第一个WS插件输入<xs>

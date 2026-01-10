@@ -10,4 +10,3 @@ export type 递归基本类型 = 基本类型 | { [k: PropertyKey]: 递归基本
 export type 可序列化类型 = 基本类型 | { [k: string]: 可序列化类型 } | Array<可序列化类型>
 
 export type 请求附加参数类型 = { log: Log; 请求id: string; webSocket管理器: WebSocket管理器 }
-export type 插件执行失败结果<T> = { status: number; data: T }

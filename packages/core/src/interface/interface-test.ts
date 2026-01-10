@@ -46,7 +46,7 @@ export class 接口测试<接口类型 extends 任意接口, 预期结果类型 
     }
   }
 }
-export type 任意的接口测试 = 接口测试<any, any>
+export type 任意接口测试 = 接口测试<any, any>
 
 export class 接口逻辑测试 {
   public constructor(
