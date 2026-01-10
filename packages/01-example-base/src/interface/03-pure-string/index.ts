@@ -60,6 +60,6 @@ export default new 接口(
   new 自定义接口返回器(接口错误类型描述, 接口正确类型描述, z.string(), z.string(), (req, res, data) => {
     if (data.isLeft() === true) return res.send(data.assertLeft().getLeft())
     res.setHeader('Content-Type', 'text/plain')
-    return res.send(data.assertRight().getRight())
+    return res.send(data.assertRight().getRight().data)
   }),
 )
