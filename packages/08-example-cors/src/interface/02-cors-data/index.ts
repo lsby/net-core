@@ -25,6 +25,11 @@ let 接口返回器 = new 常用接口返回器(
     status: z.string(),
     data: z.object({ items: z.array(z.object({ id: z.number(), name: z.string() })), timestamp: z.string() }),
   }),
+  {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  },
 )
 
 export default new 接口(接口路径, 接口方法, 接口逻辑实现, 接口返回器)

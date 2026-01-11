@@ -17,6 +17,7 @@ export class 常用接口返回器<
   public constructor(
     private 实现错误类型Zod: 实现错误类型Zod,
     private 实现正确类型Zod: 实现正确类型Zod,
+    private 自定义返回头?: Record<string, string>,
   ) {
     super()
   }
@@ -35,6 +36,12 @@ export class 常用接口返回器<
     请求附加参数: 请求附加参数类型,
   ): void {
     let log = 请求附加参数.log.extend(常用接口返回器.name)
+
+    if (this.自定义返回头 !== void 0) {
+      for (let [key, value] of Object.entries(this.自定义返回头)) {
+        res.setHeader(key, value)
+      }
+    }
 
     switch (数据.getTag()) {
       case 'Left': {

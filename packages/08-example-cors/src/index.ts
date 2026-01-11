@@ -4,9 +4,9 @@ import { interfaceApiList } from './interface/interface-list'
 import { CORS选项返回器 } from './lib/cors'
 
 // 创建服务器实例
-// 注意: CORS OPTIONS 接口（接口00）应该排在最前面，确保它首先被匹配
 let 服务 = new 服务器({
   接口们: [
+    // cors排在最前面, 处理options
     new 接口(
       /.*/,
       'options',
