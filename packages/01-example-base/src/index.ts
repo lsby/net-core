@@ -17,7 +17,7 @@ console.log(
   '1. curl -X POST http://localhost:3000/api/calculate-add -H "Content-Type: application/json" -d \'{"a": 1, "b": 2}\'',
 )
 console.log(
-  '2. curl -X POST http://localhost:3000/api/calculate-sub -H "Content-Type: application/json" -d \'{"a": 2, "b": 1}\'',
+  '2. curl -X POST http://localhost:3000/api/calculate-sub -H "Content-Type: application/json" -d \'{"x": 2, "y": 1}\'',
 )
 console.log('3. 浏览器访问 http://localhost:3000/api/pure-string?name=world')
 console.log(

@@ -23,16 +23,16 @@ let 接口路径 = '/api/form-submit' as const
 let 接口方法 = 'post' as const
 
 let 接口逻辑实现 = 接口逻辑.构造(
-  [new UrlEncoded参数解析插件(z.object({ username: z.string(), email: z.string(), age: z.coerce.number() }), {})],
+  [new UrlEncoded参数解析插件(z.object({ username: z.string() }), {})],
   async (参数, _逻辑附加参数, _请求附加参数) => {
-    let { username, email, age } = 参数.urlencoded
+    let { username } = 参数.urlencoded
 
     // 模拟业务逻辑：检查用户名是否已存在
     if (username === 'admin') {
       return new Left('用户名已被占用' as const)
     }
 
-    return new Right({ data: { userId: 123, message: `欢迎 ${username}`, userInfo: { username, email, age } } })
+    return new Right({ userId: 123, message: `hello ${username}` })
   },
 )
 
@@ -42,13 +42,7 @@ type _接口逻辑错误返回 = 计算接口逻辑错误结果<typeof 接口逻
 type _接口逻辑正确返回 = 计算接口逻辑正确结果<typeof 接口逻辑实现>
 
 let 接口错误类型描述 = z.enum(['用户名已被占用'])
-let 接口正确类型描述 = z.object({
-  data: z.object({
-    userId: z.number(),
-    message: z.string(),
-    userInfo: z.object({ username: z.string(), email: z.string(), age: z.number() }),
-  }),
-})
+let 接口正确类型描述 = z.object({ userId: z.number(), message: z.string() })
 
 let 接口返回器 = new 常用接口返回器(接口错误类型描述, 接口正确类型描述)
 

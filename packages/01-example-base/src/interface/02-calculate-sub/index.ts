@@ -24,18 +24,18 @@ let 接口方法 = 'post' as const
 
 // 接口逻辑实现
 let 接口逻辑实现 = 接口逻辑.构造(
-  [new JSON参数解析插件(z.object({ a: z.number(), b: z.number() }), {})],
+  [new JSON参数解析插件(z.object({ x: z.number(), y: z.number() }), {})],
   async (参数, 逻辑附加参数, 请求附加参数) => {
-    let { a, b } = 参数.json
+    let { x, y } = 参数.json
 
     // 复用其他接口逻辑
     // 调用时, 需要传入原来由插件提供的参数, 这是有类型检查的
     // 调用结果是 Either, 需要按左右值讨论
-    let 调用结果 = await 加法接口.调用({ json: { a: a, b: b * -1 } }, 逻辑附加参数, 请求附加参数)
+    let 调用结果 = await 加法接口.调用({ json: { a: x, b: y * -1 } }, 逻辑附加参数, 请求附加参数)
     if (调用结果.isLeft()) return new Left('调用接口失败' as const)
     let 调用右值 = 调用结果.assertRight().getRight().result
 
-    return new Right({ result: 调用右值 })
+    return new Right({ z: 调用右值 })
   },
 )
 
@@ -46,7 +46,7 @@ type _接口逻辑正确返回 = 计算接口逻辑正确结果<typeof 接口逻
 
 // 接口逻辑的错误值, 正确值定义
 let 接口错误类型描述 = z.enum(['调用接口失败'])
-let 接口正确类型描述 = z.object({ result: z.number() })
+let 接口正确类型描述 = z.object({ z: z.number() })
 
 // 接口返回器定义
 let 接口返回器 = new 常用接口返回器(接口错误类型描述, 接口正确类型描述)
