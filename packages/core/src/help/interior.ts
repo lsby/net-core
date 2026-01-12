@@ -15,7 +15,7 @@ export function 递归截断字符串(数据: any): any {
     let 新数据: Record<string, any> = {}
     for (let key in 数据) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      if (数据.hasOwnProperty(key) === true) 新数据[key] = 递归截断字符串(数据[key])
+      if (Object.prototype.hasOwnProperty.call(数据, key)) 新数据[key] = 递归截断字符串(数据[key])
     }
     return 新数据
   }
