@@ -6,7 +6,7 @@ import { 递归截断字符串 } from '../help/interior'
 import { 接口返回器 } from '../interface/interface-returner'
 import { 请求附加参数类型 } from '../types/types'
 
-export class 文件下载返回器<
+export class 文件流式下载返回器<
   实现错误类型Zod extends z.ZodTypeAny,
   实现正确类型Zod extends z.ZodObject<{
     data: z.ZodType<Readable>
@@ -36,7 +36,7 @@ export class 文件下载返回器<
     数据: Either<z.infer<实现错误类型Zod>, z.infer<实现正确类型Zod>>,
     请求附加参数: 请求附加参数类型,
   ): void {
-    let log = 请求附加参数.log.extend(文件下载返回器.name)
+    let log = 请求附加参数.log.extend(文件流式下载返回器.name)
 
     switch (数据.getTag()) {
       case 'Left': {

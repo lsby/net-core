@@ -6,6 +6,7 @@ export * from './interface/interface-plugin'
 export * from './interface/interface-returner'
 export * from './interface/interface-test'
 
+export * from './plugin/custom'
 export * from './plugin/custom-data'
 export * from './plugin/json'
 export * from './plugin/log-headers'
@@ -16,7 +17,7 @@ export * from './plugin/web-socket'
 
 export * from './returner/common'
 export * from './returner/custom'
-export * from './returner/file-download'
+export * from './returner/file-stream-download'
 export * from './returner/static-file'
 export * from './returner/virtual-file'
 

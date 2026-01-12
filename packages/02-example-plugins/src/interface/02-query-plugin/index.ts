@@ -7,7 +7,6 @@ import { z } from 'zod'
 // =======================
 // 该插件用于解析 Query 请求的 URL 查询参数
 // 例如: /api/plugins/get?keyword=hello&limit=10
-// 验证失败时自动返回兜底错误, 在日志中打印具体信息
 
 let 接口路径 = '/api/plugins/get' as const
 let 接口方法 = 'get' as const

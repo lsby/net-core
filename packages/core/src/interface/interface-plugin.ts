@@ -14,7 +14,7 @@ import type { 接口逻辑 } from './interface-logic'
  *   - 插件提供错误处理能力, 可以在插件中返回左值来拒绝请求, 此时, 服务器会直接返回错误信息, 不会进入后续逻辑
  */
 export class 插件<
-  错误结果 extends z.ZodObject<{ code: z.ZodLiteral<any>; data: z.ZodTypeAny }> | z.ZodNever,
+  错误结果 extends z.ZodObject<{ code: z.ZodLiteral<number>; data: z.ZodTypeAny }> | z.ZodNever,
   正确结果 extends z.AnyZodObject,
 > {
   declare protected readonly __类型保持符号?: [错误结果, 正确结果]

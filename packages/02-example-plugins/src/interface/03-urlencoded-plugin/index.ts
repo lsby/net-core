@@ -7,7 +7,6 @@ import { z } from 'zod'
 // =======================
 // 该插件用于解析请求的 application/x-www-form-urlencoded 格式的数据
 // 这是 HTML 表单的默认提交格式
-// 验证失败时自动返回兜底错误, 在日志中打印具体信息
 
 let 接口路径 = '/api/plugins/form' as const
 let 接口方法 = 'post' as const
