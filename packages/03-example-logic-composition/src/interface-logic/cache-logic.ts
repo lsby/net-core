@@ -3,8 +3,7 @@ import { Either, Right } from '@lsby/ts-fp-data'
 import { z } from 'zod'
 
 type 返回类型<结果类型Zod extends z.AnyZodObject> = {
-  设置缓存: (数据: z.infer<结果类型Zod>) => void
-  缓存数据: z.infer<结果类型Zod> | null
+  缓存组件: { 设置缓存: (数据: z.infer<结果类型Zod>) => void; 缓存数据: z.infer<结果类型Zod> | null }
 }
 
 // 这是一个通用的缓存接口逻辑, 写的很简单, 仅作为教学
@@ -53,14 +52,14 @@ export class 缓存逻辑<输入类型Zod extends z.AnyZodObject, 结果类型Zo
     let json = 参数.json
     if (json === void 0) {
       await log.info('请求体为空，返回空缓存')
-      return new Right({ 设置缓存, 缓存数据: null })
+      return new Right({ 缓存组件: { 设置缓存, 缓存数据: null } })
     }
 
     // 检查缓存是否存在
     let 缓存项 = this.缓存池.get(缓存键)
     if (缓存项 === void 0) {
       await log.info('缓存未命中')
-      return new Right({ 设置缓存, 缓存数据: null })
+      return new Right({ 缓存组件: { 设置缓存, 缓存数据: null } })
     }
 
     // 检查缓存是否过期
@@ -69,11 +68,12 @@ export class 缓存逻辑<输入类型Zod extends z.AnyZodObject, 结果类型Zo
       // 缓存已过期，删除它
       await log.info('缓存已过期，删除缓存')
       this.缓存池.delete(缓存键)
-      return new Right({ 设置缓存, 缓存数据: null })
+      return new Right({ 缓存组件: { 设置缓存, 缓存数据: null } })
     }
 
     // 缓存未过期，返回缓存数据
     await log.info('缓存命中，返回缓存数据')
-    return new Right({ 设置缓存, 缓存数据: 缓存项.数据 })
+    // 推荐每个"通用接口逻辑"都包装自己的命名空间, 避免冲突
+    return new Right({ 缓存组件: { 设置缓存, 缓存数据: 缓存项.数据 } })
   }
 }
