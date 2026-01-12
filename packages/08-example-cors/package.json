@@ -21,21 +21,22 @@
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
-    "@lsby/eslint-config": "^0.3.15",
-    "@lsby/eslint-plugin": "^0.0.30",
+    "@lsby/eslint-config": "^0.5.3",
+    "@lsby/eslint-plugin": "^0.2.1",
+    "@types/eslint": "^9.6.1",
     "@types/express": "^5.0.6",
-    "@types/node": "^25.0.3",
+    "@types/node": "^25.0.6",
     "cross-env": "^10.1.0",
-    "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-es": "^4.1.0",
-    "eslint-plugin-jsdoc": "^50.2.4",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsdoc": "^62.0.0",
     "eslint-plugin-sort-class-members": "^1.21.0",
     "prettier": "3.7.4",
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-packagejson": "^2.5.20",
     "tsx": "^4.21.0",
-    "typescript": "<5.6.0"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.52.0"
   },
   "packageManager": "pnpm@9.7.1"
 }
