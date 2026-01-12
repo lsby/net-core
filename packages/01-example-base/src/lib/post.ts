@@ -1,13 +1,9 @@
 import { InterfaceType } from '../types/interface-type'
 
-type 找接口<
-  P extends string,
-  method extends 'get' | 'post',
-  T extends readonly any[] = InterfaceType,
-> = T extends readonly [infer F, ...infer Rest]
-  ? F extends { path: P; method: method }
+type 找接口<P extends string, T extends readonly any[] = InterfaceType> = T extends readonly [infer F, ...infer Rest]
+  ? F extends { path: P }
     ? F
-    : 找接口<P, method, Rest>
+    : 找接口<P, Rest>
   : never
 type 取json输入<I> = I extends { input: { json: infer 输入 } } ? 输入 : never
 type 取urlencoded输入<I> = I extends { input: { urlencoded: infer 输入 } } ? 输入 : never
@@ -30,8 +26,8 @@ type 所有POST_Urlencoded路径 = InterfaceType extends readonly (infer Item)[]
 
 export async function postJson<P extends 所有POST_JSON路径>(
   path: P,
-  data: 取json输入<找接口<P, 'post'>>,
-): Promise<取http错误输出<找接口<P, 'post'>> | 取http正确输出<找接口<P, 'post'>>> {
+  data: 取json输入<找接口<P>>,
+): Promise<取http错误输出<找接口<P>> | 取http正确输出<找接口<P>>> {
   let 响应 = await fetch('http://127.0.0.1:3000' + path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -42,8 +38,8 @@ export async function postJson<P extends 所有POST_JSON路径>(
 
 export async function postUrlencoded<P extends 所有POST_Urlencoded路径>(
   path: P,
-  data: 取urlencoded输入<找接口<P, 'post'>>,
-): Promise<取http错误输出<找接口<P, 'post'>> | 取http正确输出<找接口<P, 'post'>>> {
+  data: 取urlencoded输入<找接口<P>>,
+): Promise<取http错误输出<找接口<P>> | 取http正确输出<找接口<P>>> {
   let 响应 = await fetch('http://127.0.0.1:3000' + path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

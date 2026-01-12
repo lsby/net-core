@@ -1,14 +1,10 @@
 import { InterfaceType } from '../../types/interface-type'
 import { parseURL } from './tools'
 
-type 找接口<
-  P extends string,
-  method extends 'get' | 'post',
-  T extends readonly any[] = InterfaceType,
-> = T extends readonly [infer F, ...infer Rest]
-  ? F extends { path: P; method: method }
+type 找接口<P extends string, T extends readonly any[] = InterfaceType> = T extends readonly [infer F, ...infer Rest]
+  ? F extends { path: P }
     ? F
-    : 找接口<P, method, Rest>
+    : 找接口<P, Rest>
   : never
 type 取JSON输入<I> = I extends { input: { json: infer 输入 } } ? 输入 : never
 type 取http错误输出<I> = I extends { errorOutput: infer 输出 } ? 输出 : never
@@ -32,14 +28,14 @@ export class API管理器 {
 
   public async post请求<P extends 所有POST路径>(
     路径: P,
-    数据: 取JSON输入<找接口<P, 'post'>>,
+    数据: 取JSON输入<找接口<P>>,
     ws选项?: {
-      连接回调?: (发送消息: (数据: 取ws输入<找接口<P, 'post'>>) => void, ws句柄: WebSocket) => Promise<void>
-      信息回调?: (数据: 取ws输出<找接口<P, 'post'>>) => Promise<void>
+      连接回调?: (发送消息: (数据: 取ws输入<找接口<P>>) => void, ws句柄: WebSocket) => Promise<void>
+      信息回调?: (数据: 取ws输出<找接口<P>>) => Promise<void>
       关闭回调?: (事件: CloseEvent) => Promise<void>
       错误回调?: (事件: Event) => Promise<void>
     },
-  ): Promise<取http错误输出<找接口<P, 'post'>> | 取http正确输出<找接口<P, 'post'>>> {
+  ): Promise<取http错误输出<找接口<P>> | 取http正确输出<找接口<P>>> {
     try {
       let wsid = this.生成id()
       let 请求头: Record<string, string> = { 'Content-Type': 'application/json' }
@@ -60,7 +56,7 @@ export class API管理器 {
         // 2. 等待WebSocket连接建立完成
         await new Promise<void>((res, rej): void => {
           ws句柄.onopen = async (): Promise<void> => {
-            let 发送消息 = (数据: 取ws输入<找接口<P, 'post'>>): void => {
+            let 发送消息 = (数据: 取ws输入<找接口<P>>): void => {
               ws句柄.send(JSON.stringify(数据))
             }
             await 连接回调函数?.(发送消息, ws句柄)
@@ -68,7 +64,7 @@ export class API管理器 {
           }
           ws句柄.onmessage = async (事件): Promise<void> => {
             try {
-              let 数据 = JSON.parse(事件.data) as 取ws输出<找接口<P, 'post'>>
+              let 数据 = JSON.parse(事件.data) as 取ws输出<找接口<P>>
               await 输出回调函数?.(数据)
             } catch (错误) {
               console.error(错误)
