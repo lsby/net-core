@@ -11,3 +11,9 @@ let 服务信息 = await 服务.run()
 console.log('服务器启动成功!')
 console.log('API列表:', 服务信息.api)
 console.log('服务器地址:', 服务信息.ip)
+console.log('===========================')
+console.log('测试方法:')
+console.log(
+  '1. curl -X POST http://localhost:3000/api/calculate-add -H "Content-Type: application/json" -d \'{"a": 1, "b": 2}\'',
+)
+console.log('2. 浏览器访问 http://localhost:3000/api/raw-express')

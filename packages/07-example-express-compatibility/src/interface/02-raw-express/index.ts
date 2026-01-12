@@ -9,11 +9,11 @@ import { z } from 'zod'
 
 export default new 接口(
   '/api/raw-express',
-  'post',
+  'get',
   接口逻辑.空逻辑(),
   new 自定义接口返回器(z.never(), z.object({}), z.any(), z.any(), (req, res) => {
     // 这里可以拿到原始的res/req, 可以做任何操作
     res.setHeader('Content-Type', 'text/plain')
-    res.send('你好世界')
+    res.send('hello, world')
   }),
 )
