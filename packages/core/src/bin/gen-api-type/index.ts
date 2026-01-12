@@ -54,6 +54,7 @@ import {
   合并Query插件结果,
   合并JSON插件结果,
   合并UrlEncoded参数解析插件结果,
+  计算接口逻辑Form参数,
   获得接口方法类型,
   获得接口路径类型,
   获得接口返回器接口正确类型,
@@ -69,7 +70,8 @@ type jsonMethod = 获得接口方法类型<typeof 导入>
 type 是否为正则 = jsonPath extends RegExp ? true : false
 type getInput = 合并Query插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
 type jsonInput = 合并JSON插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
-type formInput = 合并UrlEncoded参数解析插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
+type urlEncodedInput = 合并UrlEncoded参数解析插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
+type formDataInput = 计算接口逻辑Form参数<获得接口逻辑类型<typeof 导入>>
 type jsonErrorOutput = 获得接口返回器接口错误类型<获得接口返回器类型<typeof 导入>>
 type jsonSuccessOutput = 获得接口返回器接口正确类型<获得接口返回器类型<typeof 导入>>
 type wsInput = 取第一个WS插件输入<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
@@ -82,23 +84,28 @@ type JSON接口计算结果 = 是否为正则 extends true
       ? jsonMethod extends infer _
         ? getInput extends infer _
           ? jsonInput extends infer _
-            ? jsonErrorOutput extends infer _
-              ? jsonSuccessOutput extends infer _
-                ? wsOutput extends infer _
-                  ? wsInput extends infer _
-                    ? {
-                        path: jsonPath
-                        method: jsonMethod
-                        input: {
-                          json: 'json' extends keyof jsonInput ? jsonInput['json'] : never
-                          query: 'query' extends keyof getInput ? getInput['query'] : never
-                          urlencoded: 'urlencoded' extends keyof formInput ? formInput['urlencoded'] : never
-                        }
-                        errorOutput: jsonErrorOutput
-                        successOutput: jsonSuccessOutput
-                        wsOutput: wsOutput
-                        wsInput: wsInput
-                      }
+            ? urlEncodedInput extends infer _
+              ? formDataInput extends infer _
+                ? jsonErrorOutput extends infer _
+                  ? jsonSuccessOutput extends infer _
+                    ? wsOutput extends infer _
+                      ? wsInput extends infer _
+                        ? {
+                            path: jsonPath
+                            method: jsonMethod
+                            input: {
+                              json: 'json' extends keyof jsonInput ? jsonInput['json'] : never
+                              query: 'query' extends keyof getInput ? getInput['query'] : never
+                              urlencoded: 'urlencoded' extends keyof urlEncodedInput ? urlEncodedInput['urlencoded'] : never
+                              form: 'form' extends keyof formDataInput ? formDataInput['form'] : never
+                            }
+                            errorOutput: jsonErrorOutput
+                            successOutput: jsonSuccessOutput
+                            wsOutput: wsOutput
+                            wsInput: wsInput
+                          }
+                        : never
+                      : never
                     : never
                   : never
                 : never

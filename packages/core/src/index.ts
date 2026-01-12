@@ -8,6 +8,7 @@ export * from './interface/interface-test'
 
 export * from './plugin/custom'
 export * from './plugin/custom-data'
+export * from './plugin/form'
 export * from './plugin/json'
 export * from './plugin/log-headers'
 export * from './plugin/parse-path'
