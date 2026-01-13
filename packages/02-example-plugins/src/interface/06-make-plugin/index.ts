@@ -48,7 +48,7 @@ class 请求头检查插件 extends 插件<typeof 插件错误返回形状Zod, t
 }
 
 // 定义接口使用这个插件
-let 接口路径 = '/api/plugins/custom' as const
+let 接口路径 = '/api/plugins/make' as const
 let 接口方法 = 'get' as const
 
 let 接口逻辑实现 = 接口逻辑.构造([new 请求头检查插件()], async (参数, 逻辑附加参数, 请求附加参数) => {
