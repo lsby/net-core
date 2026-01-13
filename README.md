@@ -82,7 +82,7 @@ npm run _build:all
 
 ```bash
 cd packages/01-example-base
-pnpm dev
+npm run dev
 # 你的接口现在运行在 http://localhost:3000
 ```
 
