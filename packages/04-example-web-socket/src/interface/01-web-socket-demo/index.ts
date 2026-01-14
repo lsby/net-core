@@ -49,7 +49,7 @@ let 接口逻辑实现 = 接口逻辑.构造(
     // 可以通过ws给前端推送信息
     let 数据 = ['你', '好', '世', '界']
     for (let 当前数据 of 数据) {
-      await ws操作?.发送ws信息({ message: 当前数据 })
+      await ws操作?.发送ws信息({ message: 当前数据 }).catch(() => {})
       await new Promise((resolve) => setTimeout(resolve, 1000))
     }
 
