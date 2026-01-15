@@ -31,13 +31,17 @@
 - **🛟 逃生舱**: 返回器可以拿到原始的`req`/`res`句柄, **在需要完全的Express灵活性时, 可以绕过框架的约束, 直接使用Express的任何API**.
 - **🤖 自动化工具链**: 内置CLI工具链, 自动生成API索引, 类型文件, 单元测试脚手架.
 
-## 🪄 类型生成和调用
+## 🎬简单的视频介绍
+
+[b站](https://www.bilibili.com/video/BV1bmrfBSEqf)
+
+## 🪄 类型生成和调用(gif)
 
 ![类型生成和调用](./doc/type-generate-and-call.gif)
 
 ## 🏗️ 生产级实战
 
-**如果你想看如何在生产环境中使用本框架, 构建大型应用(包含: 全局状态, 数据库集成, 文件上传, JWT鉴权, WebSocket机制应用, CRUD组合器等), 请参考作者的完全体项目模版: **
+**如果你想看如何在生产环境中使用本框架, 构建大型应用(包含: 全局状态, 数据库集成, 文件上传, JWT鉴权, WebSocket机制应用, CRUD组合器等), 请参考作者的完全体项目模版:**
 
 👉 **[lsby/playground-ts-service](https://github.com/lsby/playground-ts-service)**
 
