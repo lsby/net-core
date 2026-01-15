@@ -37,7 +37,7 @@
 
 ## 🏗️ 生产级实战
 
-**如果你想看如何在生产环境中使用本框架, 构建大型应用(包含: 全局状态, 数据库集成, 文件上传, JWT鉴权, WebSocket机制应用, CRUD组合器等), 请参考作者的完全体项目模版: **
+**如果你想看如何在生产环境中使用本框架, 构建大型应用(包含: 全局状态, 数据库集成, 文件上传, JWT鉴权, WebSocket机制应用, CRUD组合器等), 请参考作者的完全体项目模版:**
 
 👉 **[lsby/playground-ts-service](https://github.com/lsby/playground-ts-service)**
 
