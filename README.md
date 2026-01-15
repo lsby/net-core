@@ -31,7 +31,11 @@
 - **🛟 逃生舱**: 返回器可以拿到原始的`req`/`res`句柄, **在需要完全的Express灵活性时, 可以绕过框架的约束, 直接使用Express的任何API**.
 - **🤖 自动化工具链**: 内置CLI工具链, 自动生成API索引, 类型文件, 单元测试脚手架.
 
-## 🪄 类型生成和调用
+## 🎬简单的视频介绍
+
+[b站](https://www.bilibili.com/video/BV1bmrfBSEqf)
+
+## 🪄 类型生成和调用(gif)
 
 ![类型生成和调用](./doc/type-generate-and-call.gif)
 
