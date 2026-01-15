@@ -15,7 +15,7 @@ export type 接口方法类型 = 'get' | 'post' | 'put' | 'delete' | 'patch' | '
  *
  * 一个HTTP接口, 它由以下部分组成:
  * - 请求路径: 例如 /api/xxx 或正则表达式 /^\/api\/.+/
- * - 请求方法: get 或 post
+ * - 请求方法: 'get' | 'post' | 'put' | 'delete' | 'patch' | 'head' | 'options'
  * - 接口逻辑: 接口的实际逻辑行为, 见 {@link 接口逻辑}
  * - 接口返回器: 决定如何将接口逻辑的返回值返回给客户端的逻辑, 见 {@link 接口返回器}
  *
