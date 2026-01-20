@@ -524,6 +524,70 @@ importers:
         specifier: ^8.52.0
         version: 8.52.0(eslint@9.39.2(jiti@1.21.0))(typescript@5.9.3)
 
+  packages/09-example-upload-file:
+    dependencies:
+      '@lsby/net-core':
+        specifier: workspace:*
+        version: link:../core
+      '@lsby/ts-fp-data':
+        specifier: ^0.2.7
+        version: 0.2.7
+      esbuild:
+        specifier: ^0.27.2
+        version: 0.27.2
+      zod:
+        specifier: 3.24.2
+        version: 3.24.2
+    devDependencies:
+      '@ianvs/prettier-plugin-sort-imports':
+        specifier: ^4.7.0
+        version: 4.7.0(prettier@3.7.4)
+      '@lsby/eslint-config':
+        specifier: ^0.5.3
+        version: 0.5.3(@lsby/eslint-plugin@0.2.1(eslint@9.39.2(jiti@1.21.0)))(@types/eslint@9.6.1)(eslint-config-prettier@10.1.8(eslint@9.39.2(jiti@1.21.0)))(eslint-plugin-jsdoc@62.0.0(eslint@9.39.2(jiti@1.21.0)))(eslint-plugin-sort-class-members@1.21.0(eslint@9.39.2(jiti@1.21.0)))(eslint@9.39.2(jiti@1.21.0))(typescript-eslint@8.52.0(eslint@9.39.2(jiti@1.21.0))(typescript@5.9.3))(typescript@5.9.3)
+      '@lsby/eslint-plugin':
+        specifier: ^0.2.1
+        version: 0.2.1(eslint@9.39.2(jiti@1.21.0))
+      '@types/eslint':
+        specifier: ^9.6.1
+        version: 9.6.1
+      '@types/node':
+        specifier: ^25.0.6
+        version: 25.0.6
+      cross-env:
+        specifier: ^10.1.0
+        version: 10.1.0
+      eslint:
+        specifier: ^9.39.2
+        version: 9.39.2(jiti@1.21.0)
+      eslint-config-prettier:
+        specifier: ^10.1.8
+        version: 10.1.8(eslint@9.39.2(jiti@1.21.0))
+      eslint-plugin-jsdoc:
+        specifier: ^62.0.0
+        version: 62.0.0(eslint@9.39.2(jiti@1.21.0))
+      eslint-plugin-sort-class-members:
+        specifier: ^1.21.0
+        version: 1.21.0(eslint@9.39.2(jiti@1.21.0))
+      prettier:
+        specifier: 3.7.4
+        version: 3.7.4
+      prettier-plugin-organize-imports:
+        specifier: ^4.3.0
+        version: 4.3.0(prettier@3.7.4)(typescript@5.9.3)
+      prettier-plugin-packagejson:
+        specifier: ^2.5.20
+        version: 2.5.20(prettier@3.7.4)
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      typescript-eslint:
+        specifier: ^8.52.0
+        version: 8.52.0(eslint@9.39.2(jiti@1.21.0))(typescript@5.9.3)
+
   packages/core:
     dependencies:
       '@lsby/ts-fp-data':
