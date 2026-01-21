@@ -62,7 +62,7 @@ export class 静态文件返回器 extends 接口返回器<string, { filePath: s
 
     try {
       // 直接读取文件（传入的是完整路径）
-      let 文件内容 = await readFile(文件路径, 'utf-8')
+      let 文件内容 = await readFile(文件路径)
 
       // 获取文件扩展名
       let 扩展名 = 文件路径.substring(文件路径.lastIndexOf('.')).toLowerCase()
