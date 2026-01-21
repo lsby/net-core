@@ -52,6 +52,13 @@ export class Form参数解析插件<Result extends z.AnyZodObject> extends 插�
 
         let files = (req.files as Express.Multer.File[] | undefined) ?? []
 
+        // 修正文件名编码
+        for (let file of files) {
+          try {
+            file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8')
+          } catch {}
+        }
+
         await log.debug('成功解析 Form 参数和文件')
         return new Right({ form: { data: parseResult.data, files } })
       },
