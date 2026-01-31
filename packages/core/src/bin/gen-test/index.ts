@@ -125,7 +125,16 @@ export async function main(
 
   let 输出文件夹 = path.dirname(输出文件路径)
   if (fs.existsSync(输出文件夹) === false) fs.mkdirSync(输出文件夹, { recursive: true })
-  fs.writeFileSync(输出文件路径, 最终代码.join('\n'))
+
+  let 最终内容 = 最终代码.join('\n')
+  if (fs.existsSync(输出文件路径)) {
+    let 现有内容 = fs.readFileSync(输出文件路径, 'utf8')
+    if (现有内容 === 最终内容) {
+      await log.debug(`输出文件内容未改变，跳过写入: ${输出文件路径}`)
+      return
+    }
+  }
+  fs.writeFileSync(输出文件路径, 最终内容)
 
   await log.debug(`输出文件写入完成: ${输出文件路径}`)
 }
