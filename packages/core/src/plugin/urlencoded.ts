@@ -17,8 +17,9 @@ export class UrlEncoded参数解析插件<Result extends z.AnyZodObject> extends
     super(错误类型描述, z.object({ urlencoded: t }), async (req, res, 附加参数) => {
       let log = 附加参数.log.extend(UrlEncoded参数解析插件.name)
 
-      await new Promise((pRes, _rej) =>
-        express.urlencoded({ extended: true, ...opt })(req, res, () => {
+      await new Promise((pRes, Prej) =>
+        express.urlencoded({ extended: true, ...opt })(req, res, (err) => {
+          if (err !== null) return Prej(`UrlEncoded 解析失败: ${String(err)}`)
           pRes(null)
         }),
       )

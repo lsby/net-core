@@ -32,12 +32,12 @@ export class Form参数解析插件<Result extends z.AnyZodObject> extends 插�
         let upload = multer(opt)
         let multerMiddleware = upload.any()
 
-        await new Promise((pRes, rej) =>
+        await new Promise((pRes, Prej) =>
           multerMiddleware(req, res, (err) => {
             if (err === null || typeof err === 'undefined') {
               pRes(null)
             } else {
-              rej(err)
+              Prej(`Form 解析失败: ${String(err)}`)
             }
           }),
         )

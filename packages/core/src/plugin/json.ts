@@ -17,8 +17,9 @@ export class JSON参数解析插件<Result extends z.AnyZodObject> extends 插�
     super(错误类型描述, z.object({ json: t }), async (req, res, 附加参数) => {
       let log = 附加参数.log.extend(JSON参数解析插件.name)
 
-      await new Promise((pRes, _rej) =>
-        express.json(opt)(req, res, () => {
+      await new Promise((pRes, Prej) =>
+        express.json(opt)(req, res, (err) => {
+          if (err !== null) return Prej(`JSON 解析失败: ${String(err)}`)
           pRes(null)
         }),
       )
