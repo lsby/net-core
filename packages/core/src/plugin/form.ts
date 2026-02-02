@@ -34,11 +34,8 @@ export class Form参数解析插件<Result extends z.AnyZodObject> extends 插�
 
         await new Promise((pRes, Prej) =>
           multerMiddleware(req, res, (err) => {
-            if (err === null || typeof err === 'undefined') {
-              pRes(null)
-            } else {
-              Prej(`Form 解析失败: ${String(err)}`)
-            }
+            if (err !== null && err !== void 0) Prej(`Form 解析失败: ${String(err)}`)
+            pRes(null)
           }),
         )
 

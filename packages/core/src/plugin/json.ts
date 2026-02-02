@@ -19,7 +19,7 @@ export class JSON参数解析插件<Result extends z.AnyZodObject> extends 插�
 
       await new Promise((pRes, Prej) =>
         express.json(opt)(req, res, (err) => {
-          if (err !== null) return Prej(`JSON 解析失败: ${String(err)}`)
+          if (err !== null && err !== void 0) return Prej(`JSON 解析失败: ${String(err)}`)
           pRes(null)
         }),
       )

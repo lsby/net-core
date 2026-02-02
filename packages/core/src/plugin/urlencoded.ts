@@ -19,7 +19,7 @@ export class UrlEncoded参数解析插件<Result extends z.AnyZodObject> extends
 
       await new Promise((pRes, Prej) =>
         express.urlencoded({ extended: true, ...opt })(req, res, (err) => {
-          if (err !== null) return Prej(`UrlEncoded 解析失败: ${String(err)}`)
+          if (err !== null && err !== void 0) return Prej(`UrlEncoded 解析失败: ${String(err)}`)
           pRes(null)
         }),
       )
