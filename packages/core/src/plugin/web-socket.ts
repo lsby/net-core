@@ -1,7 +1,7 @@
 import { Right } from '@lsby/ts-fp-data'
 import { WebSocket } from 'ws'
 import { z } from 'zod'
-import { 集线器监听器持有者 } from '../global/model/hub'
+import { 集线器监听器宿主 } from '../global/model/hub'
 import { 任意插件, 插件 } from '../interface/interface-plugin'
 
 let 错误类型描述 = z.never()
@@ -17,8 +17,11 @@ export class WebSocket插件<
         z.ZodObject<{
           发送ws信息: z.ZodFunction<z.ZodTuple<[后推前信息], null>, z.ZodPromise<z.ZodVoid>>
           监听ws信息: z.ZodFunction<
-            z.ZodTuple<[z.ZodFunction<z.ZodTuple<[前推后信息], null>, z.ZodPromise<z.ZodVoid>>], null>,
-            z.ZodPromise<z.ZodUnion<[z.ZodType<集线器监听器持有者<unknown>>, z.ZodNull]>>
+            z.ZodTuple<
+              [z.ZodFunction<z.ZodTuple<[前推后信息], null>, z.ZodPromise<z.ZodVoid>>, z.ZodType<集线器监听器宿主>],
+              null
+            >,
+            z.ZodPromise<z.ZodVoid>
           >
           关闭ws连接: z.ZodFunction<z.ZodTuple<[], null>, z.ZodPromise<z.ZodVoid>>
           设置清理函数: z.ZodFunction<
@@ -39,8 +42,8 @@ export class WebSocket插件<
           .object({
             发送ws信息: z.function(z.tuple([后推前信息描述]), z.promise(z.void())),
             监听ws信息: z.function(
-              z.tuple([z.function(z.tuple([前推后信息描述]), z.promise(z.void()))]),
-              z.promise(z.union([z.instanceof(集线器监听器持有者), z.null()])),
+              z.tuple([z.function(z.tuple([前推后信息描述]), z.promise(z.void())), z.instanceof(集线器监听器宿主)]),
+              z.promise(z.void()),
             ),
             关闭ws连接: z.function(z.tuple([]), z.promise(z.void())),
             设置清理函数: z.function(z.tuple([z.function(z.tuple([]), z.promise(z.void()))]), z.promise(z.void())),
@@ -101,18 +104,18 @@ export class WebSocket插件<
               await WebSocket管理器.设置清理函数(wsId, 清理函数)
             },
 
-            async 监听ws信息(回调函数): Promise<集线器监听器持有者<unknown> | null> {
+            async 监听ws信息(回调函数, 宿主): Promise<void> {
               if (ws句柄 === null) {
                 ws句柄 = await WebSocket管理器.获得ws句柄(wsId)
               }
 
               if (ws句柄 === null) {
                 await log.error('未能获取到有效的 WebSocket 句柄')
-                return null
+                return
               }
 
               await log.debug('注册 WebSocket 消息监听', { wsId })
-              return WebSocket管理器.设置消息监听(wsId, 回调函数)
+              WebSocket管理器.设置消息监听(wsId, 回调函数, 宿主)
             },
           },
         })

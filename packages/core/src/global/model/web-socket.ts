@@ -1,17 +1,15 @@
 import { WebSocket } from 'ws'
 import { 全局日志单例 } from '../log'
-import { 集线器模型, 集线器监听器持有者 } from './hub'
+import { 集线器模型, 集线器监听器宿主 } from './hub'
 
 type id = string
 export class WebSocket管理器 {
   private log = 全局日志单例.extend('WebSocket管理器')
   private 连接表: Record<id, WebSocket | null> = {}
   private 消息监听表: Record<id, 集线器模型<unknown>> = {}
-  private 连接清理模型: 集线器模型<void> = new 集线器模型()
-  private 连接持有者表: Record<id, 集线器监听器持有者<void>> = {}
   private 清理函数表: Record<id, () => Promise<void>> = {}
 
-  public 增加连接(id: id, ws句柄: WebSocket): 集线器监听器持有者<void> {
+  public 增加连接(id: id, ws句柄: WebSocket): void {
     // 移除旧 ws
     if (id in this.连接表) this.删除连接(id)
     this.连接表[id] = ws句柄
@@ -26,16 +24,12 @@ export class WebSocket管理器 {
     }
 
     this.注册onmessage(id, ws句柄)
-
-    let 持有者 = this.连接清理模型.添加监听器(async () => {
-      if (id in this.连接表) this.删除连接(id)
-    })
-    this.连接持有者表[id] = 持有者
-    return 持有者
   }
   public 删除连接(id: string): void {
     let ws = this.连接表[id]
-    if (ws !== null && ws !== void 0) {
+    if (ws === void 0) return
+
+    if (ws !== null) {
       ws.onmessage = null
       ws.once('error', (err) => void this.log.error(`WebSocket 异步错误, id: ${id}, 错误: ${err}`))
       ws.once(
@@ -55,12 +49,6 @@ export class WebSocket管理器 {
     delete this.连接表[id]
     delete this.清理函数表[id]
     delete this.消息监听表[id]
-
-    let 持有者 = this.连接持有者表[id]
-    if (持有者 !== void 0) {
-      this.连接清理模型.移除监听器(持有者)
-      delete this.连接持有者表[id]
-    }
   }
 
   private 注册onmessage(id: id, ws句柄: WebSocket): void {
@@ -85,9 +73,9 @@ export class WebSocket管理器 {
   public async 设置清理函数(id: string, 清理函数: () => Promise<void>): Promise<void> {
     if (id in this.连接表) this.清理函数表[id] = 清理函数
   }
-  public 设置消息监听(id: string, 回调函数: (数据: any) => Promise<void>): 集线器监听器持有者<unknown> | null {
+  public 设置消息监听(id: string, 回调函数: (数据: any) => Promise<void>, 宿主: 集线器监听器宿主): void {
     let 模型 = this.消息监听表[id]
-    if (模型 === void 0) return null
-    return 模型.添加监听器(回调函数)
+    if (模型 === void 0) return
+    模型.添加监听器(回调函数, 宿主)
   }
 }

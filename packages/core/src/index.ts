@@ -1,5 +1,7 @@
 export * from './help/help'
 
+export * from './global/model/hub'
+
 export * from './interface/interface-base'
 export * from './interface/interface-logic'
 export * from './interface/interface-plugin'
