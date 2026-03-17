@@ -77,7 +77,7 @@ let 组合逻辑 = 接口逻辑
 
       let 订单号 = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
 
-      await log.info('订单已生成: 订单号=%s, 价格=%.2f', 订单号, 商品id, 价格.商品价格 + 价格.运费)
+      await log.info('订单已生成: 订单号=%s, 价格=%.2f', 订单号, 价格.商品价格 + 价格.运费)
 
       return new Right({ 订单号, 商品id, 价格 })
     }),
