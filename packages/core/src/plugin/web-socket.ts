@@ -6,10 +6,7 @@ import { 任意插件, 插件 } from '../interface/interface-plugin'
 
 let 错误类型描述 = z.never()
 
-export class WebSocket插件<
-  后推前信息 extends z.AnyZodObject | z.ZodNever | z.ZodUnion<any>,
-  前推后信息 extends z.AnyZodObject | z.ZodNever | z.ZodUnion<any>,
-> extends 插件<
+export class WebSocket插件<后推前信息 extends z.ZodTypeAny, 前推后信息 extends z.ZodTypeAny> extends 插件<
   typeof 错误类型描述,
   z.ZodObject<{
     ws操作: z.ZodUnion<
