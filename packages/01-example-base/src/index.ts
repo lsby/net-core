@@ -27,3 +27,6 @@ console.log('5. 浏览器访问 http://localhost:3000/api/download-file?filename
 console.log('6. 浏览器访问 http://localhost:3000/static/index.ts')
 console.log('7. 浏览器访问 http://localhost:3000/virtual/demo.svg')
 console.log('8. 查看和执行 src/lib/test.ts, 体验类型安全的接口调用')
+console.log(
+  '9. curl -X POST http://localhost:3000/api/async-plugin-demo -H "Content-Type: application/json" -d \'{"名称": "测试用户"}\'',
+)

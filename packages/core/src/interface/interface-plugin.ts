@@ -1,4 +1,4 @@
-import { Either } from '@lsby/ts-fp-data'
+import { Either, Task } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
 import { z } from 'zod'
 import { 请求附加参数类型 } from '../types/types'
@@ -47,15 +47,18 @@ export class 插件<
 
 export type 任意插件 = 插件<any, any>
 
+export type 解包插件<T> = T extends Task<infer U> ? U : T
+export type 可能异步插件项 = 任意插件 | Task<任意插件>
+
 export type 取插件错误ts类型<A> = A extends 插件<infer x, any> ? z.infer<x> : never
 export type 取插件正确ts类型<A> = A extends 插件<any, infer x> ? z.infer<x> : never
 
-export type 合并插件正确结果<Arr extends Array<任意插件>> = Arr extends []
+export type 合并插件正确结果<Arr extends Array<可能异步插件项>> = Arr extends []
   ? {}
   : Arr extends [infer x, ...infer xs]
     ? x extends infer 插件项
-      ? xs extends Array<任意插件>
-        ? 取插件正确ts类型<插件项> & 合并插件正确结果<xs>
+      ? xs extends Array<可能异步插件项>
+        ? 取插件正确ts类型<解包插件<插件项>> & 合并插件正确结果<xs>
         : {}
       : {}
     : {}

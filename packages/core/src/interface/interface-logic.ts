@@ -1,13 +1,13 @@
-import { Either, Right } from '@lsby/ts-fp-data'
+import { Either, Right, Task } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
 import { 普通对象深合并 } from '../help/help'
 import { 联合转元组 } from '../help/interior'
 import { 空对象, 请求附加参数类型 } from '../types/types'
 import type { 接口 } from './interface-base'
 import type { 插件 } from './interface-plugin'
-import { 任意插件, 合并插件正确结果 } from './interface-plugin'
+import { 任意插件, 可能异步插件项, 合并插件正确结果 } from './interface-plugin'
 
-export type 清理函数类型<插件类型 extends 任意插件[], 逻辑附加参数类型 extends 接口逻辑附加参数类型> = (
+export type 清理函数类型<插件类型 extends 可能异步插件项[], 逻辑附加参数类型 extends 接口逻辑附加参数类型> = (
   参数: 合并插件正确结果<插件类型>,
   逻辑附加参数: 逻辑附加参数类型,
   请求附加参数: 请求附加参数类型,
@@ -91,7 +91,7 @@ export type 接口逻辑附加参数类型 = Record<string, any>
  * - 业务逻辑可以保持是纯的, 非常方便独立测试
  */
 export abstract class 接口逻辑Base<
-  插件类型 extends 任意插件[],
+  插件类型 extends 可能异步插件项[],
   in 逻辑附加参数类型 extends 接口逻辑附加参数类型,
   错误类型 extends 接口逻辑错误类型,
   正确类型 extends 接口逻辑正确类型,
@@ -103,7 +103,7 @@ export abstract class 接口逻辑Base<
   }
 
   public static 完整构造<
-    插件类型 extends 任意插件[],
+    插件类型 extends 可能异步插件项[],
     逻辑附加参数类型 extends 接口逻辑附加参数类型,
     错误类型 extends 接口逻辑错误类型,
     返回类型 extends 接口逻辑正确类型,
@@ -138,7 +138,7 @@ export abstract class 接口逻辑Base<
   }
 
   public static 构造<
-    插件类型 extends 任意插件[],
+    插件类型 extends 可能异步插件项[],
     逻辑附加参数类型 extends 接口逻辑附加参数类型,
     错误类型 extends 接口逻辑错误类型,
     返回类型 extends 接口逻辑正确类型,
@@ -170,8 +170,9 @@ export abstract class 接口逻辑Base<
     let 插件们 = this.获得插件们()
     let 所有插件结果: Record<string, any>[] = []
 
-    for (let 插件 of 插件们) {
-      let 插件返回 = await 插件.运行(req, res, 请求附加参数)
+    for (let 插件项 of 插件们) {
+      let 实际插件: 任意插件 = 插件项 instanceof Task ? await 插件项.run() : 插件项
+      let 插件返回 = await 实际插件.运行(req, res, 请求附加参数)
       if (插件返回.isLeft()) return 插件返回 as any
       所有插件结果.push(插件返回.assertRight().getRight())
     }
@@ -214,7 +215,7 @@ export abstract class 接口逻辑Base<
   }
 
   public 绑定<
-    输入的插件类型 extends 任意插件[],
+    输入的插件类型 extends 可能异步插件项[],
     输入的错误类型 extends 接口逻辑错误类型,
     输入的返回类型 extends 接口逻辑正确类型,
     输入的上游接口逻辑类型 extends 任意接口逻辑 | null,
@@ -298,7 +299,7 @@ export abstract class 接口逻辑Base<
  * 详情见 {@link 接口逻辑Base}
  */
 export abstract class 接口逻辑<
-  插件类型 extends 任意插件[],
+  插件类型 extends 可能异步插件项[],
   逻辑附加参数类型 extends 接口逻辑附加参数类型,
   错误类型 extends 接口逻辑错误类型,
   正确类型 extends 接口逻辑正确类型,
