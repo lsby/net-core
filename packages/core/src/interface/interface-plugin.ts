@@ -46,18 +46,19 @@ export class 插件<
 }
 
 export type 任意插件 = 插件<any, any>
+export type 任意异步插件 = Task<任意插件>
+export type 任意同步或异步插件 = 任意插件 | Task<任意插件>
 
 export type 解包插件<T> = T extends Task<infer U> ? U : T
-export type 可能异步插件项 = 任意插件 | Task<任意插件>
 
 export type 取插件错误ts类型<A> = A extends 插件<infer x, any> ? z.infer<x> : never
 export type 取插件正确ts类型<A> = A extends 插件<any, infer x> ? z.infer<x> : never
 
-export type 合并插件正确结果<Arr extends Array<可能异步插件项>> = Arr extends []
+export type 合并插件正确结果<Arr extends Array<任意同步或异步插件>> = Arr extends []
   ? {}
   : Arr extends [infer x, ...infer xs]
     ? x extends infer 插件项
-      ? xs extends Array<可能异步插件项>
+      ? xs extends Array<任意同步或异步插件>
         ? 取插件正确ts类型<解包插件<插件项>> & 合并插件正确结果<xs>
         : {}
       : {}

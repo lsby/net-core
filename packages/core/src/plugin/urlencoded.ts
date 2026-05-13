@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { 严格递归合并对象 } from '../help/help'
 import { 递归截断字符串 } from '../help/interior'
 import { 获得接口逻辑插件类型 } from '../interface/interface-logic'
-import { 取插件正确ts类型, 可能异步插件项, 插件, 解包插件 } from '../interface/interface-plugin'
+import { 任意同步或异步插件, 取插件正确ts类型, 插件, 解包插件 } from '../interface/interface-plugin'
 
 let 错误类型描述 = z.object({ code: z.literal(400), data: z.string() })
 
@@ -40,11 +40,11 @@ export class UrlEncoded参数解析插件<Result extends z.AnyZodObject> extends
 
 export type 任意UrlEncoded参数解析插件 = UrlEncoded参数解析插件<any>
 export type 任意UrlEncoded参数解析插件项 = 任意UrlEncoded参数解析插件
-export type 合并UrlEncoded参数解析插件结果<Arr extends Array<可能异步插件项>> = Arr extends []
+export type 合并UrlEncoded参数解析插件结果<Arr extends Array<任意同步或异步插件>> = Arr extends []
   ? {}
   : Arr extends [infer x, ...infer xs]
     ? x extends infer 插件项
-      ? xs extends Array<可能异步插件项>
+      ? xs extends Array<任意同步或异步插件>
         ? 解包插件<插件项> extends infer 实际插件项
           ? 实际插件项 extends 任意UrlEncoded参数解析插件项
             ? 严格递归合并对象<
