@@ -55,12 +55,15 @@ export async function main(
   let 相关源文件们 = 所有源文件.filter((源文件) => {
     let 源文件路径 = path.normalize(源文件.fileName)
     if (源文件路径.includes(目标路径) === false) return false
+    if (源文件路径 === path.normalize(输出文件路径)) return false
     let 存在默认导出 = 检查存在默认导出(源文件)
     if (存在默认导出 === false) return false
     let 符合过滤表达式 = new RegExp(文件过滤表达式 === '' ? '.*' : 文件过滤表达式).test(源文件路径)
     if (符合过滤表达式 === false) return false
     return true
   })
+  // 按照文件名路径进行排序，保证生成顺序的绝对稳定，不依赖 TypeScript 编译器的解析顺序
+  相关源文件们.sort((a, b) => a.fileName.localeCompare(b.fileName))
   await log.debug(`筛选出 ${相关源文件们.length} 个相关源文件`)
 
   let 伴随的虚拟文件们 = 相关源文件们.map((a) => {
