@@ -13,6 +13,12 @@ function 检查存在默认导出(源文件: ts.SourceFile): boolean {
   return false
 }
 
+function 存在导出修饰符(节点: ts.Node): boolean {
+  return (
+    ts.canHaveModifiers(节点) && (ts.getModifiers(节点)?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword) ?? false)
+  )
+}
+
 export async function main(tsconfig路径: string, 目标路径: string, 输出文件路径: string): Promise<void> {
   let log = new Log('@lsby:net-core').extend('gen-api-type')
 
@@ -189,13 +195,25 @@ type 导出类型定义 = GetNetCoreExportTypeDefine<导入>
             ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
         )
         if (字符串结果 !== 'unknown') {
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          if (type.symbol !== void 0) {
+          let 符号声明 = type.getSymbol()?.declarations?.[0]
+          let 别名声明 = type.aliasSymbol?.declarations?.[0]
+
+          if (
+            符号声明 !== void 0 &&
+            (ts.isEnumDeclaration(符号声明) || ts.isInterfaceDeclaration(符号声明) || ts.isClassDeclaration(符号声明))
+          ) {
+            类型定义类型 = 'aliasSymbol'
+            let 文本 = 符号声明.getText()
+            let 有导出 = 存在导出修饰符(符号声明)
+            导出类型定义 = 有导出 ? 文本 : `export ${文本}`
+          } else if (type.getSymbol() !== void 0) {
             类型定义类型 = 'symbol'
-            导出类型定义 = type.symbol.declarations?.[0]?.getText()
+            导出类型定义 = 符号声明?.getText()
           } else if (type.aliasSymbol !== void 0) {
             类型定义类型 = 'aliasSymbol'
-            导出类型定义 = type.aliasSymbol.declarations?.[0]?.getText()
+            let 文本 = 别名声明?.getText() ?? ''
+            let 有导出 = 别名声明 !== void 0 ? 存在导出修饰符(别名声明) : false
+            导出类型定义 = 有导出 ? 文本 : `export ${文本}`
           } else {
             类型定义类型 = 'symbol'
             导出类型定义 = 字符串结果
