@@ -214,6 +214,18 @@ export abstract class 接口逻辑Base<
     }
   }
 
+  public async 调用并解包(
+    合并插件结果: 合并插件正确结果<插件类型>,
+    传入的逻辑附加参数: 逻辑附加参数类型,
+    传入的请求附加参数: 请求附加参数类型,
+  ): Promise<正确类型> {
+    let 结果 = await this.调用(合并插件结果, 传入的逻辑附加参数, 传入的请求附加参数)
+    if (结果.isLeft() === true) {
+      throw new Error(JSON.stringify(结果.assertLeft().getLeft()))
+    }
+    return 结果.assertRight().getRight()
+  }
+
   public 绑定<
     输入的插件类型 extends 任意同步或异步插件[],
     输入的错误类型 extends 接口逻辑错误类型,
