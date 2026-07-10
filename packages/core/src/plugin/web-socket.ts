@@ -54,12 +54,12 @@ export class WebSocket插件<后推前信息 extends z.ZodTypeAny, 前推后信�
         let ws句柄: WebSocket | null = null
 
         let wsId = req.headers[wsKey]
-        await log.debug('检查头信息', { wsId })
+        await log.trace('检查头信息', { wsId })
         if (typeof wsId !== 'string') {
-          await log.error('未能获取到有效的 WebSocket Id')
+          await log.warn('未能获取到有效的 WebSocket Id')
           return new Right({ ws操作: null })
         }
-        await log.debug('已获得 WebSocket Id: %o', wsId)
+        await log.trace('已获得 WebSocket Id: %o', wsId)
 
         return new Right({
           ws操作: {
@@ -69,7 +69,7 @@ export class WebSocket插件<后推前信息 extends z.ZodTypeAny, 前推后信�
               }
 
               if (ws句柄 === null) {
-                await log.error('未能获取到有效的 WebSocket 句柄')
+                await log.warn('未能获取到有效的 WebSocket 句柄')
                 return
               }
 
@@ -92,12 +92,12 @@ export class WebSocket插件<后推前信息 extends z.ZodTypeAny, 前推后信�
             },
 
             async 关闭ws连接(): Promise<void> {
-              await log.debug('关闭 WebSocket 连接', { wsId })
+              await log.trace('关闭 WebSocket 连接', { wsId })
               WebSocket管理器.删除连接(wsId)
             },
 
             async 设置清理函数(清理函数): Promise<void> {
-              await log.debug('设置 WebSocket 清理函数', { wsId })
+              await log.trace('设置 WebSocket 清理函数', { wsId })
               await WebSocket管理器.设置清理函数(wsId, 清理函数)
             },
 
@@ -107,7 +107,7 @@ export class WebSocket插件<后推前信息 extends z.ZodTypeAny, 前推后信�
               }
 
               if (ws句柄 === null) {
-                await log.error('未能获取到有效的 WebSocket 句柄')
+                await log.warn('未能获取到有效的 WebSocket 句柄')
                 return
               }
 
@@ -137,7 +137,7 @@ export class WebSocket插件<后推前信息 extends z.ZodTypeAny, 前推后信�
                 关联宿主集合.delete(宿主)
               }
 
-              await log.debug('注册 WebSocket 消息监听', { wsId })
+              await log.trace('注册 WebSocket 消息监听', { wsId })
               WebSocket管理器.设置消息监听(wsId, 回调函数, 宿主)
             },
           },

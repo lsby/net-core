@@ -51,7 +51,7 @@ export class 文件流式下载返回器<
         }
 
         let 返回数据 = { status: 'fail' as const, data: 校验结果.data as z.TypeOf<实现错误类型Zod> }
-        void log.debug('最终结果: %o', JSON.stringify(递归截断字符串(返回数据)))
+        void log.trace('最终结果: %o', JSON.stringify(递归截断字符串(返回数据)))
         res.send(返回数据)
 
         break

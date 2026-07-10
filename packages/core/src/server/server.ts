@@ -10,6 +10,7 @@ import { 全局WebSocket管理器单例 } from '../global/web-socket'
 import { 任意接口 } from '../interface/interface-base'
 import { 任意接口逻辑 } from '../interface/interface-logic'
 import { 任意接口返回器 } from '../interface/interface-returner'
+import { 静态文件返回器 } from '../returner/static-file'
 import { 请求附加参数类型 } from '../types/types'
 
 type 路径 = string
@@ -68,16 +69,14 @@ export class 服务器 {
     let 请求附加参数: 请求附加参数类型 = { log: log, 请求id: 请求id, webSocket管理器: 全局WebSocket管理器单例 }
 
     let 开始时间 = Date.now()
+    let 目标接口: 任意接口 | null = null
 
     try {
-      let { path: 请求路径, method } = req
-      请求路径 = decodeURIComponent(请求路径)
+      let { path: 请求路径原始, method } = req
+      let 请求路径 = decodeURIComponent(请求路径原始)
       let 请求方法 = method.toLowerCase()
 
-      await log.debug('收到请求, 路径: %o, 方法: %o', 请求路径, 请求方法)
-
       // 匹配接口
-      let 目标接口: 任意接口 | null = null
 
       // 先尝试静态路由（路径 + 方法精确匹配）
       let 方法表 = this.静态路由表.get(请求路径)
@@ -88,6 +87,14 @@ export class 服务器 {
       // 再尝试动态路由（正则路径 + 方法匹配）
       if (目标接口 === null) {
         目标接口 = this.动态路由表.find((接口) => 请求方法 === 接口.获得方法() && 接口.匹配路径(请求路径)) ?? null
+      }
+
+      let 是静态资源 = 目标接口 !== null && 目标接口.获得接口返回器() instanceof 静态文件返回器
+
+      if (!是静态资源) {
+        await log.debug('收到请求, 路径: %o, 方法: %o', 请求路径, 请求方法)
+      } else {
+        await log.trace('收到请求, 路径: %o, 方法: %o (静态资源)', 请求路径, 请求方法)
       }
 
       if (目标接口 !== null) {
@@ -104,7 +111,15 @@ export class 服务器 {
       res.status(500).send('Internal Server Error')
     } finally {
       let 耗时ms = Date.now() - 开始时间
-      await log.info('请求完成, 耗时: %o ms', 耗时ms)
+      let 应该过滤常规日志 = 目标接口 !== null && 目标接口.获得接口返回器() instanceof 静态文件返回器
+
+      if (耗时ms > 500) {
+        await log.warn('请求完成 (慢请求), 耗时: %o ms', 耗时ms)
+      } else if (!应该过滤常规日志) {
+        await log.debug('请求完成, 耗时: %o ms', 耗时ms)
+      } else {
+        await log.trace('请求完成 (静态资源), 耗时: %o ms', 耗时ms)
+      }
     }
   }
 
@@ -124,11 +139,11 @@ export class 服务器 {
 
     // ---------- 接口逻辑 ----------
     let 开始 = Date.now()
-    await log.debug('调用接口逻辑...')
+    await log.trace('调用接口逻辑...')
 
     let 插件们 = 接口逻辑.获得插件们()
 
-    await log.debug('找到 %o 个 插件, 准备执行...', 插件们.length)
+    await log.trace('找到 %o 个 插件, 准备执行...', 插件们.length)
     let 插件结果E = await 接口逻辑.计算插件结果(req, res, 请求附加参数)
     if (插件结果E.isLeft()) {
       let error = 插件结果E.assertLeft().getLeft()
@@ -137,24 +152,28 @@ export class 服务器 {
       return
     }
     let 插件结果 = 插件结果E.assertRight().getRight()
-    await log.debug('插件 执行完毕')
+    await log.trace('插件 执行完毕')
 
-    await log.debug('准备执行接口实现...')
+    await log.trace('准备执行接口实现...')
     let 接口结果 = await 接口逻辑.调用(插件结果, {}, 请求附加参数)
-    await log.debug('接口实现执行完毕')
+    await log.trace('接口实现执行完毕')
 
     let 接口耗时 = Date.now() - 开始
-    await log.info('接口逻辑执行完毕, 耗时: %o ms', 接口耗时)
+    if (接口耗时 > 500) {
+      await log.warn('接口逻辑执行完毕 (慢执行), 耗时: %o ms', 接口耗时)
+    } else {
+      await log.trace('接口逻辑执行完毕, 耗时: %o ms', 接口耗时)
+    }
 
     // ---------- 接口返回器 ----------
     开始 = Date.now()
     接口返回器.实现(req, res, 接口结果, 请求附加参数)
     let 返回耗时 = Date.now() - 开始
-    await log.info('返回逻辑执行完毕, 耗时: %o ms', 返回耗时)
+    await log.trace('返回逻辑执行完毕, 耗时: %o ms', 返回耗时)
 
     // ---------- 总耗时 ----------
     let 总耗时 = Date.now() - 总开始
-    await log.info('接口完整执行耗时: %o ms', 总耗时)
+    await log.trace('接口完整流转耗时: %o ms', 总耗时)
   }
 
   private async 初始化WebSocket(server: http.Server): Promise<void> {
@@ -171,40 +190,40 @@ export class 服务器 {
 
     wss.on('connection', async (ws: WebSocket, req) => {
       let 连接log = log.extend(short().new())
-      await 连接log.debug('收到 WebSocket 连接请求: %o', req.url)
+      await 连接log.trace('收到 WebSocket 连接请求: %o', req.url)
 
       let 客户端id = req.url?.split('?id=')[1] ?? null
       if (客户端id === null) {
-        await 连接log.error('连接请求缺少客户端 ID')
+        await 连接log.warn('连接请求缺少客户端 ID')
         return this.关闭WebSocket连接(ws, 连接log, 4001, '缺少客户端 ID')
       }
-      await 连接log.debug('解析客户端 ID: %s', 客户端id)
+      await 连接log.trace('解析客户端 ID: %s', 客户端id)
 
       let WebSocket管理器 = 全局WebSocket管理器单例
 
       let 连接已存在 = WebSocket管理器.查询连接存在(客户端id)
       if (连接已存在) {
-        await 连接log.error('客户端 ID 已存在: %s', 客户端id)
+        await 连接log.warn('客户端 ID 已存在: %s', 客户端id)
         return this.关闭WebSocket连接(ws, 连接log, 4002, '客户端 ID 已存在')
       }
 
       WebSocket管理器.增加连接(客户端id, ws)
-      await 连接log.info('WebSocket 连接已建立, 客户端 ID: %s', 客户端id)
+      await 连接log.trace('WebSocket 连接已建立, 客户端 ID: %s', 客户端id)
 
       ws.on('close', async () => {
-        await 连接log.info('WebSocket 连接关闭: %s', 客户端id)
+        await 连接log.trace('WebSocket 连接关闭: %s', 客户端id)
         WebSocket管理器.删除连接(客户端id)
       })
 
       ws.on('error', async (err) => {
-        await 连接log.error('WebSocket 出现错误, 客户端 ID: %s, 错误: %o', 客户端id, err)
+        await 连接log.warn('WebSocket 出现错误, 客户端 ID: %s, 错误: %o', 客户端id, err)
         WebSocket管理器.删除连接(客户端id)
       })
     })
   }
 
   private async 关闭WebSocket连接(ws: WebSocket, log: Log, code: number, reason: string): Promise<void> {
-    await log.debug(`关闭 WebSocket 连接, 代码: ${code}, 原因: ${reason}`)
+    await log.trace(`关闭 WebSocket 连接, 代码: ${code}, 原因: ${reason}`)
     ws.close(code, reason)
   }
 

@@ -16,15 +16,15 @@ export class Query参数解析插件<Result extends z.AnyZodObject> extends 插�
     super(错误类型描述, z.object({ query: t }), async (req, _res, 附加参数) => {
       let log = 附加参数.log.extend(Query参数解析插件.name)
 
-      await log.debug('准备解析 Query 参数：%o', JSON.stringify(递归截断字符串(req.query)))
+      await log.trace('准备解析 Query 参数：%o', JSON.stringify(递归截断字符串(req.query)))
       let parseResult = t.safeParse(req.query)
 
       if (parseResult.success === false) {
-        await log.error('解析 Query 参数失败：%o', JSON.stringify(parseResult.error))
+        await log.warn('解析 Query 参数失败：%o', JSON.stringify(parseResult.error))
         return new Left({ code: 400, data: format('解析 Query 参数失败: %o', JSON.stringify(parseResult.error)) })
       }
 
-      await log.debug('成功解析 Query 参数')
+      await log.trace('成功解析 Query 参数')
       return new Right({ query: parseResult.data })
     })
   }

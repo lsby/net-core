@@ -35,7 +35,7 @@ export class 虚拟文件返回器 extends 接口返回器<
     if (数据.getTag() === 'Left') {
       // 处理错误情况
       let 错误消息 = 数据.assertLeft().getLeft()
-      void log.error('文件生成失败: %s', 错误消息)
+      void log.warn('文件生成失败: %s', 错误消息)
       res.status(404).send({ error: 错误消息 })
       return
     }
@@ -51,7 +51,7 @@ export class 虚拟文件返回器 extends 接口返回器<
       res.setHeader('Cache-Control', 缓存控制)
     }
 
-    void log.debug('返回虚拟文件, MIME类型: %s', MIMEType)
+    void log.trace('返回虚拟文件, MIME类型: %s', MIMEType)
     res.send(fileContent)
   }
 }

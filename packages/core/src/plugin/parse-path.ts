@@ -42,7 +42,7 @@ export class 路径解析插件 extends 插件<typeof 错误类型描述, typeof
       let log = 附加参数.log.extend(路径解析插件.name)
 
       let rawPath = decodeURIComponent(req.path)
-      await log.debug('原始路径: %s', rawPath)
+      await log.trace('原始路径: %s', rawPath)
 
       let dir = path.dirname(rawPath)
       let file = path.basename(rawPath)
@@ -50,7 +50,7 @@ export class 路径解析插件 extends 插件<typeof 错误类型描述, typeof
 
       let parsedPath = { rawPath, dir, file, ext }
 
-      await log.debug('解析后的路径: %o', JSON.stringify(递归截断字符串(parsedPath)))
+      await log.trace('解析后的路径: %o', JSON.stringify(递归截断字符串(parsedPath)))
 
       return new Right({ path: parsedPath })
     })

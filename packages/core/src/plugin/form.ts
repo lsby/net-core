@@ -39,11 +39,11 @@ export class Form参数解析插件<Result extends z.AnyZodObject> extends 插�
           }),
         )
 
-        await log.debug('准备解析 Form 参数：%o', JSON.stringify(递归截断字符串(req.body)))
+        await log.trace('准备解析 Form 参数：%o', JSON.stringify(递归截断字符串(req.body)))
         let parseResult = t.safeParse(req.body)
 
         if (parseResult.success === false) {
-          await log.error('解析 Form 参数失败：%o', JSON.stringify(parseResult.error))
+          await log.warn('解析 Form 参数失败：%o', JSON.stringify(parseResult.error))
           return new Left({ code: 400, data: format('解析 Form 参数失败: %o', JSON.stringify(parseResult.error)) })
         }
 
@@ -56,7 +56,7 @@ export class Form参数解析插件<Result extends z.AnyZodObject> extends 插�
           } catch {}
         }
 
-        await log.debug('成功解析 Form 参数和文件')
+        await log.trace('成功解析 Form 参数和文件')
         return new Right({ form: { data: parseResult.data, files } })
       },
     )

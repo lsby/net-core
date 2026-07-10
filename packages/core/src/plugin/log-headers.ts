@@ -10,7 +10,7 @@ export class 调试请求头插件 extends 插件<typeof 错误类型描述, typ
     super(错误类型描述, 正确类型描述, async (req, res, 附加参数) => {
       let log = 附加参数.log.extend(调试请求头插件.name)
 
-      await log.debug(req.headers)
+      await log.trace(req.headers)
 
       return new Right({})
     })

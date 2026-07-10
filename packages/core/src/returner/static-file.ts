@@ -76,7 +76,7 @@ export class 静态文件返回器 extends 接口返回器<string, { filePath: s
         res.setHeader('Cache-Control', 缓存控制)
       }
 
-      void log.debug('返回文件: %s, MIME类型: %s', 文件路径, MIME类型)
+      void log.trace('返回文件: %s, MIME类型: %s', 文件路径, MIME类型)
       res.send(文件内容)
     } catch (error) {
       void log.error('读取文件失败: %s, 错误: %o', 文件路径, error)
