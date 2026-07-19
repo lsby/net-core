@@ -30,3 +30,6 @@ console.log('8. 查看和执行 src/lib/test.ts, 体验类型安全的接口调�
 console.log(
   '9. curl -X POST http://localhost:3000/api/async-plugin-demo -H "Content-Type: application/json" -d \'{"名称": "测试用户"}\'',
 )
+console.log(
+  '10. curl -X POST http://localhost:3000/api/error-with-detail -H "Content-Type: application/json" -d \'{"value": -5}\'',
+)

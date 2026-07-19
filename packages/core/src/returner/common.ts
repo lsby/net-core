@@ -9,9 +9,9 @@ export class 常用接口返回器<
   实现错误类型Zod extends z.ZodTypeAny,
   实现正确类型Zod extends z.ZodTypeAny,
 > extends 接口返回器<
-  z.infer<实现错误类型Zod>,
+  z.infer<实现错误类型Zod> | { 错误: z.infer<实现错误类型Zod>; 详情?: string },
   z.infer<实现正确类型Zod>,
-  z.ZodObject<{ status: z.ZodLiteral<'fail'>; data: 实现错误类型Zod }>,
+  z.ZodObject<{ status: z.ZodLiteral<'fail'>; data: 实现错误类型Zod; detail: z.ZodOptional<z.ZodString> }>,
   z.ZodObject<{ status: z.ZodLiteral<'success'>; data: 实现正确类型Zod }>
 > {
   public constructor(
@@ -22,8 +22,12 @@ export class 常用接口返回器<
     super()
   }
 
-  public override 获得接口错误形式Zod(): z.ZodObject<{ status: z.ZodLiteral<'fail'>; data: 实现错误类型Zod }> {
-    return z.object({ status: z.literal('fail'), data: this.实现错误类型Zod })
+  public override 获得接口错误形式Zod(): z.ZodObject<{
+    status: z.ZodLiteral<'fail'>
+    data: 实现错误类型Zod
+    detail: z.ZodOptional<z.ZodString>
+  }> {
+    return z.object({ status: z.literal('fail'), data: this.实现错误类型Zod, detail: z.string().optional() })
   }
   public override 获得接口正确形式Zod(): z.ZodObject<{ status: z.ZodLiteral<'success'>; data: 实现正确类型Zod }> {
     return z.object({ status: z.literal('success'), data: this.实现正确类型Zod })
@@ -32,7 +36,10 @@ export class 常用接口返回器<
   public override 实现(
     req: Request,
     res: Response,
-    数据: Either<z.infer<实现错误类型Zod>, z.infer<实现正确类型Zod>>,
+    数据: Either<
+      z.infer<实现错误类型Zod> | { 错误: z.infer<实现错误类型Zod>; 详情?: string },
+      z.infer<实现正确类型Zod>
+    >,
     请求附加参数: 请求附加参数类型,
   ): void {
     let log = 请求附加参数.log.extend(常用接口返回器.name)
@@ -45,9 +52,19 @@ export class 常用接口返回器<
 
     switch (数据.getTag()) {
       case 'Left': {
-        let 实际数据 = 数据.assertLeft().getLeft()
+        let 实际左值 = 数据.assertLeft().getLeft()
+        let 实际数据 = 实际左值
+        let 详情: string | undefined
 
         let 校验结果 = this.实现错误类型Zod.safeParse(实际数据)
+        if (校验结果.success === false) {
+          if (typeof 实际左值 === 'object' && 实际左值 !== null && '错误' in 实际左值) {
+            实际数据 = 实际左值.错误
+            详情 = 实际左值.详情
+            校验结果 = this.实现错误类型Zod.safeParse(实际数据)
+          }
+        }
+
         if (校验结果.success === false) {
           let 结果字符串 = JSON.stringify(递归截断字符串(实际数据))
           void log.error(`结果无法通过校验: ${结果字符串}`)
@@ -55,7 +72,13 @@ export class 常用接口返回器<
           throw new Error(`结果无法通过校验`)
         }
 
-        let 返回数据 = { status: 'fail' as const, data: 校验结果.data as z.TypeOf<实现错误类型Zod> }
+        let 返回数据: { status: 'fail'; data: z.TypeOf<实现错误类型Zod>; detail?: string } = {
+          status: 'fail' as const,
+          data: 校验结果.data as z.TypeOf<实现错误类型Zod>,
+        }
+        if (详情 !== void 0) {
+          返回数据.detail = 详情
+        }
         void log.trace('最终结果: %o', JSON.stringify(递归截断字符串(返回数据)))
         res.send(返回数据)
 
