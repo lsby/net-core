@@ -9,7 +9,7 @@ export class 常用接口返回器<
   实现错误类型Zod extends z.ZodTypeAny,
   实现正确类型Zod extends z.ZodTypeAny,
 > extends 接口返回器<
-  z.infer<实现错误类型Zod> | { 错误: z.infer<实现错误类型Zod>; 详情?: string },
+  z.infer<实现错误类型Zod> | { 错误: z.infer<实现错误类型Zod>; 详情: string },
   z.infer<实现正确类型Zod>,
   z.ZodObject<{ status: z.ZodLiteral<'fail'>; data: 实现错误类型Zod; detail: z.ZodOptional<z.ZodString> }>,
   z.ZodObject<{ status: z.ZodLiteral<'success'>; data: 实现正确类型Zod }>
@@ -36,10 +36,7 @@ export class 常用接口返回器<
   public override 实现(
     req: Request,
     res: Response,
-    数据: Either<
-      z.infer<实现错误类型Zod> | { 错误: z.infer<实现错误类型Zod>; 详情?: string },
-      z.infer<实现正确类型Zod>
-    >,
+    数据: Either<z.infer<实现错误类型Zod> | { 错误: z.infer<实现错误类型Zod>; 详情: string }, z.infer<实现正确类型Zod>>,
     请求附加参数: 请求附加参数类型,
   ): void {
     let log = 请求附加参数.log.extend(常用接口返回器.name)
