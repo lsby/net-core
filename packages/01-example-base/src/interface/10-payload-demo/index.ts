@@ -28,6 +28,6 @@ let 接口返回器 = new 常用接口返回器(z.never(), z.object({ message: z
 let 接口路径 = '/api/payload-demo' as const
 let 接口方法 = 'post' as const
 export default new 接口(接口路径, 接口方法, 接口逻辑实现, 接口返回器, {
-  需要鉴权: false,
+  需要鉴权: false as const,
   接口功能描述: '这是一个演示 payload 功能的接口' as const,
 })
