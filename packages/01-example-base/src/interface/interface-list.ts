@@ -10,6 +10,7 @@ import _src_interface_06_static_file_index_ts from './06-static-file/index'
 import _src_interface_07_virtual_file_index_ts from './07-virtual-file/index'
 import _src_interface_08_async_plugin_index_ts from './08-async-plugin/index'
 import _src_interface_09_error_with_detail_index_ts from './09-error-with-detail/index'
+import _src_interface_10_payload_demo_index_ts from './10-payload-demo/index'
 
 export let interfaceApiList: 任意接口[] = [
   _src_interface_01_calculate_add_index_ts,
@@ -21,4 +22,5 @@ export let interfaceApiList: 任意接口[] = [
   _src_interface_07_virtual_file_index_ts,
   _src_interface_08_async_plugin_index_ts,
   _src_interface_09_error_with_detail_index_ts,
+  _src_interface_10_payload_demo_index_ts,
 ]

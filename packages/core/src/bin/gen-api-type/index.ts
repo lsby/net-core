@@ -71,6 +71,7 @@ import {
   获得接口返回器类型,
   获得接口逻辑插件类型,
   获得接口逻辑类型,
+  获得接口负载类型,
 } from '@lsby/net-core'
 import 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}"
 
@@ -85,6 +86,7 @@ type jsonErrorOutput = 获得接口返回器接口错误类型<获得接口返�
 type jsonSuccessOutput = 获得接口返回器接口正确类型<获得接口返回器类型<typeof 导入>>
 type wsInput = 取第一个WS插件输入<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
 type wsOutput = 取第一个WS插件输出<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
+type payload = 获得接口负载类型<typeof 导入>
 type JSON接口计算结果 = 是否为正则 extends true
   ? never
   : jsonPath extends never
@@ -113,6 +115,7 @@ type JSON接口计算结果 = 是否为正则 extends true
                             successOutput: jsonSuccessOutput
                             wsOutput: wsOutput
                             wsInput: wsInput
+                            payload: payload
                           }
                         : never
                       : never
