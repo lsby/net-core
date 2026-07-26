@@ -108,8 +108,7 @@ type JSON接口计算结果 = 是否为正则 extends true
                               json: 'json' extends keyof jsonInput ? jsonInput['json'] : never
                               query: 'query' extends keyof getInput ? getInput['query'] : never
                               urlencoded: 'urlencoded' extends keyof urlEncodedInput ? urlEncodedInput['urlencoded'] : never
-                              // form: 'form' extends keyof formDataInput ? formDataInput['form'] : never
-                              form: FormData
+                              form: 'form' extends keyof formDataInput ? FormData : never
                             }
                             errorOutput: jsonErrorOutput
                             successOutput: jsonSuccessOutput

@@ -1,6 +1,7 @@
 import { Either, Task } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
 import { z } from 'zod'
+import type { 严格递归合并对象 } from '../help/help'
 import { 请求附加参数类型 } from '../types/types'
 import type { 接口逻辑 } from './interface-logic'
 
@@ -59,7 +60,7 @@ export type 合并插件正确结果<Arr extends Array<任意同步或异步插�
   : Arr extends [infer x, ...infer xs]
     ? x extends infer 插件项
       ? xs extends Array<任意同步或异步插件>
-        ? 取插件正确ts类型<解包插件<插件项>> & 合并插件正确结果<xs>
+        ? 严格递归合并对象<取插件正确ts类型<解包插件<插件项>>, 合并插件正确结果<xs>>
         : {}
       : {}
     : {}

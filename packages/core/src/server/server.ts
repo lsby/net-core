@@ -1,4 +1,4 @@
-import { Log } from '@lsby/ts-log'
+﻿import { Log } from '@lsby/ts-log'
 import type { Request, Response } from 'express'
 import express from 'express'
 import type * as http from 'node:http'
@@ -6,7 +6,7 @@ import { networkInterfaces } from 'node:os'
 import short from 'short-uuid'
 import { WebSocket, WebSocketServer } from 'ws'
 import { 全局日志单例 } from '../global/log'
-import { 全局WebSocket管理器单例 } from '../global/web-socket'
+import { WebSocket管理器 } from '../global/model/web-socket'
 import { 任意接口 } from '../interface/interface-base'
 import { 任意接口逻辑 } from '../interface/interface-logic'
 import { 任意接口返回器 } from '../interface/interface-returner'
@@ -26,12 +26,19 @@ export class 服务器 {
   private 日志回调?: 日志回调类型 | undefined
   private 接口们: 任意接口[]
   private 端口: number
+  private WebSocket管理器: WebSocket管理器
   private 动态路由表: 任意接口[] = []
   private 静态路由表 = new Map<路径, Map<方法, 任意接口>>()
 
-  public constructor(options: { 接口们: 任意接口[]; 端口: number; 日志回调?: 日志回调类型 }) {
+  public constructor(options: {
+    接口们: 任意接口[]
+    端口: number
+    日志回调?: 日志回调类型
+    WebSocket管理器?: WebSocket管理器
+  }) {
     this.接口们 = options.接口们
     this.端口 = options.端口
+    this.WebSocket管理器 = options.WebSocket管理器 ?? new WebSocket管理器()
     this.日志回调 = options.日志回调
     this.log = 全局日志单例
     if (this.日志回调 !== void 0) this.log = this.log.pipe(this.日志回调)
@@ -41,6 +48,9 @@ export class 服务器 {
       if (typeof 路径 === 'string') {
         let 方法 = 接口.获得方法() as string
         let 方法表 = this.静态路由表.get(路径) ?? new Map<string, 任意接口>()
+        if (方法表.has(方法)) {
+          throw new Error(`发现重复接口: ${方法.toUpperCase()} ${路径}`)
+        }
         方法表.set(方法, 接口)
         this.静态路由表.set(路径, 方法表)
         continue
@@ -59,6 +69,22 @@ export class 服务器 {
 
     let server = app.listen(this.端口)
     await this.初始化WebSocket(server)
+    await new Promise<void>((resolve, reject) => {
+      let 监听成功 = (): void => {
+        server.off('error', 监听失败)
+        resolve()
+      }
+      let 监听失败 = (error: Error): void => {
+        server.off('listening', 监听成功)
+        reject(error)
+      }
+
+      server.once('listening', 监听成功)
+      server.once('error', 监听失败)
+    })
+
+    let address = server.address()
+    if (address !== null && typeof address !== 'string') this.端口 = address.port
 
     return { ip: this.获取本地地址(), api: this.接口们.map((a) => a.获得路径() as string), server }
   }
@@ -66,7 +92,7 @@ export class 服务器 {
   private async 处理请求(req: Request, res: Response): Promise<void> {
     let 请求id = short().new()
     let log = this.log.extend(请求id)
-    let 请求附加参数: 请求附加参数类型 = { log: log, 请求id: 请求id, webSocket管理器: 全局WebSocket管理器单例 }
+    let 请求附加参数: 请求附加参数类型 = { log: log, 请求id: 请求id, webSocket管理器: this.WebSocket管理器 }
 
     let 开始时间 = Date.now()
     let 目标接口: 任意接口 | null = null
@@ -107,8 +133,12 @@ export class 服务器 {
       res.status(404).end()
     } catch (error) {
       await log.error(error)
-      res.setHeader('Content-Type', 'text/html')
-      res.status(500).send('Internal Server Error')
+      if (res.headersSent) {
+        res.destroy()
+      } else {
+        res.setHeader('Content-Type', 'text/html')
+        res.status(500).send('Internal Server Error')
+      }
     } finally {
       let 耗时ms = Date.now() - 开始时间
       let 应该过滤常规日志 = 目标接口 !== null && 目标接口.获得接口返回器() instanceof 静态文件返回器
@@ -167,7 +197,7 @@ export class 服务器 {
 
     // ---------- 接口返回器 ----------
     开始 = Date.now()
-    接口返回器.实现(req, res, 接口结果, 请求附加参数)
+    await 接口返回器.实现(req, res, 接口结果, 请求附加参数)
     let 返回耗时 = Date.now() - 开始
     await log.trace('返回逻辑执行完毕, 耗时: %o ms', 返回耗时)
 
@@ -192,14 +222,15 @@ export class 服务器 {
       let 连接log = log.extend(short().new())
       await 连接log.trace('收到 WebSocket 连接请求: %o', req.url)
 
-      let 客户端id = req.url?.split('?id=')[1] ?? null
+      let 请求URL = new URL(req.url ?? '/', 'http://localhost')
+      let 客户端id = 请求URL.searchParams.get('id')
       if (客户端id === null) {
         await 连接log.warn('连接请求缺少客户端 ID')
         return this.关闭WebSocket连接(ws, 连接log, 4001, '缺少客户端 ID')
       }
       await 连接log.trace('解析客户端 ID: %s', 客户端id)
 
-      let WebSocket管理器 = 全局WebSocket管理器单例
+      let WebSocket管理器 = this.WebSocket管理器
 
       let 连接已存在 = WebSocket管理器.查询连接存在(客户端id)
       if (连接已存在) {
@@ -230,6 +261,9 @@ export class 服务器 {
   private 获取本地地址(): string[] {
     return Object.values(networkInterfaces())
       .flatMap((iface) => iface ?? [])
-      .map((address) => `http://${address.address}:${this.端口}`)
+      .map((address) => {
+        let host = address.family === 'IPv6' ? `[${address.address}]` : address.address
+        return `http://${host}:${this.端口}`
+      })
   }
 }

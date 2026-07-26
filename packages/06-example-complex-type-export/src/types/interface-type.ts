@@ -21,4 +21,4 @@ export enum TestEnum {
   A,
   B,
 }
-export type InterfaceType = [{ path: "/api/structure/add"; method: "post"; input: { json: { data: { type: "object"; properties: Record<string, JSONSchema>; required?: string[] | undefined; definitions?: Record<string, JSONSchema> | undefined; } | { type: "object"; $ref?: `http://${string}` | `https://${string}` | undefined; }; }; query: never; urlencoded: never; form: FormData; }; errorOutput: { status: "fail"; data: never; }; successOutput: { status: "success"; data: {}; }; wsOutput: {}; wsInput: {}; }]
+export type InterfaceType = [{ path: "/api/structure/add"; method: "post"; input: { json: { data: { type: "object"; properties: Record<string, JSONSchema>; required?: string[] | undefined; definitions?: Record<string, JSONSchema> | undefined; } | { type: "object"; $ref?: `http://${string}` | `https://${string}` | undefined; }; }; query: never; urlencoded: never; form: never; }; errorOutput: { status: "fail"; data: never; detail?: string | undefined; }; successOutput: { status: "success"; data: {}; }; wsOutput: {}; wsInput: {}; payload: Record<string, unknown> | undefined; }]

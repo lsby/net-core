@@ -17,12 +17,15 @@ export class JSON参数解析插件<Result extends z.AnyZodObject> extends 插�
     super(错误类型描述, z.object({ json: t }), async (req, res, 附加参数) => {
       let log = 附加参数.log.extend(JSON参数解析插件.name)
 
-      await new Promise((pRes, Prej) =>
+      let 中间件错误 = await new Promise<unknown>((pRes) =>
         express.json(opt)(req, res, (err) => {
-          if (err !== null && err !== void 0) return Prej(`JSON 解析失败: ${String(err)}`)
-          pRes(null)
+          pRes(err ?? null)
         }),
       )
+      if (中间件错误 !== null) {
+        await log.warn('JSON 中间件解析失败：%o', String(中间件错误))
+        return new Left({ code: 400, data: `JSON 解析失败: ${String(中间件错误)}` })
+      }
 
       await log.trace('准备解析 JSON 参数：%o', JSON.stringify(递归截断字符串(req.body)))
       let parseResult = t.safeParse(req.body)

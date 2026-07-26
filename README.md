@@ -83,6 +83,7 @@ npm run _build:all
 6. **[06-example-complex-type-export](./packages/06-example-complex-type-export)**: 复杂类型系统的导出方法.
 7. **[07-example-express-compatibility](./packages/07-example-express-compatibility)**: Express兼容性示例. 学习如何包装Express中间件, 复用现有生态, 实现完全的Express兼容模式.
 8. **[08-example-cors](./packages/08-example-cors)**: cors示例. 学习如何通过框架的方式实现cors.
+9. **[09-example-upload-file](./packages/09-example-upload-file)**: 文件上传示例. 学习如何解析 multipart/form-data、限制文件大小并生成前端 FormData 调用类型.
 
 ```bash
 cd packages/01-example-base

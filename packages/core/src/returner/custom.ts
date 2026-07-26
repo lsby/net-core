@@ -20,7 +20,7 @@ export class 自定义接口返回器<
       res: Response,
       数据: Either<z.infer<实现错误类型Zod>, z.infer<实现正确类型Zod>>,
       请求附加参数: 请求附加参数类型,
-    ) => void,
+    ) => unknown | Promise<unknown>,
   ) {
     super()
   }
@@ -37,9 +37,9 @@ export class 自定义接口返回器<
     res: Response,
     数据: Either<z.infer<实现错误类型Zod>, z.infer<实现正确类型Zod>>,
     请求附加参数: 请求附加参数类型,
-  ): void {
+  ): unknown | Promise<unknown> {
     let _log = 请求附加参数.log.extend(自定义接口返回器.name)
 
-    this.实现函数(req, res, 数据, 请求附加参数)
+    return this.实现函数(req, res, 数据, 请求附加参数)
   }
 }

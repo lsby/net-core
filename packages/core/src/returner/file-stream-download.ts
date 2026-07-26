@@ -1,6 +1,7 @@
 import { Either } from '@lsby/ts-fp-data'
 import type { Request, Response } from 'express'
 import { Readable } from 'node:stream'
+import { pipeline } from 'node:stream/promises'
 import { z } from 'zod'
 import { 递归截断字符串 } from '../help/interior'
 import { 接口返回器 } from '../interface/interface-returner'
@@ -30,12 +31,12 @@ export class 文件流式下载返回器<
     return z.any()
   }
 
-  public override 实现(
+  public override async 实现(
     req: Request,
     res: Response,
     数据: Either<z.infer<实现错误类型Zod>, z.infer<实现正确类型Zod>>,
     请求附加参数: 请求附加参数类型,
-  ): void {
+  ): Promise<void> {
     let log = 请求附加参数.log.extend(文件流式下载返回器.name)
 
     switch (数据.getTag()) {
@@ -84,7 +85,7 @@ export class 文件流式下载返回器<
         }
 
         // 返回文件流
-        实际数据.data.pipe(res)
+        await pipeline(实际数据.data, res)
 
         break
       }

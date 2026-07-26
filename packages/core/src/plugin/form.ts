@@ -32,12 +32,15 @@ export class Form参数解析插件<Result extends z.AnyZodObject> extends 插�
         let upload = multer(opt)
         let multerMiddleware = upload.any()
 
-        await new Promise((pRes, Prej) =>
+        let 中间件错误 = await new Promise<unknown>((pRes) =>
           multerMiddleware(req, res, (err) => {
-            if (err !== null && err !== void 0) Prej(`Form 解析失败: ${String(err)}`)
-            pRes(null)
+            pRes(err ?? null)
           }),
         )
+        if (中间件错误 !== null) {
+          await log.warn('Form 中间件解析失败：%o', String(中间件错误))
+          return new Left({ code: 400, data: `Form 解析失败: ${String(中间件错误)}` })
+        }
 
         await log.trace('准备解析 Form 参数：%o', JSON.stringify(递归截断字符串(req.body)))
         let parseResult = t.safeParse(req.body)

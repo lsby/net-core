@@ -55,6 +55,7 @@ export class 接口<
       return 规则 === 路径
     }
     if (规则 instanceof RegExp) {
+      规则.lastIndex = 0
       return 规则.test(路径)
     }
     return false

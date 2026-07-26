@@ -65,8 +65,8 @@ export type 严格递归合并对象<A, B> = A extends 普通对象
             ? A[K] extends 普通对象
               ? B[K] extends 普通对象
                 ? 严格递归合并对象<A[K], B[K]> // 两边都是对象
-                : never // B[K] 不是对象 坍缩
-              : never // A[K] 不是对象 坍缩
+                : B[K] // 后者不是对象，按运行时行为覆盖
+              : B[K] // 基本类型冲突时，后者按运行时行为覆盖
             : A[K] // 只有 A 有
           : K extends keyof B
             ? B[K] // 只有 B 有

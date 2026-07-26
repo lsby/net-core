@@ -49,12 +49,6 @@ export class 缓存逻辑<输入类型Zod extends z.AnyZodObject, 结果类型Zo
       this.缓存池.set(缓存键, { 数据, 过期时间 })
     }
 
-    let json = 参数.json
-    if (json === void 0) {
-      await log.info('请求体为空，返回空缓存')
-      return new Right({ 缓存组件: { 设置缓存, 缓存数据: null } })
-    }
-
     // 检查缓存是否存在
     let 缓存项 = this.缓存池.get(缓存键)
     if (缓存项 === void 0) {

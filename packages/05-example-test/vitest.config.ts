@@ -10,6 +10,6 @@ export default defineConfig({
       exclude: ['node_modules/', 'test/', 'src/interface/**/*.test.ts'],
     },
     include: ['test/**/*.test.ts'],
-    testTimeout: 999_999_999,
+    testTimeout: 30_000,
   },
 })

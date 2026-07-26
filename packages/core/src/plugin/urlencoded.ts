@@ -17,12 +17,15 @@ export class UrlEncoded参数解析插件<Result extends z.AnyZodObject> extends
     super(错误类型描述, z.object({ urlencoded: t }), async (req, res, 附加参数) => {
       let log = 附加参数.log.extend(UrlEncoded参数解析插件.name)
 
-      await new Promise((pRes, Prej) =>
+      let 中间件错误 = await new Promise<unknown>((pRes) =>
         express.urlencoded({ extended: true, ...opt })(req, res, (err) => {
-          if (err !== null && err !== void 0) return Prej(`UrlEncoded 解析失败: ${String(err)}`)
-          pRes(null)
+          pRes(err ?? null)
         }),
       )
+      if (中间件错误 !== null) {
+        await log.warn('UrlEncoded 中间件解析失败：%o', String(中间件错误))
+        return new Left({ code: 400, data: `UrlEncoded 解析失败: ${String(中间件错误)}` })
+      }
 
       await log.trace('准备解析UrlEncoded数据：%o', JSON.stringify(递归截断字符串(req.body)))
       let parseResult = t.safeParse(req.body)

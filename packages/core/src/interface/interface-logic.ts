@@ -226,6 +226,11 @@ export abstract class 接口逻辑Base<
     return 结果.assertRight().getRight()
   }
 
+  private 获得原子逻辑链(): 任意接口逻辑[] {
+    if (this.上游接口 === null || this.最后接口 === null) return [this]
+    return [...this.上游接口.获得原子逻辑链(), ...this.最后接口.获得原子逻辑链()]
+  }
+
   public 绑定<
     输入的插件类型 extends 任意同步或异步插件[],
     输入的错误类型 extends 接口逻辑错误类型,
@@ -249,51 +254,56 @@ export abstract class 接口逻辑Base<
     typeof this,
     typeof 输入
   > {
-    let 上清理 = this.获得清理函数?.()
-    let 下清理 = 输入.获得清理函数?.()
-
-    let 合并清理: 清理函数类型<[...插件类型, ...输入的插件类型], 逻辑附加参数类型> | undefined = void 0
-    if (上清理 !== void 0 && 下清理 !== void 0) {
-      合并清理 = async (
-        参数: 合并插件正确结果<[...插件类型, ...输入的插件类型]>,
-        逻辑附加参数: 逻辑附加参数类型,
-        请求附加参数: 请求附加参数类型,
-      ): Promise<void> => {
-        await 上清理(参数 as any, 逻辑附加参数, 请求附加参数)
-        await 下清理(参数 as any, 逻辑附加参数 as any, 请求附加参数)
-      }
-    } else if (上清理 !== void 0) {
-      合并清理 = async (
-        参数: 合并插件正确结果<[...插件类型, ...输入的插件类型]>,
-        逻辑附加参数: 逻辑附加参数类型,
-        请求附加参数: 请求附加参数类型,
-      ): Promise<void> => {
-        await 上清理(参数 as any, 逻辑附加参数, 请求附加参数)
-      }
-    } else if (下清理 !== void 0) {
-      合并清理 = async (
-        参数: 合并插件正确结果<[...插件类型, ...输入的插件类型]>,
-        逻辑附加参数: 逻辑附加参数类型,
-        请求附加参数: 请求附加参数类型,
-      ): Promise<void> => {
-        await 下清理(参数 as any, 逻辑附加参数 as any, 请求附加参数)
-      }
-    }
+    let 原子逻辑链 = [...this.获得原子逻辑链(), ...输入.获得原子逻辑链()]
 
     return 接口逻辑Base.完整构造(
       [...this.获得插件们(), ...输入.获得插件们()],
       async (参数, 逻辑附加参数, 请求附加参数) => {
-        let 上层调用结果 = await this.实现(参数 as any, 逻辑附加参数, 请求附加参数)
-        if (上层调用结果.isLeft()) return 上层调用结果 as any
+        let 当前逻辑附加参数: Record<string, any> = 逻辑附加参数
+        let 最终结果: Either<any, any> | undefined = void 0
+        let 主错误: unknown = void 0
+        let 清理栈: Array<{ 清理: 清理函数类型<any, any>; 逻辑附加参数: Record<string, any> }> = []
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        let 传给下一层的 = 普通对象深合并(逻辑附加参数, 上层调用结果.assertRight().getRight()) as any
-        let 下层调用结果 = await 输入.实现(参数 as any, 传给下一层的, 请求附加参数)
+        try {
+          for (let 当前逻辑 of 原子逻辑链) {
+            let 清理函数 = 当前逻辑.获得清理函数?.()
+            let 清理项 = 清理函数 === void 0 ? void 0 : { 清理: 清理函数, 逻辑附加参数: 当前逻辑附加参数 }
+            if (清理项 !== void 0) 清理栈.push(清理项)
 
-        let 最终返回结果 = 下层调用结果.map((a) => 普通对象深合并(传给下一层的, a) as any)
-        return 最终返回结果
+            let 当前结果 = await 当前逻辑.实现(参数 as any, 当前逻辑附加参数, 请求附加参数)
+            if (当前结果.isLeft()) {
+              最终结果 = 当前结果
+              break
+            }
+
+            当前逻辑附加参数 = 普通对象深合并(当前逻辑附加参数, 当前结果.assertRight().getRight())
+            if (清理项 !== void 0) 清理项.逻辑附加参数 = 当前逻辑附加参数
+          }
+
+          最终结果 ??= new Right(当前逻辑附加参数)
+        } catch (error) {
+          主错误 = error
+        }
+
+        let 清理错误们: unknown[] = []
+        for (let 清理项 of 清理栈.reverse()) {
+          try {
+            await 清理项.清理(参数 as any, 清理项.逻辑附加参数, 请求附加参数)
+          } catch (error) {
+            清理错误们.push(error)
+          }
+        }
+
+        if (主错误 !== void 0 && 清理错误们.length > 0) {
+          throw new AggregateError([主错误, ...清理错误们], '接口逻辑和清理函数均执行失败')
+        }
+        if (主错误 !== void 0) throw 主错误
+        if (清理错误们.length === 1) throw 清理错误们[0]
+        if (清理错误们.length > 1) throw new AggregateError(清理错误们, '多个清理函数执行失败')
+
+        return 最终结果 as any
       },
-      合并清理,
+      void 0,
       this,
       输入,
     )

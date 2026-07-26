@@ -29,7 +29,7 @@ export abstract class 接口返回器<
     res: Response,
     数据: Either<实现错误类型, 实现正确类型>,
     请求附加参数: 请求附加参数类型,
-  ): void
+  ): unknown | Promise<unknown>
 }
 export type 任意接口返回器 = 接口返回器<any, any, any, any>
 export type 获得接口返回器实现错误类型<A> = A extends 接口返回器<infer X, any, any, any> ? X : never
