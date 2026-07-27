@@ -7,8 +7,21 @@
   },
   "type": "module",
   "exports": {
-    "require": "./dist/cjs/index.cjs",
-    "import": "./dist/esm/index.js"
+    ".": {
+      "types": "./dist/esm/index.d.ts",
+      "require": "./dist/cjs/index.cjs",
+      "import": "./dist/esm/index.js"
+    },
+    "./*": {
+      "types": "./dist/esm/*.d.ts",
+      "require": "./dist/cjs/*.cjs",
+      "import": "./dist/esm/*.js"
+    }
+  },
+  "browser": {
+    "express": false,
+    "multer": false,
+    "ws": false
   },
   "bin": {
     "lsby-net-core-gen-api-list": "./dist/bin/gen-api-list/bin.cjs",
