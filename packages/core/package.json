@@ -19,8 +19,8 @@
     }
   },
   "browser": {
-    "express": "./dist/esm/browser-mock/express.js",
-    "multer": "./dist/esm/browser-mock/multer.js",
+    "express": false,
+    "multer": false,
     "ws": false
   },
   "bin": {
