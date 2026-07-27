@@ -3,8 +3,8 @@ import type { Server } from 'node:http'
 import { interfaceApiList } from '../interface/interface-list'
 
 export class App {
-  public async run(): Promise<Server> {
-    let 服务 = new 服务器({ 接口们: interfaceApiList, 端口: 3000 })
+  public async run(端口: number = 3000): Promise<Server> {
+    let 服务 = new 服务器({ 接口们: interfaceApiList, 端口 })
     let 服务信息 = await 服务.run()
 
     console.log('服务器启动成功!')
