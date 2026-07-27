@@ -18,11 +18,6 @@
       "import": "./dist/esm/*.js"
     }
   },
-  "browser": {
-    "express": false,
-    "multer": false,
-    "ws": false
-  },
   "bin": {
     "lsby-net-core-gen-api-list": "./dist/bin/gen-api-list/bin.cjs",
     "lsby-net-core-gen-api-type": "./dist/bin/gen-api-type/bin.cjs",
