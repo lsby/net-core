@@ -29,8 +29,8 @@
   "scripts": {
     "_build:all": "npm run _build:cjs && npm run _build:esm && npm run _build:bin",
     "_build:bin": "tsup src/bin/**/*.ts --external typescript --format cjs --clean --dts -d dist/bin",
-    "_build:cjs": "tsup src/**/*.ts --external typescript --format cjs --clean --dts -d dist/cjs",
-    "_build:esm": "tsup src/**/*.ts --external typescript --format esm --clean --dts -d dist/esm",
+    "_build:cjs": "tsup src/index.ts src/**/*.ts --external typescript --format cjs --clean --dts -d dist/cjs",
+    "_build:esm": "tsup src/index.ts src/**/*.ts --external typescript --format esm --clean --dts -d dist/esm",
     "_check:all": "npm run _check:format && npm run _check:lint",
     "_check:format": "prettier --write .",
     "_check:lint": "eslint . --fix",
