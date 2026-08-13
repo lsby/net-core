@@ -1,5 +1,7 @@
 export * from './help/help'
 
+export * from './executor/interface-executor'
+
 export * from './global/model/hub'
 
 export * from './interface/interface-base'
