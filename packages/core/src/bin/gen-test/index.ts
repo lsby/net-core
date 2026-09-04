@@ -28,9 +28,13 @@ export async function main(
   tsconfig路径: string,
   目标路径: string,
   输出文件路径: string,
-  文件过滤表达式: string,
+  文件过滤表达式: string = '.*',
 ): Promise<void> {
   let log = new Log('@lsby:net-core').extend('gen-test')
+
+  let 绝对目标路径 = path.resolve(目标路径)
+  let 绝对输出文件路径 = path.resolve(输出文件路径)
+  let 文件过滤正则 = new RegExp(文件过滤表达式 === '' ? '.*' : 文件过滤表达式)
 
   await log.debug('开始生成测试...')
   await log.debug(`tsconfig路径: ${tsconfig路径}`)
@@ -53,12 +57,14 @@ export async function main(
 
   let 所有源文件 = 项目.getSourceFiles()
   let 相关源文件们 = 所有源文件.filter((源文件) => {
-    let 源文件路径 = path.normalize(源文件.fileName)
-    if (源文件路径.includes(目标路径) === false) return false
-    if (源文件路径 === path.normalize(输出文件路径)) return false
+    let 源文件路径 = path.resolve(源文件.fileName)
+    let 相对筛选路径 = path.relative(绝对目标路径, 源文件路径)
+    if (相对筛选路径 === '' || 相对筛选路径 === '..' || 相对筛选路径.startsWith(`..${path.sep}`) === true) return false
+    if (path.isAbsolute(相对筛选路径) === true) return false
+    if (源文件路径 === 绝对输出文件路径) return false
     let 存在默认导出 = 检查存在默认导出(源文件)
     if (存在默认导出 === false) return false
-    let 符合过滤表达式 = new RegExp(文件过滤表达式 === '' ? '.*' : 文件过滤表达式).test(源文件路径)
+    let 符合过滤表达式 = 文件过滤正则.test(相对筛选路径.replaceAll('\\', '/'))
     if (符合过滤表达式 === false) return false
     return true
   })

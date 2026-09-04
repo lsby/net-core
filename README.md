@@ -96,7 +96,7 @@ npm run dev
 
 - `lsby-net-core-gen-api-list`: 自动扫描代码, 生成API路由索引.
 - `lsby-net-core-gen-api-type`: 自动扫描代码, 生成前端可用的TypeScript类型定义.
-- `lsby-net-core-gen-test`: 自动扫描代码, 生成单元测试脚手架.
+- `lsby-net-core-gen-test`: 自动扫描代码, 生成单元测试脚手架. 可选的正则过滤器会匹配相对于接口文件夹的 `/` 分隔路径, 省略时默认生成全部测试.
 
 在不同的示例中, 会将这些命令编写为npm命令, 请查看示例中的package.json来了解详情
 
