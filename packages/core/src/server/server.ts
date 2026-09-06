@@ -14,18 +14,24 @@ import { 请求附加参数类型 } from '../types/types'
 
 type 路径 = string
 type 方法 = string
+type HTTP服务器 = http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>
 export type 日志回调类型 = (
   level: 'trace' | 'debug' | 'info' | 'warn' | 'error',
   namespace: string,
   content: string,
 ) => Promise<void>
+export type 服务器运行信息 = { ip: string[]; api: string[]; server: HTTP服务器 }
 
 export class 服务器 {
+  private HTTP服务器: HTTP服务器 | null = null
+  private WebSocket服务器: WebSocketServer | null = null
+  private 关闭Promise: Promise<void> | null = null
   private log: Log
   private 日志回调?: 日志回调类型 | undefined
   private 接口们: 任意接口[]
   private 端口: number
   private WebSocket管理器: WebSocket管理器
+  private 是否已启动 = false
   private 动态路由表: 任意接口[] = []
   private 静态路由表 = new Map<路径, Map<方法, 任意接口>>()
 
@@ -58,34 +64,83 @@ export class 服务器 {
     }
   }
 
-  public async run(): Promise<{
-    ip: string[]
-    api: string[]
-    server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>
-  }> {
+  public async run(): Promise<服务器运行信息> {
+    if (this.是否已启动 === true) throw new Error('服务器不可以多次启动')
+    if (this.关闭Promise !== null) throw new Error('服务器已关闭，不能再次启动')
+    this.是否已启动 = true
     let app = express()
     app.use(this.处理请求.bind(this))
 
-    let server = app.listen(this.端口)
-    await this.初始化WebSocket(server)
+    try {
+      let server = app.listen(this.端口)
+      this.HTTP服务器 = server
+      this.WebSocket服务器 = this.初始化WebSocket(server)
+      await new Promise<void>((resolve, reject) => {
+        let 监听成功 = (): void => {
+          server.off('error', 监听失败)
+          resolve()
+        }
+        let 监听失败 = (error: Error): void => {
+          server.off('listening', 监听成功)
+          reject(error)
+        }
+
+        server.once('listening', 监听成功)
+        server.once('error', 监听失败)
+      })
+
+      let address = server.address()
+      if (address !== null && typeof address !== 'string') this.端口 = address.port
+      return { ip: this.获取本地地址(), api: this.接口们.map((a) => a.获得路径() as string), server }
+    } catch (启动错误) {
+      try {
+        await this.close()
+      } catch (关闭错误) {
+        throw new AggregateError([启动错误, 关闭错误], '服务器启动失败，回收资源时也发生错误')
+      }
+      throw 启动错误
+    }
+  }
+
+  public async close(): Promise<void> {
+    this.关闭Promise ??= this.执行关闭()
+    await this.关闭Promise
+  }
+
+  private async 关闭HTTP服务器(server: HTTP服务器 | null): Promise<void> {
+    if (server === null) return
     await new Promise<void>((resolve, reject) => {
-      let 监听成功 = (): void => {
-        server.off('error', 监听失败)
-        resolve()
-      }
-      let 监听失败 = (error: Error): void => {
-        server.off('listening', 监听成功)
-        reject(error)
-      }
-
-      server.once('listening', 监听成功)
-      server.once('error', 监听失败)
+      server.close((错误) => {
+        if (错误 === void 0 || ('code' in 错误 && 错误.code === 'ERR_SERVER_NOT_RUNNING')) resolve()
+        else reject(错误)
+      })
     })
+  }
 
-    let address = server.address()
-    if (address !== null && typeof address !== 'string') this.端口 = address.port
+  private async 关闭WebSocket服务器(server: WebSocketServer | null): Promise<void> {
+    if (server === null) return
+    for (let 客户端 of server.clients) {
+      if (客户端.readyState !== WebSocket.CLOSED) 客户端.terminate()
+    }
+    await new Promise<void>((resolve, reject) => {
+      server.close((错误) => (错误 === void 0 ? resolve() : reject(错误)))
+    })
+  }
 
-    return { ip: this.获取本地地址(), api: this.接口们.map((a) => a.获得路径() as string), server }
+  private async 执行关闭(): Promise<void> {
+    let HTTP服务器 = this.HTTP服务器
+    let WebSocket服务器 = this.WebSocket服务器
+    let 关闭结果组 = await Promise.allSettled([
+      this.关闭HTTP服务器(HTTP服务器),
+      this.关闭WebSocket服务器(WebSocket服务器),
+      this.WebSocket管理器.关闭所有连接(),
+    ])
+    this.HTTP服务器 = null
+    this.WebSocket服务器 = null
+    let 错误组 = 关闭结果组
+      .filter((结果): 结果 is PromiseRejectedResult => 结果.status === 'rejected')
+      .map((结果) => 结果.reason)
+    if (错误组.length > 0) throw new AggregateError(错误组, '关闭服务器失败')
   }
 
   private async 处理请求(req: Request, res: Response): Promise<void> {
@@ -152,7 +207,7 @@ export class 服务器 {
     }
   }
 
-  private async 初始化WebSocket(server: http.Server): Promise<void> {
+  private 初始化WebSocket(server: HTTP服务器): WebSocketServer {
     let log = this.log
 
     let wss = new WebSocketServer({ server })
@@ -197,6 +252,7 @@ export class 服务器 {
         WebSocket管理器.删除连接(客户端id)
       })
     })
+    return wss
   }
 
   private async 关闭WebSocket连接(ws: WebSocket, log: Log, code: number, reason: string): Promise<void> {

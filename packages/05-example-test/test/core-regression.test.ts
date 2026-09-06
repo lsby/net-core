@@ -8,15 +8,8 @@ import {
   默认请求附加参数,
 } from '@lsby/net-core'
 import { Left, Right } from '@lsby/ts-fp-data'
-import type { Server } from 'node:http'
 import { expect, test } from 'vitest'
 import { z } from 'zod'
-
-async function 关闭服务器(server: Server): Promise<void> {
-  await new Promise<void>((resolve, reject) => {
-    server.close((error) => (error === void 0 ? resolve() : reject(error)))
-  })
-}
 
 test('组合逻辑在失败时携带已完成的上下文并逆序清理', async () => {
   let 清理记录: string[] = []
@@ -96,7 +89,8 @@ test('畸形 JSON 返回 400，异步返回器异常返回 500', async () => {
       throw new Error('异步返回器失败')
     }),
   )
-  let 服务信息 = await new 服务器({ 接口们: [JSON接口, 异步异常接口], 端口: 0 }).run()
+  let 服务 = new 服务器({ 接口们: [JSON接口, 异步异常接口], 端口: 0 })
+  let 服务信息 = await 服务.run()
 
   try {
     if (!服务信息.server.listening) {
@@ -118,6 +112,46 @@ test('畸形 JSON 返回 400，异步返回器异常返回 500', async () => {
     expect(异步异常响应.status).toBe(500)
     expect(await 异步异常响应.text()).toBe('Internal Server Error')
   } finally {
-    await 关闭服务器(服务信息.server)
+    await 服务.close()
+  }
+})
+
+test('服务器关闭时会终止 WebSocket 并且可以重复关闭', async () => {
+  let 服务 = new 服务器({ 接口们: [], 端口: 0 })
+  let 服务信息 = await 服务.run()
+  try {
+    let 地址 = 服务信息.server.address()
+    if (地址 === null || typeof 地址 === 'string') throw new Error('无法获得测试服务器端口')
+    let 客户端 = new WebSocket(`ws://127.0.0.1:${地址.port}/?id=close-test`)
+    await new Promise<void>((resolve, reject) => {
+      客户端.onopen = (): void => resolve()
+      客户端.onerror = (): void => reject(new Error('WebSocket 连接失败'))
+    })
+    let 客户端关闭Promise = new Promise<void>((resolve) => {
+      客户端.onclose = (): void => resolve()
+    })
+
+    await 服务.close()
+    await 客户端关闭Promise
+    await 服务.close()
+
+    expect(服务信息.server.listening).toBe(false)
+    expect(客户端.readyState).toBe(WebSocket.CLOSED)
+  } finally {
+    await 服务.close()
+  }
+})
+
+test('服务器启动失败时会回收资源', async () => {
+  let 已启动服务 = new 服务器({ 接口们: [], 端口: 0 })
+  let 服务信息 = await 已启动服务.run()
+  try {
+    let 地址 = 服务信息.server.address()
+    if (地址 === null || typeof 地址 === 'string') throw new Error('无法获得测试服务器端口')
+    let 冲突服务 = new 服务器({ 接口们: [], 端口: 地址.port })
+    await expect(冲突服务.run()).rejects.toMatchObject({ code: 'EADDRINUSE' })
+    await 冲突服务.close()
+  } finally {
+    await 已启动服务.close()
   }
 })

@@ -44,11 +44,37 @@ export class WebSocket管理器 {
     }
 
     let 清理函数 = this.清理函数表[id]
-    if (清理函数 !== void 0) void 清理函数().catch((err) => this.log.error(`清理连接失败, id: ${id}, 错误: ${err}`))
+    if (清理函数 !== void 0)
+      void Promise.resolve()
+        .then(清理函数)
+        .catch((err) => this.log.error(`清理连接失败, id: ${id}, 错误: ${err}`))
 
     delete this.连接表[id]
     delete this.清理函数表[id]
     delete this.消息监听表[id]
+  }
+
+  public async 关闭所有连接(): Promise<void> {
+    let 清理Promise组: Promise<void>[] = []
+    for (let id of Object.keys(this.连接表)) {
+      let ws = this.连接表[id]
+      let 清理函数 = this.清理函数表[id]
+      delete this.连接表[id]
+      delete this.清理函数表[id]
+      delete this.消息监听表[id]
+
+      if (ws !== void 0 && ws !== null) {
+        ws.onmessage = null
+        if (ws.readyState !== WebSocket.CLOSED) ws.terminate()
+      }
+      if (清理函数 !== void 0) 清理Promise组.push(Promise.resolve().then(清理函数))
+    }
+
+    let 清理结果组 = await Promise.allSettled(清理Promise组)
+    let 错误组 = 清理结果组
+      .filter((结果): 结果 is PromiseRejectedResult => 结果.status === 'rejected')
+      .map((结果) => 结果.reason)
+    if (错误组.length > 0) throw new AggregateError(错误组, '关闭 WebSocket 连接时执行清理函数失败')
   }
 
   private 注册onmessage(id: id, ws句柄: WebSocket): void {
