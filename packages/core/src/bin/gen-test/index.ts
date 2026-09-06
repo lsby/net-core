@@ -4,6 +4,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import ts from 'typescript'
 import { 数组合并 } from '../../help/interior'
+import { 检查TypeScript诊断, 路径位于目录内, 路径相同 } from '../generator-help'
 
 function 检查存在默认导出(源文件: ts.SourceFile): boolean {
   for (let statement of 源文件.statements) {
@@ -32,8 +33,6 @@ export async function main(
 ): Promise<void> {
   let log = new Log('@lsby:net-core').extend('gen-test')
 
-  let 绝对目标路径 = path.resolve(目标路径)
-  let 绝对输出文件路径 = path.resolve(输出文件路径)
   let 文件过滤正则 = new RegExp(文件过滤表达式 === '' ? '.*' : 文件过滤表达式)
 
   await log.debug('开始生成测试...')
@@ -56,14 +55,15 @@ export async function main(
   await log.debug('成功读取项目...')
 
   let 所有源文件 = 项目.getSourceFiles()
-  let 相关源文件们 = 所有源文件.filter((源文件) => {
-    let 源文件路径 = path.resolve(源文件.fileName)
-    let 相对筛选路径 = path.relative(绝对目标路径, 源文件路径)
-    if (相对筛选路径 === '' || 相对筛选路径 === '..' || 相对筛选路径.startsWith(`..${path.sep}`) === true) return false
-    if (path.isAbsolute(相对筛选路径) === true) return false
-    if (源文件路径 === 绝对输出文件路径) return false
+  let 目标源文件们 = 所有源文件.filter(
+    (源文件) => 路径位于目录内(目标路径, 源文件.fileName) && 路径相同(源文件.fileName, 输出文件路径) === false,
+  )
+  检查TypeScript诊断(项目, 目标源文件们, '测试源码')
+
+  let 相关源文件们 = 目标源文件们.filter((源文件) => {
     let 存在默认导出 = 检查存在默认导出(源文件)
     if (存在默认导出 === false) return false
+    let 相对筛选路径 = path.relative(path.resolve(目标路径), path.resolve(源文件.fileName))
     let 符合过滤表达式 = 文件过滤正则.test(相对筛选路径.replaceAll('\\', '/'))
     if (符合过滤表达式 === false) return false
     return true
@@ -75,9 +75,9 @@ export async function main(
   let 伴随的虚拟文件们 = 相关源文件们.map((a) => {
     let 代码 = [
       `import { 任意接口测试, 接口逻辑测试 } from '@lsby/net-core'`,
-      `import 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}"`,
+      `import * as 导入模块 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}"`,
       ``,
-      `type 计算结果 = typeof 导入 extends 任意接口测试 ? true : typeof 导入 extends 接口逻辑测试 ? true : false`,
+      `type 计算结果 = typeof 导入模块 extends { default: infer 默认导出 } ? 默认导出 extends 任意接口测试 ? true : 默认导出 extends 接口逻辑测试 ? true : false : false`,
     ]
     return ts.createSourceFile(
       a.fileName.replaceAll('.ts', '-' + randomUUID() + '.ts'),
@@ -91,14 +91,18 @@ export async function main(
     options: 解析后的tsconfig.options,
     host: {
       ...项目主机,
-      getSourceFile: (filename) => {
+      getSourceFile: (filename, languageVersion, onError, shouldCreateNewSourceFile) => {
         let 找到的虚拟文件 = 伴随的虚拟文件们.find((a) => a.fileName === filename) ?? null
         if (找到的虚拟文件 !== null) return 找到的虚拟文件
-        return 项目.getSourceFile(filename)
+        return (
+          项目.getSourceFile(filename) ??
+          项目主机.getSourceFile(filename, languageVersion, onError, shouldCreateNewSourceFile)
+        )
       },
     },
     oldProgram: 项目,
   })
+  检查TypeScript诊断(新项目, 伴随的虚拟文件们, '测试列表推导')
   let 类型检查器 = 新项目.getTypeChecker()
 
   let 检查结果: boolean[] = []
@@ -109,6 +113,7 @@ export async function main(
         let type = 类型检查器.getTypeAtLocation(node)
         let 文本结果 = 类型检查器.typeToString(type)
         if (文本结果 === 'true') 结果 = true
+        else if (文本结果 !== 'false') throw new Error(`测试列表推导结果不明确: ${源文件.fileName}: ${文本结果}`)
       }
     })
     检查结果.push(结果)

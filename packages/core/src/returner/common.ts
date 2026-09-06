@@ -5,6 +5,11 @@ import { 递归截断字符串 } from '../help/interior'
 import { 接口返回器 } from '../interface/interface-returner'
 import { 请求附加参数类型 } from '../types/types'
 
+/**
+ * 返回已经通过全部插件检查的合法请求结果。
+ * Left与Right分别表示业务失败和业务成功，二者都使用HTTP 200，并通过返回体的status字段区分。
+ * 请求解析、校验或鉴权失败应由插件使用非2xx状态码直接返回，不会进入本返回器。
+ */
 export class 常用接口返回器<
   实现错误类型Zod extends z.ZodTypeAny,
   实现正确类型Zod extends z.ZodTypeAny,

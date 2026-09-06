@@ -31,10 +31,12 @@
     "_build:bin": "tsup src/bin/**/*.ts --external typescript --format cjs --clean --dts -d dist/bin",
     "_build:cjs": "tsup src/index.ts src/**/*.ts --external typescript --format cjs --clean --dts -d dist/cjs",
     "_build:esm": "tsup src/index.ts src/**/*.ts --external typescript --format esm --clean --dts -d dist/esm",
-    "_check:all": "npm run _check:format && npm run _check:lint",
+    "_check:all": "npm run _check:format && npm run _check:lint && npm run _check:type",
     "_check:format": "prettier --write .",
     "_check:lint": "eslint . --fix",
-    "public:npm": "npm run _build:all && bumpp && npm publish"
+    "_check:type": "tsc --noEmit",
+    "public:npm": "pnpm --workspace-root run verify && bumpp && npm publish",
+    "test:base": "vitest run"
   },
   "dependencies": {
     "commander": "^12.1.0",
@@ -60,13 +62,15 @@
     "prettier-plugin-packagejson": "^2.5.20",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.52.0"
+    "typescript-eslint": "^8.52.0",
+    "vitest": "^2.1.9"
   },
   "peerDependencies": {
     "@lsby/ts-fp-data": "^0.2.7",
     "@lsby/ts-log": "^0.3.0",
     "@types/express": "^5.0.6",
     "express": "^5.2.1",
+    "typescript": "^5.9.3",
     "zod": "3.24.2"
   },
   "packageManager": "pnpm@9.7.1"

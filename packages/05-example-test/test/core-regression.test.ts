@@ -73,7 +73,7 @@ test('重复的静态路由会在启动前被拒绝', () => {
   expect(() => new 服务器({ 接口们: [接口一, 接口二], 端口: 0 })).toThrow('发现重复接口')
 })
 
-test('畸形 JSON 返回 400，异步返回器异常返回 500', async () => {
+test('插件拒绝返回 400，常用返回器的业务失败返回 200，异步返回器异常返回 500', async () => {
   let JSON接口 = new 接口(
     '/api/invalid-json',
     'post',
@@ -89,7 +89,13 @@ test('畸形 JSON 返回 400，异步返回器异常返回 500', async () => {
       throw new Error('异步返回器失败')
     }),
   )
-  let 服务 = new 服务器({ 接口们: [JSON接口, 异步异常接口], 端口: 0 })
+  let 业务失败接口 = new 接口(
+    '/api/business-fail',
+    'get',
+    接口逻辑.构造([], async () => new Left('业务失败' as const)),
+    new 常用接口返回器(z.literal('业务失败'), z.object({})),
+  )
+  let 服务 = new 服务器({ 接口们: [JSON接口, 异步异常接口, 业务失败接口], 端口: 0 })
   let 服务信息 = await 服务.run()
 
   try {
@@ -107,6 +113,12 @@ test('畸形 JSON 返回 400，异步返回器异常返回 500', async () => {
     })
     expect(JSON响应.status).toBe(400)
     expect(await JSON响应.text()).toContain('JSON 解析失败')
+
+    let 业务失败响应 = await fetch(`${基础地址}/api/business-fail`)
+    expect(业务失败响应.status).toBe(200)
+    expect(
+      z.object({ status: z.literal('fail'), data: z.literal('业务失败') }).parse(await 业务失败响应.json()),
+    ).toEqual({ status: 'fail', data: '业务失败' })
 
     let 异步异常响应 = await fetch(`${基础地址}/api/async-returner-error`)
     expect(异步异常响应.status).toBe(500)

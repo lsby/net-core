@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import ts from 'typescript'
+import { 检查TypeScript诊断, 路径位于目录内, 路径相同 } from '../generator-help'
 
 function 检查存在默认导出(源文件: ts.SourceFile): boolean {
   for (let statement of 源文件.statements) {
@@ -17,6 +18,18 @@ function 存在导出修饰符(节点: ts.Node): boolean {
   return (
     ts.canHaveModifiers(节点) && (ts.getModifiers(节点)?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword) ?? false)
   )
+}
+
+function 默认导出是否仅为类型(源文件: ts.SourceFile, 类型检查器: ts.TypeChecker): boolean {
+  let 默认导出节点 = 源文件.statements.find(
+    (节点): 节点 is ts.ExportAssignment => ts.isExportAssignment(节点) && (节点.isExportEquals ?? null) === null,
+  )
+  if (默认导出节点 === void 0) return false
+  let 默认导出符号 = 类型检查器.getSymbolAtLocation(默认导出节点.expression)
+  if (默认导出符号 === void 0) return false
+  let 具有类型含义 = (默认导出符号.flags & ts.SymbolFlags.Type) !== 0
+  let 具有值含义 = (默认导出符号.flags & ts.SymbolFlags.Value) !== 0
+  return 具有类型含义 === true && 具有值含义 === false
 }
 
 export async function main(tsconfig路径: string, 目标路径: string, 输出文件路径: string): Promise<void> {
@@ -41,10 +54,12 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
   await log.debug('成功读取项目...')
 
   let 所有源文件 = 项目.getSourceFiles()
-  let 相关源文件们 = 所有源文件.filter((源文件) => {
-    let 源文件路径 = path.normalize(源文件.fileName)
-    if (源文件路径.includes(目标路径) === false) return false
-    if (源文件路径 === path.normalize(输出文件路径)) return false
+  let 目标源文件们 = 所有源文件.filter(
+    (源文件) => 路径位于目录内(目标路径, 源文件.fileName) && 路径相同(源文件.fileName, 输出文件路径) === false,
+  )
+  检查TypeScript诊断(项目, 目标源文件们, '接口源码')
+
+  let 相关源文件们 = 目标源文件们.filter((源文件) => {
     let 存在默认导出 = 检查存在默认导出(源文件)
     if (存在默认导出 === false) return false
     return true
@@ -53,7 +68,52 @@ export async function main(tsconfig路径: string, 目标路径: string, 输出�
   相关源文件们.sort((a, b) => a.fileName.localeCompare(b.fileName))
   await log.debug(`筛选出 ${相关源文件们.length} 个相关源文件`)
 
+  let 原项目类型检查器 = 项目.getTypeChecker()
   let 伴随的虚拟文件们 = 相关源文件们.map((a) => {
+    let 仅类型默认导出 = 默认导出是否仅为类型(a, 原项目类型检查器)
+    let 默认导入代码 = 仅类型默认导出
+      ? `import type 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}"`
+      : `import 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}"`
+    let 接口推导代码 = 仅类型默认导出
+      ? `
+type 默认导出是否Any = false
+type jsonPath = never
+type jsonMethod = never
+type 是否为正则 = false
+type getInput = never
+type jsonInput = never
+type urlEncodedInput = never
+type formDataInput = never
+type jsonErrorOutput = never
+type jsonSuccessOutput = never
+type wsInput = never
+type wsOutput = never
+type payload = never
+`
+      : `
+type 默认导出是否Any = 0 extends 1 & typeof 导入 ? true : false
+type jsonPath = 获得接口路径类型<typeof 导入>
+type jsonMethod = 获得接口方法类型<typeof 导入>
+type 是否为正则 = jsonPath extends RegExp ? true : false
+type getInput = 合并Query插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
+type jsonInput = 合并JSON插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
+type urlEncodedInput = 合并UrlEncoded参数解析插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
+type formDataInput = 计算接口逻辑Form参数<获得接口逻辑类型<typeof 导入>>
+type jsonErrorOutput = 获得接口返回器接口错误类型<获得接口返回器类型<typeof 导入>>
+type jsonSuccessOutput = 获得接口返回器接口正确类型<获得接口返回器类型<typeof 导入>>
+type wsInput = 取第一个WS插件输入<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
+type wsOutput = 取第一个WS插件输出<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
+type payload = 获得接口负载类型<typeof 导入>
+`
+    let 导出类型推导代码 = 仅类型默认导出
+      ? `
+type 导出类型名称 = GetNetCoreExportTypeName<导入>
+type 导出类型定义 = GetNetCoreExportTypeDefine<导入>
+`
+      : `
+type 导出类型名称 = never
+type 导出类型定义 = never
+`
     let 代码 = `
 import {
   GetNetCoreExportTypeDefine,
@@ -73,20 +133,8 @@ import {
   获得接口逻辑类型,
   获得接口负载类型,
 } from '@lsby/net-core'
-import 导入 from "./${a.fileName.split('/').at(-1)?.replaceAll('.ts', '')}"
-
-type jsonPath = 获得接口路径类型<typeof 导入>
-type jsonMethod = 获得接口方法类型<typeof 导入>
-type 是否为正则 = jsonPath extends RegExp ? true : false
-type getInput = 合并Query插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
-type jsonInput = 合并JSON插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
-type urlEncodedInput = 合并UrlEncoded参数解析插件结果<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
-type formDataInput = 计算接口逻辑Form参数<获得接口逻辑类型<typeof 导入>>
-type jsonErrorOutput = 获得接口返回器接口错误类型<获得接口返回器类型<typeof 导入>>
-type jsonSuccessOutput = 获得接口返回器接口正确类型<获得接口返回器类型<typeof 导入>>
-type wsInput = 取第一个WS插件输入<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
-type wsOutput = 取第一个WS插件输出<获得接口逻辑插件类型<获得接口逻辑类型<typeof 导入>>>
-type payload = 获得接口负载类型<typeof 导入>
+${默认导入代码}
+${接口推导代码}
 type JSON接口计算结果 = 是否为正则 extends true
   ? never
   : jsonPath extends never
@@ -125,10 +173,8 @@ type JSON接口计算结果 = 是否为正则 extends true
             : never
           : never
         : never
-      : never
-
-type 导出类型名称 = GetNetCoreExportTypeName<导入>
-type 导出类型定义 = GetNetCoreExportTypeDefine<导入>
+                        : never
+${导出类型推导代码}
     `
     return ts.createSourceFile(a.fileName.replaceAll('.ts', '-' + randomUUID() + '.ts'), 代码, ts.ScriptTarget.Latest)
   })
@@ -138,24 +184,37 @@ type 导出类型定义 = GetNetCoreExportTypeDefine<导入>
     options: 解析后的tsconfig.options,
     host: {
       ...项目主机,
-      getSourceFile: (filename) => {
+      getSourceFile: (filename, languageVersion, onError, shouldCreateNewSourceFile) => {
         let 找到的虚拟文件 = 伴随的虚拟文件们.find((a) => a.fileName === filename) ?? null
         if (找到的虚拟文件 !== null) return 找到的虚拟文件
-        return 项目.getSourceFile(filename)
+        return (
+          项目.getSourceFile(filename) ??
+          项目主机.getSourceFile(filename, languageVersion, onError, shouldCreateNewSourceFile)
+        )
       },
     },
     oldProgram: 项目,
   })
+  检查TypeScript诊断(新项目, 伴随的虚拟文件们, '接口类型推导')
   let 类型检查器 = 新项目.getTypeChecker()
 
-  let JSON结果: string[] = []
+  let JSON结果: Array<{ 源文件路径: string; 类型文本: string }> = []
   let 导出类型: string[] = []
   for (let 源文件 of 伴随的虚拟文件们) {
+    let 默认导出判断节点 = 源文件.statements.find(
+      (节点): 节点 is ts.TypeAliasDeclaration =>
+        ts.isTypeAliasDeclaration(节点) && 节点.name.text === '默认导出是否Any',
+    )
+    if (默认导出判断节点 === void 0) throw new Error(`未找到默认导出类型判断: ${源文件.fileName}`)
+    let 默认导出不明确 = 类型检查器.typeToString(类型检查器.getTypeAtLocation(默认导出判断节点)) === 'true'
+    if (默认导出不明确 === true) throw new Error(`接口类型推导结果不明确: ${源文件.fileName}`)
+
     ts.forEachChild(源文件, (node) => {
       if (ts.isTypeAliasDeclaration(node) && node.name.text === 'JSON接口计算结果') {
         let type = 类型检查器.getTypeAtLocation(node)
-        JSON结果.push(
-          类型检查器.typeToString(
+        JSON结果.push({
+          源文件路径: 源文件.fileName,
+          类型文本: 类型检查器.typeToString(
             type,
             void 0,
             ts.TypeFormatFlags.NoTruncation |
@@ -163,7 +222,7 @@ type 导出类型定义 = GetNetCoreExportTypeDefine<导入>
               ts.TypeFormatFlags.AllowUniqueESSymbolType |
               ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
           ),
-        )
+        })
       }
     })
 
@@ -181,7 +240,7 @@ type 导出类型定义 = GetNetCoreExportTypeDefine<导入>
             ts.TypeFormatFlags.AllowUniqueESSymbolType |
             ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
         )
-        if (字符串结果 !== 'unknown') {
+        if (字符串结果 !== 'unknown' && 字符串结果 !== 'never') {
           导出类型名称 = JSON.parse(字符串结果) as string
         }
       }
@@ -196,7 +255,7 @@ type 导出类型定义 = GetNetCoreExportTypeDefine<导入>
             ts.TypeFormatFlags.AllowUniqueESSymbolType |
             ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
         )
-        if (字符串结果 !== 'unknown') {
+        if (字符串结果 !== 'unknown' && 字符串结果 !== 'never') {
           let 符号声明 = type.getSymbol()?.declarations?.[0]
           let 别名声明 = type.aliasSymbol?.declarations?.[0]
 
@@ -239,7 +298,12 @@ type 导出类型定义 = GetNetCoreExportTypeDefine<导入>
     }
   }
 
-  let 最终结果_JSON = Array.from(new Set(JSON结果.filter((a) => a !== 'any' && a !== 'never' && a !== 'unknown')))
+  let 不明确JSON结果 = JSON结果.filter((a) => a.类型文本 === 'any' || a.类型文本 === 'unknown')
+  if (不明确JSON结果.length > 0) {
+    throw new Error(`接口类型推导结果不明确: ${不明确JSON结果.map((a) => a.源文件路径).join(', ')}`)
+  }
+
+  let 最终结果_JSON = Array.from(new Set(JSON结果.map((a) => a.类型文本).filter((a) => a !== 'never')))
   await log.debug(`最终筛选出 ${最终结果_JSON.length} 个json接口类型`)
 
   let 最终结果_导出类型 = Array.from(new Set(导出类型.filter((a) => a !== 'any' && a !== 'never' && a !== 'unknown')))
